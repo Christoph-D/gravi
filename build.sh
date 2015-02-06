@@ -9,10 +9,10 @@ fi
 compile() {
   # Ignore the output because coffeescript-concat sometimes fails when
   # it tries to concat temporary hidden files created by an editor.
-  ./coffeescript-concat/coffeescript-concat -I coffee -o js/graph.coffee 2>/dev/null
+  ./coffeescript-concat/coffeescript-concat -I coffee -o js/gralog.coffee 2>/dev/null
   # Recompile to javascript
-  coffee -co js/ js/graph.coffee
-  rm -f js/graph.coffee
+  coffee -co js/ js/gralog.coffee
+  rm -f js/gralog.coffee
 }
 
 while :; do
