@@ -16,7 +16,7 @@ compile() {
 }
 
 while :; do
-  echo -n 'Recompiling...'
+  echo -n 'Recompiling...' | ts
   compile
   echo 'done'
   if which inotifywait >/dev/null; then
