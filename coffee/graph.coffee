@@ -8,6 +8,8 @@ class Node
   out_neighbors: -> @g.nodes[id] for id in @out_neighbors_ids
   in_neighbors: -> @g.nodes[id] for id in @in_neighbors_ids
 
+class Edge
+
 class Graph
   constructor: ->
     @nodes = []
@@ -47,7 +49,17 @@ class Graph
       .attr("x2", (d) => @nodes[d[1]].x)
       .attr("y2", (d) => @nodes[d[1]].y)
   draw: (svg) ->
+    d3.select("#dump").text(@to_string())
     @draw_edges(svg)
     @draw_nodes(svg)
+  to_string: ->
+    n.graph = undefined for n in @nodes
+    result = JSON.stringify(this)
+    n.graph = this for n in @nodes
+    return result
+  clone: ->
+    g = new Graph
+    # ...
+    return g
 
 class FiniteAutomaton extends Graph
