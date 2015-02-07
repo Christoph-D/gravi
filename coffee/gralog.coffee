@@ -9,7 +9,6 @@ g = new Graph
 g.add_vertex(new Node label: 1, x: 50, y: 50)
 g.add_vertex(new Node label: 2, x: 100, y: 50)
 g.add_vertex(new Node label: 3, x: 30, y: 70)
-
-console.log g
+g.add_edge(0, 1)
 
 g.draw(svg)
