@@ -6,10 +6,7 @@ svg = d3.select("body").append("svg").attr("width", width).attr("height", height
   .style("outline", "thin solid black")
 d3.select("body").append("p").attr("id", "dump")
 
-g = new Graph
-g.addVertex(new Node label: 1, x: 50, y: 50)
-g.addVertex(new Node label: 2, x: 100, y: 50)
-g.addVertex(new Node label: 3, x: 30, y: 70)
-g.addEdge(0, 1)
+s = '{"vertices":[{"outE":[0],"inE":[],"id":0,"x":405,"y":182},{"outE":[],"inE":[0],"id":1,"x":110,"y":27},{"outE":[],"inE":[],"id":2,"x":344,"y":102}],"edges":[{"tail":0,"head":1,"id":0}]}'
 
+g = graphFromJSON(s)
 g.draw(svg)
