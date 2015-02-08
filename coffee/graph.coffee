@@ -1,16 +1,21 @@
 class Vertex
-  constructor: ->
+  constructor: (v) ->
     @outE = []
     @inE = []
+    this[key] = v[key] for key of v
   addOutEdge: (e) -> @outE.push(e)
   addInEdge: (e) -> @inE.push(e)
+  # @outE contains only the ids of outgoing edges.  @outEdges()
+  # returns the corresponding list of Edge objects.
   outEdges: (graph) -> graph.edges[e] for e in @outE
   inEdges: (graph) -> graph.edges[e] for e in @inE
+  # Returns a list of Vertex objects.
   outNeighbors: (graph) -> graph.vertices[e.head] for e in @outEdges(graph)
   inNeighbors: (graph) -> graph.vertices[e.tail] for e in @inEdges(graph)
 
 class Edge
-  constructor: ({@tail, @head}) ->
+  # e should contain at least the keys "tail" and "head".
+  constructor: (e) -> this[key] = e[key] for key of e
 
 class Graph
   constructor: ->
@@ -47,24 +52,16 @@ class Graph
       .attr("x2", (d) => @vertices[d.head].x)
       .attr("y2", (d) => @vertices[d.head].y)
   draw: (svg) ->
-    d3.select("#dump").text(@toString())
+    d3.select("#dump").text(graphToJSON(this))
     @drawEdges(svg)
     @drawVertices(svg)
-  toString: -> JSON.stringify(this)
 
+graphToJSON = (graph) -> JSON.stringify(graph)
 graphFromJSON = (json) ->
   raw = JSON.parse(json)
   g = new Graph
-  for v in raw.vertices
-    v2 = new Vertex
-    v2[key] = value for key, value of v
-    v2.inE = []
-    v2.outE = [] # edges will be added later
-    g.addVertex(v2)
-  for e in raw.edges
-    e2 = new Edge tail: e.tail, head: e.head
-    e2[key] = value for key, value of e
-    g.addEdge(e2)
+  g.vertices = (new Vertex v for v in raw.vertices)
+  g.edges = (new Edge e for e in raw.edges)
   return g
 
 class FiniteAutomaton extends Graph
