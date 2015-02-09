@@ -62,12 +62,13 @@ s = '{
 }'
 
 #g = graphFromJSON(s)
-g = generateRandomGraph(10, 0.3)
+#g = generateRandomGraph(10, 0.2)
+g = generatePath(10)
 g.saveStep()
 svg = d3.select("#graph")
-g.draw(svg)
 dfs(g)
 g.currentStep = 0
+g.draw(svg)
 slider = d3.slider().min(0).max(g.totalSteps - 1).step(1)
   .on("slide", (event, value) ->
     g.currentStep = value
