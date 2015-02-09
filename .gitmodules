@@ -1,3 +1,6 @@
 [submodule "coffeescript-concat"]
 	path = coffeescript-concat
 	url = https://github.com/fairfieldt/coffeescript-concat.git
+[submodule "d3"]
+	path = d3
+	url = https://github.com/mbostock/d3.git
