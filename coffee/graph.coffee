@@ -4,8 +4,8 @@ class Vertex
   constructor: (v) ->
     @outE = []
     @inE = []
-    this[key] = v[key] for key of v
     @highlightClass = new TimedProperty ""
+    this[key] = v[key] for own key of v
 
   addOutEdge: (e) -> @outE.push(e)
   addInEdge: (e) -> @inE.push(e)
@@ -39,8 +39,8 @@ class Vertex
 class Edge
   # e should contain at least the keys "tail" and "head".
   constructor: (e) ->
-    this[key] = e[key] for key of e
     @highlightClass = new TimedProperty ""
+    this[key] = e[key] for own key of e
 
   highlight: (graph, highlightId) ->
     @highlightClass.valueAtTime(graph.currentStep, if highlightId? then "highlight#{highlightId}" else "")
