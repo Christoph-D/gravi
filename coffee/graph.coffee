@@ -1,7 +1,15 @@
+getHighlightClass = (graph, obj) ->
+  i = graph.currentStep
+  --i while i > 0 and not obj.class[i]?
+  if obj.class[i]?
+    return obj.class[i]
+  return ""
+
 class Vertex
   constructor: (v) ->
     @outE = []
     @inE = []
+    @class = []
     this[key] = v[key] for key of v
 
   addOutEdge: (e) -> @outE.push(e)
@@ -25,25 +33,33 @@ class Vertex
   drawEnter: (graph, svgGroup) ->
     svgGroup.append("circle").attr("r", 10)
   drawUpdate: (graph, svgGroup) ->
-    if @class?
-      svgGroup.attr("class", "vertex " + @class)
-    else
-      svgGroup.attr("class", "vertex")
+    svgGroup.attr("class", "vertex " + getHighlightClass(graph, this))
     svgGroup.selectAll("circle")
       .attr("cx", (d) -> d.x)
       .attr("cy", (d) -> d.y)
 
+  highlight: (graph, highlightId) ->
+    if highlightId?
+      @class[graph.currentStep] = "highlight#{highlightId}"
+    else
+      @class[graph.currentStep] = ""
+
 class Edge
   # e should contain at least the keys "tail" and "head".
-  constructor: (e) -> this[key] = e[key] for key of e
+  constructor: (e) ->
+    @class = []
+    this[key] = e[key] for key of e
+
+  highlight: (graph, highlightId) ->
+    if highlightId?
+      @class[graph.currentStep] = "highlight#{highlightId}"
+    else
+      @class[graph.currentStep] = ""
 
   drawEnter: (graph, svgGroup) ->
     svgGroup.append("line")
   drawUpdate: (graph, svgGroup) ->
-    if @class?
-      svgGroup.attr("class", "edge " + @class)
-    else
-      svgGroup.attr("class", "edge")
+    svgGroup.attr("class", "edge " + getHighlightClass(graph, this))
     s = graph.vertices[@tail]
     t = graph.vertices[@head]
     svgGroup.selectAll("line")
@@ -56,7 +72,8 @@ class Graph
   constructor: ->
     @vertices = []
     @edges = []
-    @steps = []
+    @totalSteps = 0
+    @currentStep = 0
 
   addVertex: (v) ->
     v.id = @vertices.length
@@ -94,7 +111,8 @@ class Graph
     @drawVertices(svg)
 
   saveStep: ->
-    @steps.push(graphFromJSON(graphToJSON(this)))
+    ++@totalSteps
+    ++@currentStep
 
 graphToJSON = (graph) -> JSON.stringify(graph, undefined, 2)
 graphFromJSON = (json) ->
