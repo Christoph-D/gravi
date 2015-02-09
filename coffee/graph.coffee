@@ -25,6 +25,7 @@ class Vertex
   drawEnter: (graph, svgGroup) ->
     svgGroup.append("circle").attr("r", 10)
   drawUpdate: (graph, svgGroup) ->
+    svgGroup.classed(@class, true)
     svgGroup.selectAll("circle")
       .attr("cx", (d) -> d.x)
       .attr("cy", (d) -> d.y)
@@ -36,6 +37,7 @@ class Edge
   drawEnter: (graph, svgGroup) ->
     svgGroup.append("line")
   drawUpdate: (graph, svgGroup) ->
+    svgGroup.classed(@class, true)
     s = graph.vertices[@tail]
     t = graph.vertices[@head]
     svgGroup.selectAll("line")
