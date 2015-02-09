@@ -36,7 +36,8 @@ class Graph
         d.y = d3.event.y
         @draw(svg)
       )
-    vertices = svg.selectAll(".vertex").data(@vertices)
+    svg.append("g").attr("id", "vertices") if svg.select("#vertices").empty()
+    vertices = svg.select("#vertices").selectAll(".vertex").data(@vertices)
     vertices.enter().append("circle").attr("class", "vertex")
       .attr("r", 10)
       .call(drag)
@@ -44,7 +45,8 @@ class Graph
       .attr("cx", (d) -> d.x)
       .attr("cy", (d) -> d.y)
   drawEdges: (svg) ->
-    edges = svg.selectAll(".edge").data(@edges)
+    svg.append("g").attr("id", "edges") if svg.select("#edges").empty()
+    edges = svg.select("#edges").selectAll(".edge").data(@edges)
     edges.enter().append("line").attr("class", "edge")
     edges
       .attr("x1", (d) => @vertices[d.tail].x)
