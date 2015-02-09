@@ -1,5 +1,6 @@
 #= require Graph
 #= require <dfs.coffee>
+#= require <generators.coffee>
 
 # We need to add a new marker for every possible highlighting because
 # marker elements do not inherit their css from the referencing
@@ -60,11 +61,22 @@ s = '{
   ]
 }'
 
-g = graphFromJSON(s)
+#g = graphFromJSON(s)
+g = generateRandomGraph(10, 0.3)
 g.saveStep()
-g.draw(d3.select("#graph"))
+svg = d3.select("#graph")
+g.draw(svg)
 dfs(g)
-d3.select("#slider").call(d3.slider().min(0).max(g.steps.length - 1).step(1)
+g.currentStep = 0
+slider = d3.slider().min(0).max(g.totalSteps - 1).step(1)
   .on("slide", (event, value) ->
-    g.steps[value].draw(d3.select("#graph")))
-)
+    g.currentStep = value
+    g.draw(svg))
+d3.select("#slider").call(slider)
+
+d3.select("body").on("keydown", () ->
+  switch d3.event.keyCode
+    when 37 then --g.currentStep if g.currentStep > 0
+    when 39 then ++g.currentStep if g.currentStep < g.totalSteps - 1
+  slider.value(g.currentStep)
+  g.draw(svg))
