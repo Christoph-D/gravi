@@ -89,7 +89,7 @@ class Graph
 
   # TODO: implement one parameter version by checking the edge id
   removeEdge: (tail, head) ->
-    @edges = (e for e in @edges if e.tail != tail or e.head != head)
+    @edges = (e for e in @edges when e.tail != tail or e.head != head)
 
   hasEdge: (tail, head) ->
     e = @parseEdge(tail, head)
@@ -162,8 +162,10 @@ class Graph
     edges.enter().append("g").each((e) -> e.drawEnter(graph, d3.select(this)))
     edges.each((e) -> e.drawUpdate(graph, d3.select(this)))
 
-    if @drawEdgeMode
-      s = @getSelectedVertex()
+    # s will be null if the user clicks on empty space because this
+    # deselects all vertices.  In this case, abort drawEdgeMode.
+    s = @getSelectedVertex()
+    if @drawEdgeMode and s?
       pointer = svg.selectAll(".edge.pointer").data([@mouse])
       pointer.enter().append("line").attr("class", "edge pointer")
       pointer
@@ -172,6 +174,7 @@ class Graph
           .attr("x2", (d) -> d.x)
           .attr("y2", (d) -> d.y)
     else
+      @drawEdgeMode = false
       svg.selectAll(".edge.pointer").remove()
 
   draw: (svg) ->
