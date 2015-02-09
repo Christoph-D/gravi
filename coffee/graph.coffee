@@ -25,7 +25,10 @@ class Vertex
   drawEnter: (graph, svgGroup) ->
     svgGroup.append("circle").attr("r", 10)
   drawUpdate: (graph, svgGroup) ->
-    svgGroup.classed(@class, true)
+    if @class?
+      svgGroup.attr("class", "vertex " + @class)
+    else
+      svgGroup.attr("class", "vertex")
     svgGroup.selectAll("circle")
       .attr("cx", (d) -> d.x)
       .attr("cy", (d) -> d.y)
@@ -37,7 +40,10 @@ class Edge
   drawEnter: (graph, svgGroup) ->
     svgGroup.append("line")
   drawUpdate: (graph, svgGroup) ->
-    svgGroup.classed(@class, true)
+    if @class?
+      svgGroup.attr("class", "edge " + @class)
+    else
+      svgGroup.attr("class", "edge")
     s = graph.vertices[@tail]
     t = graph.vertices[@head]
     svgGroup.selectAll("line")
@@ -50,6 +56,7 @@ class Graph
   constructor: ->
     @vertices = []
     @edges = []
+    @steps = []
 
   addVertex: (v) ->
     v.id = @vertices.length
@@ -70,17 +77,15 @@ class Graph
       )
     vertices = svg.select("#vertices").selectAll(".vertex").data(@vertices)
     graph = this
-    vertices.enter()
-      .append("g").attr("class", "vertex")
-        .each((v) -> v.drawEnter(graph, d3.select(this)))
-        .call(drag)
+    vertices.enter().append("g")
+      .each((v) -> v.drawEnter(graph, d3.select(this)))
+      .call(drag)
     vertices.each((v) -> v.drawUpdate(graph, d3.select(this)))
 
   drawEdges: (svg) ->
     edges = svg.select("#edges").selectAll(".edge").data(@edges)
     graph = this
-    edges.enter().append("g").attr("class", "edge")
-      .each((e) -> e.drawEnter(graph, d3.select(this)))
+    edges.enter().append("g").each((e) -> e.drawEnter(graph, d3.select(this)))
     edges.each((e) -> e.drawUpdate(graph, d3.select(this)))
 
   draw: (svg) ->
@@ -88,6 +93,8 @@ class Graph
     @drawEdges(svg)
     @drawVertices(svg)
 
+  saveStep: ->
+    @steps.push(graphFromJSON(graphToJSON(this)))
 
 graphToJSON = (graph) -> JSON.stringify(graph, undefined, 2)
 graphFromJSON = (json) ->

@@ -3,6 +3,12 @@
 <style>
 #graph {
   outline: thin solid black;
+  width: 700px;
+  height: 300px;
+}
+#slider {
+  width: 680px;
+  margin-left: 10px;
 }
 .vertex {
   fill: #8888FF;
@@ -10,17 +16,37 @@
 .vertex.highlight1 {
   fill: #FF0000;
 }
+.vertex.highlight2 {
+  fill: #009900;
+}
 .edge {
-  stroke: black;
+  stroke: #000000;
   stroke-width: 1.5px;
   marker-end: url(#edgeArrow);
 }
+.edge.highlight1 {
+  stroke: #FF0000;
+  marker-end: url(#edgeArrowHighlight1);
+}
+marker.highlight1 {
+  fill: #FF0000;
+}
+.edge.highlight2 {
+  fill: #BBBBBB;
+  stroke: #BBBBBB;
+  marker-end: url(#edgeArrowHighlight2);
+}
+marker.highlight2 {
+  fill: #BBBBBB;
+}
 </style>
+<link rel="stylesheet" type="text/css" href="d3.slider/d3.slider.css">
 <title></title>
 <body>
 <script src="d3/d3.min.js" charset="utf-8"></script>
-<svg width="700" height="300" id="graph">
-  <defs>
+<script src="d3.slider/d3.slider.js" charset="utf-8"></script>
+<svg id="graph">
+  <defs id="graphDefinitions">
     <marker id="edgeArrow"
       viewBox="0 0 10 10" refX="10" refY="5"
       markerUnits="strokeWidth"
@@ -32,6 +58,7 @@
   <g id="vertices"></g>
   <g id="edges"></g>
 </svg>
+<div id="slider"></div>
 <pre id="dump">
 </pre>
 <script src="js/gralog.js" charset="utf-8"></script>
