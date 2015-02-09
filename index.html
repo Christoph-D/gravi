@@ -1,54 +1,11 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-#graph {
-  outline: thin solid black;
-  width: 700px;
-  height: 300px;
-}
-#info {
-  position: absolute;
-  top: 20px;
-  left: 750px;
-}
-#slider {
-  width: 680px;
-  margin-left: 10px;
-}
-.vertex {
-  fill: #8888FF;
-}
-.vertex.highlight1 {
-  fill: #FF0000;
-}
-.vertex.highlight2 {
-  fill: #009900;
-}
-.vertex.selected {
-  stroke: #000000;
-  stroke-width: 2px;
-}
-.edge {
-  stroke: #000000;
-  stroke-width: 1.5px;
-  marker-end: url(#edgeArrow);
-}
-.edge.highlight1 {
-  stroke: #FF0000;
-  marker-end: url(#edgeArrowHighlight1);
-}
-marker.highlight1 {
-  fill: #FF0000;
-}
-.edge.highlight2 {
-  fill: #BBBBBB;
-  stroke: #BBBBBB;
-  marker-end: url(#edgeArrowHighlight2);
-}
-marker.highlight2 {
-  fill: #BBBBBB;
-}
+.edge { marker-end: url(#edgeArrow); }
+.edge.highlight1 { marker-end: url(#edgeArrowHighlight1); }
+.edge.highlight2 { marker-end: url(#edgeArrowHighlight2); }
 </style>
+<link rel="stylesheet" type="text/css" href="graphs.css">
 <link rel="stylesheet" type="text/css" href="d3.slider/d3.slider.css">
 <title></title>
 <body>
