@@ -56,7 +56,7 @@ class Graph
     @drawEdges(svg)
     @drawVertices(svg)
 
-graphToJSON = (graph) -> JSON.stringify(graph)
+graphToJSON = (graph) -> JSON.stringify(graph, undefined, 2)
 graphFromJSON = (json) ->
   raw = JSON.parse(json)
   g = new Graph
