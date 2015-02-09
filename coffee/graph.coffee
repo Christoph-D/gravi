@@ -10,6 +10,10 @@ class Vertex
   addOutEdge: (e) -> @outE.push(e)
   addInEdge: (e) -> @inE.push(e)
 
+  removeEdgeId: (edgeId) ->
+    @outE = (e for e in @outE when e != edgeId)
+    @inE = (e for e in @inE when e != edgeId)
+
   # @outE contains only the ids of outgoing edges.  @outEdges()
   # returns the corresponding list of Edge objects.
   outEdges: (graph) -> graph.edges[e] for e in @outE
@@ -70,7 +74,7 @@ class Graph
     @mouse = { x: 0, y: 0 }
 
   addVertex: (v) ->
-    v.id = @vertices.length
+    v.id = if @vertices.length > 0 then 1 + @vertices[@vertices.length - 1].id else 0
     @vertices.push(v)
 
   parseEdge: (tail, head) ->
@@ -81,15 +85,22 @@ class Graph
 
   addEdge: (tail, head) ->
     e = @parseEdge(tail, head)
-    return if @hasEdge(e)
-    e.id = @edges.length
-    @vertices[e.tail].addOutEdge(e.id)
-    @vertices[e.head].addInEdge(e.id)
-    @edges.push(e)
+    if @hasEdge e
+      return # no duplicate edges
+    e.id = if @edges.length > 0 then 1 + @edges[@edges.length - 1].id else 0
+    @vertices[e.tail].addOutEdge e.id
+    @vertices[e.head].addInEdge e.id
+    @edges.push e
 
   # TODO: implement one parameter version by checking the edge id
   removeEdge: (tail, head) ->
-    @edges = (e for e in @edges when e.tail != tail or e.head != head)
+    e = @parseEdge(tail, head)
+    for f, i in @edges
+      if e.head == f.head and e.tail == f.tail
+        @vertices[e.tail].removeEdgeId f.id
+        @vertices[e.head].removeEdgeId f.id
+        @edges.splice(i, 1)
+        return
 
   hasEdge: (tail, head) ->
     e = @parseEdge(tail, head)
@@ -153,6 +164,7 @@ class Graph
           @drawEdgeMode = false
           @draw(svg)
       )
+    vertices.exit().remove()
     vertices.each((v) -> v.drawUpdate(graph, d3.select(this)))
     d3.select("#info").text(JSON.stringify(@getSelectedVertex(), undefined, 2))
 
@@ -160,6 +172,7 @@ class Graph
     edges = svg.select("#edges").selectAll(".edge").data(@edges)
     graph = this
     edges.enter().append("g").each((e) -> e.drawEnter(graph, d3.select(this)))
+    edges.exit().remove()
     edges.each((e) -> e.drawUpdate(graph, d3.select(this)))
 
     # s will be null if the user clicks on empty space because this
