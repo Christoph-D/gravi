@@ -8,3 +8,6 @@ class TimedProperty
     else
       --time while time > 0 and not @value[time]?
       return @value[time]
+
+  clear: () ->
+    @value = { 0: @value[0] }
