@@ -6,4 +6,4 @@
 	url = https://github.com/mbostock/d3.git
 [submodule "d3.slider"]
 	path = d3.slider
-	url = https://github.com/turban/d3.slider.git
+	url = git@github.com:Christoph-D/d3.slider.git
