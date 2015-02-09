@@ -1,16 +1,11 @@
-getHighlightClass = (graph, obj) ->
-  i = graph.currentStep
-  --i while i > 0 and not obj.class[i]?
-  if obj.class[i]?
-    return obj.class[i]
-  return ""
+#= require TimedProperty
 
 class Vertex
   constructor: (v) ->
     @outE = []
     @inE = []
-    @class = []
     this[key] = v[key] for key of v
+    @highlightClass = new TimedProperty ""
 
   addOutEdge: (e) -> @outE.push(e)
   addInEdge: (e) -> @inE.push(e)
@@ -33,33 +28,27 @@ class Vertex
   drawEnter: (graph, svgGroup) ->
     svgGroup.append("circle").attr("r", 10)
   drawUpdate: (graph, svgGroup) ->
-    svgGroup.attr("class", "vertex " + getHighlightClass(graph, this))
+    svgGroup.attr("class", "vertex " + @highlightClass.valueAtTime(graph.currentStep))
     svgGroup.selectAll("circle")
       .attr("cx", (d) -> d.x)
       .attr("cy", (d) -> d.y)
 
   highlight: (graph, highlightId) ->
-    if highlightId?
-      @class[graph.currentStep] = "highlight#{highlightId}"
-    else
-      @class[graph.currentStep] = ""
+    @highlightClass.valueAtTime(graph.currentStep, if highlightId? then "highlight#{highlightId}" else "")
 
 class Edge
   # e should contain at least the keys "tail" and "head".
   constructor: (e) ->
-    @class = []
     this[key] = e[key] for key of e
+    @highlightClass = new TimedProperty ""
 
   highlight: (graph, highlightId) ->
-    if highlightId?
-      @class[graph.currentStep] = "highlight#{highlightId}"
-    else
-      @class[graph.currentStep] = ""
+    @highlightClass.valueAtTime(graph.currentStep, if highlightId? then "highlight#{highlightId}" else "")
 
   drawEnter: (graph, svgGroup) ->
     svgGroup.append("line")
   drawUpdate: (graph, svgGroup) ->
-    svgGroup.attr("class", "edge " + getHighlightClass(graph, this))
+    svgGroup.attr("class", "edge " + @highlightClass.valueAtTime(graph.currentStep))
     s = graph.vertices[@tail]
     t = graph.vertices[@head]
     svgGroup.selectAll("line")
