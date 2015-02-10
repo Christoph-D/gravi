@@ -25,10 +25,10 @@ EdgeDrawableMixin =
     s = graph.vertices[@tail]
     t = graph.vertices[@head]
     svgGroup.selectAll("line")
-      .attr("x1", (d) => s.edgeAnchor(t).x)
-      .attr("y1", (d) => s.edgeAnchor(t).y)
-      .attr("x2", (d) => t.edgeAnchor(s).x)
-      .attr("y2", (d) => t.edgeAnchor(s).y)
+      .attr("x1", (d) -> s.edgeAnchor(t).x)
+      .attr("y1", (d) -> s.edgeAnchor(t).y)
+      .attr("x2", (d) -> t.edgeAnchor(s).x)
+      .attr("y2", (d) -> t.edgeAnchor(s).y)
 
 class GraphEditor
   constructor: (@g = new Graph) ->
@@ -114,7 +114,7 @@ class GraphEditor
       svg.selectAll(".edge.pointer").remove()
 
   draw: (svg) ->
-    d3.select("#dump").text(graphToJSON(this))
+    #d3.select("#dump").text(graphToJSON(this))
     editor = this
     svg.on("mousemove", ->
       [editor.mouse.x, editor.mouse.y] = d3.mouse(this)
