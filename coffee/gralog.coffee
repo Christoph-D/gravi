@@ -1,4 +1,5 @@
 #= require Graph
+#= require GraphEditor
 #= require <dfs.coffee>
 #= require <generators.coffee>
 
@@ -64,15 +65,17 @@ s = '{
 #g = graphFromJSON(s)
 #g = generateRandomGraph(10, 0.2)
 g = generatePath(10)
+editor = new GraphEditor g
 g.saveStep()
 svg = d3.select("#graph")
 dfs(g)
 g.currentStep = 0
-g.draw(svg)
+
+editor.draw(svg)
 slider = d3.slider().min(0).max(g.totalSteps - 1).step(1)
   .on("slide", (event, value) ->
     g.currentStep = value
-    g.draw(svg))
+    editor.draw(svg))
 d3.select("#slider").call(slider)
 
 d3.select("body").on("keydown", () ->
@@ -80,4 +83,4 @@ d3.select("body").on("keydown", () ->
     when 37 then --g.currentStep if g.currentStep > 0
     when 39 then ++g.currentStep if g.currentStep < g.totalSteps - 1
   slider.value(g.currentStep)
-  g.draw(svg))
+  editor.draw(svg))
