@@ -101,6 +101,7 @@ class GraphEditor
     edges.exit().remove()
     edges.each((e) -> e.drawUpdate(editor, d3.select(this)))
 
+    # Draw an edge from the selected node to the mouse cursor.
     if @drawEdgeMode
       pointer = svg.selectAll(".edge.pointer").data([@mouse])
       pointer.enter().append("line").attr("class", "edge pointer")

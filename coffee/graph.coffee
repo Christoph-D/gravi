@@ -11,6 +11,7 @@ HighlightableMixin =
       c = ""
     @highlightClass.valueAtTime(graph.currentStep, c)
   getHighlightClass: (graph) -> @highlightClass.valueAtTime(graph.currentStep)
+
 # Mixin to make a graph highlightable.
 HighlightableGraphMixin =
   clearHistory: ->
@@ -86,6 +87,11 @@ class Graph extends Extensible
       if e.head == f.head and e.tail == f.tail
         @vertices[e.tail].removeEdgeId i
         @vertices[e.head].removeEdgeId i
+        # We set the entry to null in order to preserve the indices
+        # because they are the edge ids.  Removing/adding lots of
+        # edges will thus clutter @edges with null entries.
+        # TODO: There should be a function to renumber edges and clean
+        # up null entries.
         @edges[i] = null
         return
 
