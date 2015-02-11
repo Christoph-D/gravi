@@ -37,7 +37,7 @@ class GraphEditor
 
   # Selects w or deselects all vertices if w == null.
   selectVertex: (w) ->
-    v.selected = undefined for v in @g.vertices
+    delete v.selected for v in @g.vertices
     w.selected = true if w?
   # Returns the currently selected vertex.
   getSelectedVertex: ->
