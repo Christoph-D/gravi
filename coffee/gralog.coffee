@@ -16,51 +16,6 @@ addHighlightedMarkers = ->
     defs.appendChild(t)
 addHighlightedMarkers()
 
-s = '{
-  "vertices": [
-    {
-      "outE": [
-        0
-      ],
-      "inE": [],
-      "id": 0,
-      "x": 405,
-      "y": 182
-    },
-    {
-      "outE": [
-        1
-      ],
-      "inE": [
-        0
-      ],
-      "id": 1,
-      "x": 110,
-      "y": 27
-    },
-    {
-      "outE": [],
-      "inE": [
-        1
-      ],
-      "id": 2,
-      "x": 484,
-      "y": 81
-    }
-  ],
-  "edges": [
-    {
-      "tail": 0,
-      "head": 1,
-      "id": 0
-    },
-    {
-      "tail": 1,
-      "head": 2,
-      "id": 1
-    }
-  ]
-}'
 
 state = {}
 runAlgorithm = ->
