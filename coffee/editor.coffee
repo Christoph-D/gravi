@@ -32,7 +32,7 @@ EdgeDrawable =
 
 class GraphEditor
   # This class may modify the graph @g.
-  constructor: (@g) ->
+  constructor: (@g, @svg) ->
     # This is true when the user is drawing a new edge.
     @drawEdgeMode = false
     # The current mouse position.
@@ -46,14 +46,8 @@ class GraphEditor
     @g.EdgeType = @g.EdgeType.newTypeWithMixin EdgeDrawable
     @g.edges = (new @g.EdgeType(v) for v in @g.edges)
 
-  drawVertices: (svg) ->
-    svg.on("click", =>
-      return if d3.event.defaultPrevented
-      @selectedV = null
-      @drawEdgeMode = false
-      @draw(svg)
-    )
-    drag = d3.behavior.drag()
+    # Make vertices draggable.
+    @drag = d3.behavior.drag()
       .on("dragstart", (d) =>
         d3.event.sourceEvent.stopPropagation()
         @selectedV = d
@@ -64,21 +58,30 @@ class GraphEditor
         d.y = d3.event.y
         @draw(svg)
       )
-    vertices = svg.select("#vertices").selectAll(".vertex").data(@g.getVertices())
+    # Global click handler to deselect everything.
+    @svg.on("click", =>
+      return if d3.event.defaultPrevented
+      @selectedV = null
+      @drawEdgeMode = false
+      @draw(svg)
+    )
+
+  drawVertices: ->
+    vertices = @svg.select("#vertices").selectAll(".vertex").data(@g.getVertices())
     editor = this
     vertices.enter().append("g")
       .each((v) -> v.drawEnter(editor, d3.select(this)))
-      .call(drag)
+      .call(@drag)
       .on("click", (d) =>
         d3.event.stopPropagation()
         @selectedV = d
-        @draw(svg)
+        @draw()
       )
       .on("dblclick", (d) =>
         d3.event.stopPropagation()
         @selectedV = d
         @drawEdgeMode = true
-        @draw(svg)
+        @draw()
       )
       .on("mouseover", (d) =>
         if @drawEdgeMode and @selectedV != d
@@ -88,14 +91,14 @@ class GraphEditor
           else
             @g.addEdge e
           @drawEdgeMode = false
-          @draw(svg)
+          @draw()
       )
     vertices.exit().remove()
     vertices.each((v) -> v.drawUpdate(editor, d3.select(this)))
     d3.select("#info").text(JSON.stringify(@selectedV, undefined, 2))
 
-  drawEdges: (svg) ->
-    edges = svg.select("#edges").selectAll(".edge").data(@g.getEdges())
+  drawEdges: ->
+    edges = @svg.select("#edges").selectAll(".edge").data(@g.getEdges())
     editor = this
     edges.enter().append("g").each((e) -> e.drawEnter(editor, d3.select(this)))
     edges.exit().remove()
@@ -103,7 +106,7 @@ class GraphEditor
 
     # Draw an edge from the selected node to the mouse cursor.
     if @drawEdgeMode
-      pointer = svg.selectAll(".edge.pointer").data([@mouse])
+      pointer = @svg.selectAll(".edge.pointer").data([@mouse])
       pointer.enter().append("line").attr("class", "edge pointer")
       pointer
           .attr("x1", (d) => @selectedV.edgeAnchor(d).x)
@@ -111,15 +114,15 @@ class GraphEditor
           .attr("x2", (d) -> d.x)
           .attr("y2", (d) -> d.y)
     else
-      svg.selectAll(".edge.pointer").remove()
+      @svg.selectAll(".edge.pointer").remove()
 
-  draw: (svg) ->
+  draw: ->
     #d3.select("#dump").text(graphToJSON(@g))
     editor = this
-    svg.on("mousemove", ->
+    @svg.on("mousemove", ->
       [editor.mouse.x, editor.mouse.y] = d3.mouse(this)
       if editor.drawEdgeMode
-        editor.draw(svg)
+        editor.draw()
     )
-    @drawEdges(svg)
-    @drawVertices(svg)
+    @drawEdges()
+    @drawVertices()

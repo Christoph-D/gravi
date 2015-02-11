@@ -65,12 +65,11 @@ s = '{
 #g = graphFromJSON(s)
 #g = generateRandomGraph(10, 0.2)
 g = generatePath(10)
-editor = new GraphEditor g
-svg = d3.select("#graph")
+editor = new GraphEditor g, d3.select("#graph")
 
 slider = d3.slider().on("slide", (event, value) ->
   g.currentStep = value
-  editor.draw(svg))
+  editor.draw())
 
 runAlgorithm = ->
   g.clearHistory()
@@ -86,8 +85,8 @@ runAlgorithm = ->
       when 37 then --g.currentStep if g.currentStep > 0
       when 39 then ++g.currentStep if g.currentStep < g.totalSteps - 1
     slider.value(g.currentStep)
-    editor.draw(svg))
-  editor.draw(svg)
+    editor.draw())
+  editor.draw()
 
 d3.select("#run").on("click", runAlgorithm)
 runAlgorithm()
