@@ -1,27 +1,27 @@
 #= require TimedProperty
-#= require GraphEditor
+#= require Extensible
 
-class Extendable
-  constructor: -> @init?()
-  @mixin: (mixin) ->
-    oldInit = this::init
-    this::init = ->
-      oldInit?.call this
-      mixin.init?.call this
-    this::[key] = value for key, value of mixin when key != "init"
-    this
-
-# Makes a vertex or an edge highlightable.
+# Mixin to make a vertex or an edge highlightable.
 HighlightableMixin =
-  init: -> @highlightClass = new TimedProperty ""
+  constructor: -> @highlightClass = new TimedProperty ""
   highlight: (graph, highlightId) ->
-    @highlightClass.valueAtTime(graph.currentStep, if highlightId? then "highlight#{highlightId}" else "")
+    if highlightId?
+      c = "highlight#{highlightId}"
+    else
+      c = ""
+    @highlightClass.valueAtTime(graph.currentStep, c)
+  getHighlightClass: (graph) -> @highlightClass.valueAtTime(graph.currentStep)
+# Mixin to make a graph highlightable.
+HighlightableGraphMixin =
+  clearHighlights: ->
+    v.highlightClass.clear() for v in @vertices
+    e.highlightClass.clear() for e in @edges
 
-class Vertex extends Extendable
+class Vertex extends Extensible
   constructor: (v) ->
     @outE = []
     @inE = []
-    this[key] = v[key] for own key of v
+    this[key] = value for own key, value of v
     super
 
   addOutEdge: (e) -> @outE.push(e)
@@ -41,19 +41,17 @@ class Vertex extends Extendable
   inNeighbors: (graph) -> graph.vertices[e.tail] for e in @inEdges(graph)
 
   @mixin HighlightableMixin
-  @mixin VertexDrawableMixin
 
-class Edge extends Extendable
+class Edge extends Extensible
   # e should contain at least the keys "tail" and "head".
   constructor: (e) ->
-    this[key] = e[key] for own key of e
+    this[key] = value for own key, value of e
     super
 
   @mixin HighlightableMixin
-  @mixin EdgeDrawableMixin
 
-class Graph
-  constructor: ->
+class Graph extends Extensible
+  constructor: (@VertexType = Vertex, @EdgeType = Edge) ->
     @vertices = []
     @edges = []
     @totalSteps = 0
@@ -67,7 +65,7 @@ class Graph
     if not head?
       return tail # assume that tail is already an Edge object
     else
-      return new Edge tail: tail, head: head
+      return new @EdgeType tail: tail, head: head
 
   addEdge: (tail, head) ->
     e = @parseEdge(tail, head)
@@ -94,13 +92,12 @@ class Graph
       return true if e.head == f.head and e.tail == f.tail
     return false
 
-  clearHighlights: ->
-    v.highlightClass.clear() for v in @vertices
-    e.highlightClass.clear() for e in @edges
-
   saveStep: ->
     ++@totalSteps
     ++@currentStep
+
+  @mixin HighlightableGraphMixin
+
 
 graphToJSON = (graph) -> JSON.stringify(graph, undefined, 2)
 graphFromJSON = (json) ->

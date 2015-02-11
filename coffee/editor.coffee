@@ -1,29 +1,29 @@
-# Turns a vertex into a drawable vertex.
-VertexDrawableMixin =
+# Mixin to draw a vertex with a circular shape.
+VertexDrawableCircular =
   # Returns the coordinates of the endpoint of an adjacent edge from
   # the given other node.
   edgeAnchor: (otherNode) ->
     a = Math.atan2(@y - otherNode.y, @x - otherNode.x)
     return { x: @x - Math.cos(a) * 10, y: @y - Math.sin(a) * 10}
-  drawEnter: (graph, svgGroup) ->
+  drawEnter: (editor, svgGroup) ->
     svgGroup.append("circle").attr("r", 10)
-  drawUpdate: (graph, svgGroup) ->
+  drawUpdate: (editor, svgGroup) ->
     svgGroup.attr("class",
       "vertex " +
-      @highlightClass.valueAtTime(graph.currentStep) +
-      (if @selected? then " selected" else ""))
+      @getHighlightClass(editor.g) +
+      (if editor.selectedV == this then " selected" else ""))
     svgGroup.selectAll("circle")
       .attr("cx", (d) -> d.x)
       .attr("cy", (d) -> d.y)
 
-# Turns an edge into a drawable edge.
-EdgeDrawableMixin =
-  drawEnter: (graph, svgGroup) ->
+# Mixin to draw an edge with an arrow at its head.
+EdgeDrawable =
+  drawEnter: (editor, svgGroup) ->
     svgGroup.append("line")
-  drawUpdate: (graph, svgGroup) ->
-    svgGroup.attr("class", "edge " + @highlightClass.valueAtTime(graph.currentStep))
-    s = graph.vertices[@tail]
-    t = graph.vertices[@head]
+  drawUpdate: (editor, svgGroup) ->
+    s = editor.g.vertices[@tail]
+    t = editor.g.vertices[@head]
+    svgGroup.attr("class", "edge " + @getHighlightClass(editor.g))
     svgGroup.selectAll("line")
       .attr("x1", (d) -> s.edgeAnchor(t).x)
       .attr("y1", (d) -> s.edgeAnchor(t).y)
@@ -31,26 +31,27 @@ EdgeDrawableMixin =
       .attr("y2", (d) -> t.edgeAnchor(s).y)
 
 class GraphEditor
-  constructor: (@g = new Graph) ->
+  # This class may modify the graph @g.
+  constructor: (@g) ->
+    # This is true when the user is drawing a new edge.
     @drawEdgeMode = false
+    # The current mouse position.
     @mouse = { x: 0, y: 0 }
+    # The currently selected vertex.
+    @selectedV = null
 
-  # Selects w or deselects all vertices if w == null.
-  selectVertex: (w) ->
-    delete v.selected for v in @g.vertices
-    w.selected = true if w?
-  # Returns the currently selected vertex.
-  getSelectedVertex: ->
-    for v in @g.vertices
-      return v if v.selected?
-    return null
+    # Patch the vertices and edges to make them drawable.
+    @g.VertexType = @g.VertexType.newTypeWithMixin VertexDrawableCircular
+    @g.vertices = (new @g.VertexType(v) for v in @g.vertices)
+    @g.EdgeType = @g.EdgeType.newTypeWithMixin EdgeDrawable
+    @g.edges = (new @g.EdgeType(v) for v in @g.edges)
 
   drawVertices: (svg) ->
     drag = d3.behavior.drag()
       .on("dragstart", (d) =>
-        @selectVertex(d)
-        @draw(svg)
         d3.event.sourceEvent.stopPropagation()
+        @selectedV = d
+        @draw(svg)
       )
       .on("drag", (d) =>
         d.x = d3.event.x
@@ -59,27 +60,27 @@ class GraphEditor
       )
     svg.on("click", (d) =>
       return if d3.event.defaultPrevented
-      @selectVertex(d)
+      @selectedV = d
       @draw(svg))
     vertices = svg.select("#vertices").selectAll(".vertex").data(@g.vertices)
-    graph = @g
+    editor = this
     vertices.enter().append("g")
-      .each((v) -> v.drawEnter(graph, d3.select(this)))
+      .each((v) -> v.drawEnter(editor, d3.select(this)))
       .call(drag)
       .on("click", (d) =>
-        @selectVertex(d)
+        @selectedV = d
         @draw(svg)
         d3.event.stopPropagation()
       )
       .on("dblclick", (d) =>
-        @selectVertex(d)
+        @selectedV = d
         @drawEdgeMode = true
         @draw(svg)
         d3.event.stopPropagation()
       )
       .on("mouseover", (d) =>
-        if @drawEdgeMode and @getSelectedVertex().id != d.id
-          e = new Edge tail: @getSelectedVertex().id, head: d.id
+        if @drawEdgeMode and @selectedV.id != d.id
+          e = new @g.EdgeType tail: @selectedV.id, head: d.id
           if @g.hasEdge(e)
             @g.removeEdge(e)
           else
@@ -88,19 +89,19 @@ class GraphEditor
           @draw(svg)
       )
     vertices.exit().remove()
-    vertices.each((v) -> v.drawUpdate(graph, d3.select(this)))
-    d3.select("#info").text(JSON.stringify(@getSelectedVertex(), undefined, 2))
+    vertices.each((v) -> v.drawUpdate(editor, d3.select(this)))
+    d3.select("#info").text(JSON.stringify(@selectedV, undefined, 2))
 
   drawEdges: (svg) ->
     edges = svg.select("#edges").selectAll(".edge").data(@g.edges)
-    graph = @g
-    edges.enter().append("g").each((e) -> e.drawEnter(graph, d3.select(this)))
+    editor = this
+    edges.enter().append("g").each((e) -> e.drawEnter(editor, d3.select(this)))
     edges.exit().remove()
-    edges.each((e) -> e.drawUpdate(graph, d3.select(this)))
+    edges.each((e) -> e.drawUpdate(editor, d3.select(this)))
 
     # s will be null if the user clicks on empty space because this
     # deselects all vertices.  In this case, abort drawEdgeMode.
-    s = @getSelectedVertex()
+    s = @selectedV
     if @drawEdgeMode and s?
       pointer = svg.selectAll(".edge.pointer").data([@mouse])
       pointer.enter().append("line").attr("class", "edge pointer")
