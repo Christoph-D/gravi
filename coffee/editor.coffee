@@ -63,7 +63,7 @@ class GraphEditor
         d.x, d.y = d3.event.x, d3.event.y
         @draw(svg)
       )
-    vertices = svg.select("#vertices").selectAll(".vertex").data(@g.vertices)
+    vertices = svg.select("#vertices").selectAll(".vertex").data(@g.getVertices())
     editor = this
     vertices.enter().append("g")
       .each((v) -> v.drawEnter(editor, d3.select(this)))
@@ -94,7 +94,7 @@ class GraphEditor
     d3.select("#info").text(JSON.stringify(@selectedV, undefined, 2))
 
   drawEdges: (svg) ->
-    edges = svg.select("#edges").selectAll(".edge").data(@g.edges)
+    edges = svg.select("#edges").selectAll(".edge").data(@g.getEdges())
     editor = this
     edges.enter().append("g").each((e) -> e.drawEnter(editor, d3.select(this)))
     edges.exit().remove()

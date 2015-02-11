@@ -14,8 +14,8 @@ HighlightableMixin =
 # Mixin to make a graph highlightable.
 HighlightableGraphMixin =
   clearHighlights: ->
-    v.highlightClass.clear() for v in @vertices
-    e.highlightClass.clear() for e in @edges
+    v.highlightClass.clear() for v in @getVertices()
+    e.highlightClass.clear() for e in @getEdges()
 
 class Vertex extends Extensible
   constructor: (v) ->
@@ -58,7 +58,7 @@ class Graph extends Extensible
     @currentStep = 0
 
   addVertex: (v) ->
-    v.id = if @vertices.length > 0 then 1 + @vertices[@vertices.length - 1].id else 0
+    v.id = @vertices.length
     @vertices.push(v)
 
   parseEdge: (tail, head) ->
@@ -71,7 +71,7 @@ class Graph extends Extensible
     e = @parseEdge(tail, head)
     if @hasEdge e
       return # no duplicate edges
-    e.id = if @edges.length > 0 then 1 + @edges[@edges.length - 1].id else 0
+    e.id = @edges.length
     @vertices[e.tail].addOutEdge e.id
     @vertices[e.head].addInEdge e.id
     @edges.push e
@@ -80,17 +80,21 @@ class Graph extends Extensible
   removeEdge: (tail, head) ->
     e = @parseEdge(tail, head)
     for f, i in @edges
+      continue unless f?
       if e.head == f.head and e.tail == f.tail
-        @vertices[e.tail].removeEdgeId f.id
-        @vertices[e.head].removeEdgeId f.id
-        @edges.splice(i, 1)
+        @vertices[e.tail].removeEdgeId i
+        @vertices[e.head].removeEdgeId i
+        @edges[i] = null
         return
 
   hasEdge: (tail, head) ->
     e = @parseEdge(tail, head)
-    for f in @edges
+    for f in @getEdges()
       return true if e.head == f.head and e.tail == f.tail
     return false
+
+  getVertices: -> v for v in @vertices when v != null
+  getEdges: -> e for e in @edges when e != null
 
   saveStep: ->
     ++@totalSteps
