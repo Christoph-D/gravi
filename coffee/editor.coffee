@@ -60,7 +60,8 @@ class GraphEditor
         @draw(svg)
       )
       .on("drag", (d) =>
-        d.x, d.y = d3.event.x, d3.event.y
+        d.x = d3.event.x
+        d.y = d3.event.y
         @draw(svg)
       )
     vertices = svg.select("#vertices").selectAll(".vertex").data(@g.getVertices())
@@ -82,10 +83,10 @@ class GraphEditor
       .on("mouseover", (d) =>
         if @drawEdgeMode and @selectedV != d
           e = new @g.EdgeType tail: @selectedV.id, head: d.id
-          if @g.hasEdge(e)
-            @g.removeEdge(e)
+          if @g.hasEdge e
+            @g.removeEdge e
           else
-            @g.addEdge(e)
+            @g.addEdge e
           @drawEdgeMode = false
           @draw(svg)
       )
@@ -112,7 +113,7 @@ class GraphEditor
       svg.selectAll(".edge.pointer").remove()
 
   draw: (svg) ->
-    #d3.select("#dump").text(graphToJSON(this))
+    #d3.select("#dump").text(graphToJSON(@g))
     editor = this
     svg.on("mousemove", ->
       [editor.mouse.x, editor.mouse.y] = d3.mouse(this)

@@ -13,9 +13,11 @@ HighlightableMixin =
   getHighlightClass: (graph) -> @highlightClass.valueAtTime(graph.currentStep)
 # Mixin to make a graph highlightable.
 HighlightableGraphMixin =
-  clearHighlights: ->
+  clearHistory: ->
     v.highlightClass.clear() for v in @getVertices()
     e.highlightClass.clear() for e in @getEdges()
+    @totalSteps = 0
+    @currentStep = 0
 
 class Vertex extends Extensible
   constructor: (v) ->

@@ -10,9 +10,13 @@
   left: 750px;
 }
 
+#run {
+}
+
 #slider {
   width: 680px;
-  margin-left: 10px;
+  margin: 10px;
+  margin-bottom: 30px;
 }
 
 .vertex {
