@@ -32,19 +32,9 @@ EdgeDrawable =
 
 class GraphEditor
   # This class may modify the graph @g.
-  constructor: (@g, @svg) ->
-    # This is true when the user is drawing a new edge.
-    @drawEdgeMode = false
+  constructor: (g, @svg) ->
     # The current mouse position.
     @mouse = { x: 0, y: 0 }
-    # The currently selected vertex.
-    @selectedV = null
-
-    # Patch the vertices and edges to make them drawable.
-    @g.VertexType = @g.VertexType.newTypeWithMixin VertexDrawableCircular
-    @g.vertices = (new @g.VertexType(v) for v in @g.vertices)
-    @g.EdgeType = @g.EdgeType.newTypeWithMixin EdgeDrawable
-    @g.edges = (new @g.EdgeType(v) for v in @g.edges)
 
     # Make vertices draggable.
     @drag = d3.behavior.drag()
@@ -65,6 +55,25 @@ class GraphEditor
       @drawEdgeMode = false
       @draw(svg)
     )
+    @setGraph g
+
+  # Sets the underlying graph of this editor instance.
+  setGraph: (@g) ->
+    # This is true when the user is drawing a new edge.
+    @drawEdgeMode = false
+
+    # The currently selected vertex.
+    @selectedV = null
+
+    # Patch the vertices and edges to make them drawable.
+    @g.VertexType = @g.VertexType.newTypeWithMixin VertexDrawableCircular
+    @g.vertices = (new @g.VertexType(v) for v in @g.vertices)
+    @g.EdgeType = @g.EdgeType.newTypeWithMixin EdgeDrawable
+    @g.edges = (new @g.EdgeType(v) for v in @g.edges)
+
+    # Make sure that the svg nodes we need are clean.
+    @svg.select("#vertices").selectAll(".vertex").remove()
+    @svg.select("#edges").selectAll(".edge").remove()
 
   drawVertices: ->
     vertices = @svg.select("#vertices").selectAll(".vertex").data(@g.getVertices())
