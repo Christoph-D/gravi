@@ -24,7 +24,7 @@ runAlgorithm = ->
   g.saveStep()
   dfs(g)
   g.currentStep = 0
-  state.slider.min(0).max(g.totalSteps - 1).step(1)
+  state.slider.min(0).max(g.totalSteps - 1)#.step(1)
     .value(0)
     .axis(d3.svg.axis().ticks(g.totalSteps - 1))
   d3.select("#slider").call(state.slider)
