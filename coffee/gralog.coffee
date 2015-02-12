@@ -66,7 +66,6 @@ loadGraph = (json) ->
     runAlgorithm()
   catch e
     d3.select("#loading-message").text(e.message)
-    throw e
 
 stopAnimation = ->
   d3.select("#slider").transition().duration(0)
