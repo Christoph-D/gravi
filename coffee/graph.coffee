@@ -120,12 +120,39 @@ class Graph extends Extensible
   @mixin GraphCursorMixin
 
 
-graphToJSON = (graph) -> JSON.stringify(graph, undefined, 2)
+graphToJSON = (graph) ->
+  g = vertices: [], edges: []
+  for v in graph.vertices
+    w = {}
+    if v == null
+      w = null
+    else
+      for key in ["x", "y"]
+        w[key] = v[key]
+    g.vertices.push(w)
+  for e in graph.edges
+    f = {}
+    if e == null
+      f = null
+    else
+      for key in ["head", "tail"]
+        f[key] = e[key]
+    g.edges.push(f)
+  JSON.stringify(g, undefined, 2)
+
 graphFromJSON = (json) ->
   raw = JSON.parse(json)
   g = new Graph
-  g.vertices = (new Vertex v for v in raw.vertices)
-  g.edges = (new Edge e for e in raw.edges)
+  for v, i in raw.vertices
+    if v == null
+      g.vertices.push(null)
+    else
+      g.addVertex(new Vertex v)
+  for e, i in raw.edges
+    if e == null
+      g.edges.push(null)
+    else
+      g.addEdge(new Edge e)
   return g
 
 class FiniteAutomaton extends Graph
