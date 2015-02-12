@@ -19,6 +19,14 @@
   margin-bottom: 30px;
 }
 
+#loading-message {
+  color: #AA0000;
+}
+#dump {
+  width: 700px;
+  height: 1000px;
+}
+
 .vertex {
   fill: #8888FF;
 }

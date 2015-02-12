@@ -26,11 +26,17 @@
 </svg>
 <pre id="info"></pre>
 <div>
-  <input id="run" type="button" value="Run the algorithm" />
-  <input id="generate" type="button" value="Regenerate the graph" />
+  <input id="run" type="button" value="Run DFS" />
+  <input id="generate" type="button" value="Generate a graph" />
+  <input id="save" type="button" value="Save the graph" />
+  <input id="load" type="button" value="Load the graph" />
+  <input id="example1" type="button" value="Load an example" />
 </div>
 <div id="slider"></div>
-<pre id="dump">
-</pre>
+<p>
+  Copy &amp; paste the graph here:<br />
+  <span id="loading-message"></span></br>
+  <textarea id="dump"></textarea>
+</p>
 <script src="js/gralog.js" charset="utf-8"></script>
 </body>

@@ -2,6 +2,7 @@
 #= require GraphEditor
 #= require <dfs.coffee>
 #= require <generators.coffee>
+#= require <examples.coffee>
 
 # We need to add a new marker for every possible highlighting because
 # marker elements do not inherit their css from the referencing
@@ -28,6 +29,7 @@ runAlgorithm = ->
     .axis(d3.svg.axis().ticks(g.totalSteps - 1))
   d3.select("#slider").call(state.slider)
   d3.select("body").on("keydown", () ->
+    return unless document.activeElement.id != "dump"
     stopAnimation()
     switch d3.event.keyCode
       when 37 then --g.currentStep if g.currentStep >= 1
@@ -53,6 +55,19 @@ generateGraph = ->
     )
   runAlgorithm()
 
+loadGraph = (json) ->
+  stopAnimation()
+  if not json?
+    json = document.getElementById("dump").value
+  d3.select("#loading-message").text("")
+  try
+    state.g = graphFromJSON(json)
+    state.editor.setGraph(state.g)
+    runAlgorithm()
+  catch e
+    d3.select("#loading-message").text(e.message)
+    throw e
+
 stopAnimation = ->
   d3.select("#slider").transition().duration(0)
   state.animating = false
@@ -72,12 +87,7 @@ animateAlgorithm = ->
 
 d3.select("#run").on("click", animateAlgorithm)
 d3.select("#generate").on("click", generateGraph)
+d3.select("#save").on("click", -> document.getElementById("dump").value = graphToJSON(state.g))
+d3.select("#load").on("click", loadGraph)
+d3.select("#example1").on("click", -> loadGraph example1)
 generateGraph()
-#slider = d3.slider().min(0).max(10).step(1)
-#  .value(0)
-#  .axis(d3.svg.axis().ticks(10))
-#d3.select("#slider").call(slider)
-#slider.min(0).max(2).step(1)
-#  .value(0)
-#  .axis(d3.svg.axis().ticks(2))
-#d3.select("#slider").call(slider)
