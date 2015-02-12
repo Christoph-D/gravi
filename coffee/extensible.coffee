@@ -15,7 +15,7 @@ class Extensible
       old = this::mixinConstructor
       this::mixinConstructor = ->
         old.call this
-        mixin.mixinConstructor?.call this
+        mixin.constructor.call this
     else
       this::mixinConstructor = mixin.constructor
     this

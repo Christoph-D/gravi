@@ -7,17 +7,22 @@ describe "A non-interpolating TimedProperty on a string", ->
 
   it "has correct timed values", ->
     t.valueAtTime(1, "first")
-    # no "second"
     t.valueAtTime(3, "third")
     values = (t.valueAtTime time for time in [0..4])
     expect(values).toEqual(["initial", "first", "first", "third", "third"])
 
   it "does not interpolate", ->
     t.valueAtTime(1, "first")
-    # no "second"
     t.valueAtTime(3, "third")
     values = (t.valueAtTime time for time in [0.5, 1.3, 2.99, 3.01])
     expect(values).toEqual(["initial", "first", "first", "third"])
+
+  it "is resettable", ->
+    t.valueAtTime(1, "first")
+    t.valueAtTime(3, "third")
+    t.clear()
+    values = (t.valueAtTime time for time in [0..4])
+    expect(values).toEqual("initial" for t in [0..4])
 
 describe "An interpolating TimedProperty on an x/y position", ->
   t = {}
@@ -38,3 +43,10 @@ describe "An interpolating TimedProperty on an x/y position", ->
   it "does not interpolate if attributes are missing", ->
     t.valueAtTime(1, x: 1) # y is missing
     expect(-> t.valueAtTime(0.5)).toThrow()
+
+  it "is resettable", ->
+    t.valueAtTime(1, x: 2, y: 1)
+    t.valueAtTime(3, x: 0, y: 0)
+    t.clear()
+    values = (t.valueAtTime time for time in [0..4])
+    expect(values).toEqual(x: 0, y: 0 for t in [0..4])
