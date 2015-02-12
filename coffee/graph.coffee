@@ -169,12 +169,12 @@ graphToJSON = (graph) ->
 graphFromJSON = (json) ->
   raw = JSON.parse(json)
   g = new Graph
-  for v, i in raw.vertices
+  for v, i in raw.vertices ? []
     if v == null
       g.vertices.push(null)
     else
       g.addVertex(new Vertex v)
-  for e, i in raw.edges
+  for e, i in raw.edges ? []
     if e == null
       g.edges.push(null)
     else
