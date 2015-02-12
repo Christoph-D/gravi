@@ -62,10 +62,15 @@ loadGraph = (json) ->
   d3.select("#loading-message").text("")
   try
     state.g = graphFromJSON(json)
+    state.g.compressEdgeIds()
     state.editor.setGraph(state.g)
     runAlgorithm()
   catch e
     d3.select("#loading-message").text(e.message)
+
+saveGraph = ->
+  state.g.compressEdgeIds()
+  document.getElementById("dump").value = graphToJSON(state.g)
 
 stopAnimation = ->
   d3.select("#slider").transition().duration(0)
@@ -86,7 +91,7 @@ animateAlgorithm = ->
 
 d3.select("#run").on("click", animateAlgorithm)
 d3.select("#generate").on("click", generateGraph)
-d3.select("#save").on("click", -> document.getElementById("dump").value = graphToJSON(state.g))
+d3.select("#save").on("click", saveGraph)
 d3.select("#load").on("click", loadGraph)
 d3.select("#example1").on("click", -> loadGraph example1)
 generateGraph()
