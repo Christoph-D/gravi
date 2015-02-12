@@ -7,21 +7,25 @@ else
 fi
 
 compile() {
-  src=$1
-  out=$2
-  coffee=${out%.js}.coffee
+  coffee=js/gralog.coffee
   # Ignore the output because coffeescript-concat sometimes fails when
   # it tries to concat temporary hidden files created by an editor.
-  ./coffeescript-concat/coffeescript-concat -I "$src" -o "$coffee" #2>/dev/null
+  ./coffeescript-concat/coffeescript-concat -I coffee -o "$coffee" 2>/dev/null
   # Recompile to javascript
-  coffee -bco "${out%/*}" "$coffee"
+  coffee -bco js/ "$coffee"
+  rm -f "$coffee"
+}
+compiletests() {
+  coffee=jasmine/spec/gralog.coffee
+  cat spec/*.coffee > "$coffee"
+  coffee -bco jasmine/spec/ "$coffee"
   rm -f "$coffee"
 }
 
 while :; do
   echo -n 'Recompiling...' | ts
-  compile coffee js/gralog.js
-  compile spec jasmine/spec/gralog.js
+  compile
+  compiletests
   echo 'done'
   if which inotifywait >/dev/null; then
     inotifywait -qqre modify,create,delete,move --exclude '/\.[^/]*' coffee spec
