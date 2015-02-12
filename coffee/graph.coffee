@@ -79,20 +79,21 @@ class Graph extends Extensible
 
   parseEdge: (tail, head) ->
     if not head?
-      return tail # assume that tail is already an Edge object
+      e = tail # assume that tail is already an Edge object
     else
-      return new @EdgeType tail: tail, head: head
+      e = new @EdgeType tail: tail, head: head
+    if not e.tail?
+      throw new Error("Missing property \"tail\".")
+    if not @vertices[e.tail]?
+      throw new Error("Invalid property \"tail\". Not a vertex id: #{e.tail}")
+    if not e.head?
+      throw new Error("Missing property \"head\".")
+    if not @vertices[e.head]?
+      throw new Error("Invalid property \"head\". Not a vertex id: #{e.head}")
+    return e
 
   addEdge: (tail, head) ->
     e = @parseEdge(tail, head)
-    if not e.tail?
-      throw new Error("Graph.addEdge: Missing tail.")
-    if typeof @vertices[e.tail] == "undefined"
-      throw new Error("Graph.addEdge: Invalid tail. No such vertex: #{e.tail}")
-    if not e.head?
-      throw new Error("Graph.addEdge: Missing head.")
-    if typeof @vertices[e.head] == "undefined"
-      throw new Error("Graph.addEdge: Invalid head. No such vertex: #{e.head}")
     if @hasEdge e
       return # no duplicate edges
     e.id = @edges.length
@@ -178,14 +179,6 @@ graphFromJSON = (json) ->
     if e == null
       g.edges.push(null)
     else
-      if not e.tail?
-        throw new Error("graphFromJSON: Property \"tail\" missing from edge ##{i}.")
-      if typeof g.vertices[e.tail] == "undefined"
-        throw new Error("graphFromJSON: Property \"tail\" invalid on edge ##{i}. No such vertex: #{e.tail}")
-      if not e.head?
-        throw new Error("graphFromJSON: Property \"head\" missing from edge ##{i}.")
-      if typeof g.vertices[e.head] == "undefined"
-        throw new Error("graphFromJSON: Property \"head\" invalid on edge ##{i}. No such vertex: #{e.head}")
       g.addEdge(new Edge e)
   return g
 
