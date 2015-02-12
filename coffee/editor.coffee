@@ -109,9 +109,9 @@ class GraphEditor
 
   drawCursor: ->
     cursor = @svg.selectAll("#cursor").data([@g.getCursor()])
-    cursor.enter().append("circle")
-      .attr("id", "cursor")
+    cursor.enter().append("circle").attr("id", "cursor")
       .attr("r", "5")
+      .style("pointer-events", "none")
     cursor
       .attr("cx", (d) -> d.x)
       .attr("cy", (d) -> d.y)
