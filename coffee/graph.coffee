@@ -61,9 +61,14 @@ class Edge extends Extensible
   @mixin HighlightableMixin
 
 class Graph extends Extensible
-  constructor: (@VertexType = Vertex, @EdgeType = Edge) ->
+  constructor: (options = {}) ->
+    @VertexType = options.VertexType ? Vertex
+    @EdgeType = options.EdgeType ? Edge
     @vertices = []
+    if options.numVertices? and options.numVertices > 0
+      @addVertex new @VertexType for i in [1..options.numVertices]
     @edges = []
+    @addEdge e[0], e[1] for e in options.edgeList ? []
     @totalSteps = 0
     @currentStep = 0
     super
@@ -80,6 +85,14 @@ class Graph extends Extensible
 
   addEdge: (tail, head) ->
     e = @parseEdge(tail, head)
+    if not e.tail?
+      throw new Error("Graph.addEdge: Missing tail.")
+    if typeof @vertices[e.tail] == "undefined"
+      throw new Error("Graph.addEdge: Invalid tail. No such vertex: #{e.tail}")
+    if not e.head?
+      throw new Error("Graph.addEdge: Missing head.")
+    if typeof @vertices[e.head] == "undefined"
+      throw new Error("Graph.addEdge: Invalid head. No such vertex: #{e.head}")
     if @hasEdge e
       return # no duplicate edges
     e.id = @edges.length
@@ -98,10 +111,23 @@ class Graph extends Extensible
         # We set the entry to null in order to preserve the indices
         # because they are the edge ids.  Removing/adding lots of
         # edges will thus clutter @edges with null entries.
-        # TODO: There should be a function to renumber edges and clean
-        # up null entries.
         @edges[i] = null
         return
+
+  # Removes null edges by reassigning ids.
+  compressEdgeIds: ->
+    ids = {} # translation table for the ids
+    j = 0
+    for e, i in @edges when e != null
+      ids[i] = j++
+    # Convert the edge references in the vertices.
+    for v in @getVertices()
+      v.outE = (ids[i] for i in v.outE)
+      v.inE = (ids[i] for i in v.inE)
+    # Remove all null edges.
+    @edges = @getEdges()
+    # Fix the edge ids.
+    e.id = ids[e.id] for e, i in @edges
 
   hasEdge: (tail, head) ->
     e = @parseEdge(tail, head)
@@ -152,6 +178,14 @@ graphFromJSON = (json) ->
     if e == null
       g.edges.push(null)
     else
+      if not e.tail?
+        throw new Error("graphFromJSON: Property \"tail\" missing from edge ##{i}.")
+      if typeof g.vertices[e.tail] == "undefined"
+        throw new Error("graphFromJSON: Property \"tail\" invalid on edge ##{i}. No such vertex: #{e.tail}")
+      if not e.head?
+        throw new Error("graphFromJSON: Property \"head\" missing from edge ##{i}.")
+      if typeof g.vertices[e.head] == "undefined"
+        throw new Error("graphFromJSON: Property \"head\" invalid on edge ##{i}. No such vertex: #{e.head}")
       g.addEdge(new Edge e)
   return g
 

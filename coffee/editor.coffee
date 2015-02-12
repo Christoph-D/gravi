@@ -67,9 +67,24 @@ class GraphEditor
 
     # Patch the vertices and edges to make them drawable.
     @g.VertexType = @g.VertexType.newTypeWithMixin VertexDrawableCircular
-    @g.vertices = (new @g.VertexType(v) for v in @g.vertices)
+    newV = []
+    for v in @g.vertices
+      if v == null
+        newV.push null
+      else
+        w = new @g.VertexType v
+        w.x = 0 unless w.x?
+        w.y = 0 unless w.y?
+        newV.push w
+    @g.vertices = newV
     @g.EdgeType = @g.EdgeType.newTypeWithMixin EdgeDrawable
-    @g.edges = (new @g.EdgeType(v) for v in @g.edges)
+    newE = []
+    for e in @g.edges
+      if e == null
+        newE.push null
+      else
+        newE.push new @g.EdgeType e
+    @g.edges = newE
 
     # Make sure that the svg nodes we need are clean.
     @svg.select("#vertices").selectAll(".vertex").remove()

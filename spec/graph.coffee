@@ -1,22 +1,14 @@
-describe "The graph JSON converter", ->
-  g = {}
+describe "A graph", ->
   beforeEach ->
-    g = new Graph
-    g.addVertex(new Vertex) for i in [0..3]
-    g.addEdge(0, 1)
-    g.addEdge(0, 2)
-    g.addEdge(3, 2)
-    g.addEdge(3, 0)
-
     jasmine.addMatchers
       toBeGraphEquivalent: (util, customEqualityTesters) ->
         compare: (actual, expected) ->
           result = pass: false
           if actual.vertices.length != expected.vertices.length
-            result.message = "Different number of vertices."
+            result.message = "Different number of vertices.  Expected #{expected.vertices.length} but received #{actual.vertices.length}."
             return result
           if actual.edges.length != expected.edges.length
-            result.message = "Different number of edges."
+            result.message = "Different number of edges.  Expected #{expected.edges.length} but received #{actual.edges.length}."
             return result
           for v, i in actual.vertices
             w = expected.vertices[i]
@@ -43,9 +35,50 @@ describe "The graph JSON converter", ->
           result.pass = true
           return result
 
-  it "leaves the graph intact", ->
-    expect(graphFromJSON(graphToJSON(g))).toBeGraphEquivalent(g)
+  describe "with the JSON converter", ->
+    g = {}
+    beforeEach -> g = new Graph numVertices: 4, edgeList: [[0,1], [0,2], [3,2], [3,0]]
 
-  it "leaves the graph intact after removing an edge", ->
-    g.removeEdge(0, 2)
-    expect(graphFromJSON(graphToJSON(g))).toBeGraphEquivalent(g)
+    it "leaves the graph intact", ->
+      expect(graphFromJSON(graphToJSON(g))).toBeGraphEquivalent(g)
+
+    it "leaves the graph intact after removing an edge", ->
+      g.removeEdge(0, 2)
+      expect(graphFromJSON(graphToJSON(g))).toBeGraphEquivalent(g)
+
+    it "leaves the graph intact after adding an edge", ->
+      g.addEdge(2,1)
+      expect(graphFromJSON(graphToJSON(g))).toBeGraphEquivalent(g)
+
+  describe "with ordinary vertices/edges", ->
+    it "allows removing edges", ->
+      g = new Graph numVertices: 4, edgeList: [[0,1], [1,2]]
+      h = new Graph numVertices: 4, edgeList: [[1,2]]
+      g.removeEdge(0, 1)
+      g.compressEdgeIds()
+      expect(g).toBeGraphEquivalent(h)
+
+    it "allows adding edges", ->
+      g = new Graph numVertices: 4, edgeList: [[0,1], [1,2]]
+      h = new Graph numVertices: 4, edgeList: [[0,1], [1,2], [0,3]]
+      g.addEdge(0, 3)
+      expect(g).toBeGraphEquivalent(h)
+
+    it "allows adding vertices", ->
+      g = new Graph numVertices: 4, edgeList: [[0,1], [1,2]]
+      h = new Graph numVertices: 5, edgeList: [[0,1], [1,2]]
+      g.addVertex(new Vertex)
+      expect(g).toBeGraphEquivalent(h)
+
+    it "checks head/tail ids of edges in the constructor", ->
+      expect(-> new Graph numVertices: 1, edgeList: [[0,1]]).toThrow()
+      expect(-> new Graph numVertices: 2, edgeList: [[0,-1]]).toThrow()
+      expect(-> new Graph numVertices: 3, edgeList: [[0]]).toThrow()
+
+    it "checks head/tail ids of added edges", ->
+      g = new Graph numVertices: 2
+      expect(-> g.addEdge(tail: 0, head: 2)).toThrow()
+      expect(-> g.addEdge(new Edge tail: 0, head: 2)).toThrow()
+      expect(-> g.addEdge(new Edge tail: 0, head: 1)).not.toThrow()
+      h = new Graph numVertices: 2, edgeList: [[0,1]]
+      expect(g).toBeGraphEquivalent(h)
