@@ -36,6 +36,11 @@ describe "An interpolating TimedProperty on an x/y position", ->
     t.valueAtTime(3, x: 0, y: 0)
     expect(t.valueAtTime(2)).toEqual(x: 1, y: 0.5)
 
+  it "ignores other properties", ->
+    t.valueAtTime(1, x: 2, y: 1, z: 2)
+    t.valueAtTime(3, x: 0, y: 0, z: 5)
+    expect(t.valueAtTime(2)).toEqual(x: 1, y: 0.5)
+
   it "does not interpolate between different types", ->
     t.valueAtTime(1, "foo")
     expect(-> t.valueAtTime(0.5)).toThrow()
