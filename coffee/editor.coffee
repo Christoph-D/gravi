@@ -104,7 +104,17 @@ class GraphEditor
       )
     vertices.exit().remove()
     vertices.each((v) -> v.drawUpdate(editor, d3.select(this)))
+    @drawCursor()
     d3.select("#info").text(JSON.stringify(@selectedV, undefined, 2))
+
+  drawCursor: ->
+    cursor = @svg.selectAll("#cursor").data([@g.getCursor()])
+    cursor.enter().append("circle")
+      .attr("id", "cursor")
+      .attr("r", "5")
+    cursor
+      .attr("cx", (d) -> d.x)
+      .attr("cy", (d) -> d.y)
 
   drawEdges: ->
     edges = @svg.select("#edges").selectAll(".edge").data(@g.getEdges())

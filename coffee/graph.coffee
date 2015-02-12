@@ -1,6 +1,13 @@
 #= require TimedProperty
 #= require Extensible
 
+# Marks a vertex in the graph.  Useful to show the state of
+# depth-first search and related algorithms.
+GraphCursorMixin =
+  constructor: -> @cursor = new TimedProperty null, ["x", "y"]
+  setCursor: (cursor) -> @cursor.valueAtTime(@currentStep, cursor)
+  getCursor: -> @cursor.valueAtTime(@currentStep)
+
 # Mixin to make a vertex or an edge highlightable.
 HighlightableMixin =
   constructor: -> @highlightClass = new TimedProperty ""
@@ -59,6 +66,7 @@ class Graph extends Extensible
     @edges = []
     @totalSteps = 0
     @currentStep = 0
+    super
 
   addVertex: (v) ->
     v.id = @vertices.length
@@ -109,6 +117,7 @@ class Graph extends Extensible
     ++@currentStep
 
   @mixin HighlightableGraphMixin
+  @mixin GraphCursorMixin
 
 
 graphToJSON = (graph) -> JSON.stringify(graph, undefined, 2)
