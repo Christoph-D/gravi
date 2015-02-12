@@ -101,7 +101,7 @@ class Graph extends Extensible
     @vertices[e.head].addInEdge e.id
     @edges.push e
 
-  # TODO: implement one parameter version by checking the edge id
+  # Accepts a single Edge object or tail, head.  Ignores the edge id.
   removeEdge: (tail, head) ->
     e = @parseEdge(tail, head)
     for f, i in @edges
@@ -109,13 +109,13 @@ class Graph extends Extensible
       if e.head == f.head and e.tail == f.tail
         @vertices[e.tail].removeEdgeId i
         @vertices[e.head].removeEdgeId i
-        # We set the entry to null in order to preserve the indices
-        # because they are the edge ids.  Removing/adding lots of
-        # edges will thus clutter @edges with null entries.
+        # We set the entry to null in order to preserve the indices in
+        # @edges.  Removing/adding lots of edges will thus clutter
+        # @edges with null entries.  See @compressEdgeIds().
         @edges[i] = null
         return
 
-  # Removes null edges by reassigning ids.
+  # Removes null edges by reassigning all edge ids.
   compressEdgeIds: ->
     ids = {} # translation table for the ids
     j = 0
