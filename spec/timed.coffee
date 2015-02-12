@@ -26,7 +26,7 @@ describe "A non-interpolating TimedProperty on a string", ->
 
 describe "An interpolating TimedProperty on an x/y position", ->
   t = {}
-  beforeEach -> t = new TimedProperty x: 0, y: 0, true
+  beforeEach -> t = new TimedProperty x: 0, y: 0, ["x", "y"]
 
   it "has the correct initial value", ->
     expect(t.valueAtTime(0)).toEqual(x: 0, y: 0)

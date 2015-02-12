@@ -1,15 +1,12 @@
 class TimedProperty
-  constructor: (initialValue = null, @interpolate = false) ->
+  constructor: (initialValue = null, @interpolateKeys = []) ->
     @value = { 0: initialValue }
 
-  interpolate = (x, y, t) ->
-    if typeof x != typeof y
-      throw "Cannot interpolate between different types."
-    if typeof x == "number"
-      return x * (1 - t) + y * t
+  interpolate: (x, y, t) ->
     result = {}
-    for own key of x
-      result[key] = interpolate(x[key], y[key], t)
+    for key in @interpolateKeys
+      throw "Missing key: #{key}" unless key of x and key of y
+      result[key] = x[key] * (1 - t) + y[key] * t
     return result
 
   valueAtTime: (time, value) ->
@@ -17,12 +14,12 @@ class TimedProperty
       @value[time] = value
     else
       lastTime = Math.max.apply(null, v for own v of @value when v <= time)
-      if @interpolate
+      if @interpolateKeys.length > 0
         nextTime = Math.min.apply(null, v for own v of @value when v > lastTime)
         if nextTime == Number.POSITIVE_INFINITY
           return @value[lastTime]
         normedDiff = (time - lastTime) / (nextTime - lastTime)
-        return interpolate @value[lastTime], @value[nextTime], normedDiff
+        return @interpolate @value[lastTime], @value[nextTime], normedDiff
       else
         return @value[lastTime]
 
