@@ -7,7 +7,7 @@ generateRandomGraph = (n, p) ->
     g.addVertex(v)
   for i in [0..n - 1]
     for j in [0..n - 1]
-      continue if i == j
+      continue if i == j or g.hasEdge(i, j) or g.hasEdge(j, i)
       if Math.random() < p
         g.addEdge(new Edge head: i, tail: j)
   return g
