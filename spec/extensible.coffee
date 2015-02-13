@@ -19,6 +19,7 @@ describe "An Extensible derived class", ->
       p = 8
       incPrivate: -> ++p
       getPrivate: -> p
+      @newStatic = 7
     class @M2
       constructor: (a, b) ->
         @foo ?= []
@@ -29,13 +30,17 @@ describe "An Extensible derived class", ->
       jumpToM: -> @super.onlyInM()
 
   describe "with derived classes", ->
-    it "allows mixins", ->
+    beforeEach ->
       class @D2 extends @D
         constructor: (a, b) -> super(b, a)
       @D2.mixin @M
+
+    it "allows mixins", ->
       d2 = new @D2("a", "b")
       expect(d2.foo).toEqual(["D", "Mb"])
       expect(d2.overrideThis()).toEqual(["overrideThis", "overridden"])
+    it "works with static variables", ->
+      expect(@D2.newStatic).toEqual(7)
 
   describe "with a destructive mixin", ->
     beforeEach -> @D.mixin @M
@@ -45,15 +50,19 @@ describe "An Extensible derived class", ->
       expect(d.onlyInM()).toEqual("onlyInM")
       expect(d.overrideThis()).toEqual(["overrideThis", "overridden"])
       expect(d.foo).toEqual(["D", "M"])
-
     it "works with arguments", ->
       expect((new @D).arguments(1, 3)).toEqual(2)
-
+    it "works with static variables", ->
+      expect(@D.newStatic).toEqual(7)
     it "works with private variables", ->
       d = new @D
       expect(d.getPrivate()).toEqual(8)
       d.incPrivate()
       expect(d.getPrivate()).toEqual(9)
+    it "lets static variables persist", ->
+      expect(@D.static).toEqual(5)
+      @D.mixin @M2
+      expect(@D.static).toEqual(5)
 
     describe "chains", ->
       beforeEach -> @D.mixin @M2
@@ -70,21 +79,15 @@ describe "An Extensible derived class", ->
         expect(d.jumpToD()).toEqual("D")
         expect(d.jumpToM()).toEqual("onlyInM")
 
-    it "lets static variables persist", ->
-      expect(@D.static).toEqual(5)
-      @D.mixin @M2
-      expect(@D.static).toEqual(5)
-
-    describe "disallows mixin of reserved word", ->
-      it "super", ->
-        class S
-          super: -> 0
-        expect(-> @D.mixin S).toThrow()
-
-      it "mixinConstructor", ->
-        class S
-          mixinConstructor: -> 0
-        expect(-> @D.mixin S).toThrow()
+  describe "disallows mixin of reserved word", ->
+    it "super", ->
+      class S
+        super: -> 0
+      expect(-> @D.mixin S).toThrow()
+    it "mixinConstructor", ->
+      class S
+        mixinConstructor: -> 0
+      expect(-> @D.mixin S).toThrow()
 
   describe "with a non-destructive mixin", ->
     beforeEach ->
@@ -99,21 +102,16 @@ describe "An Extensible derived class", ->
       expect(@e.onlyInM()).toEqual("onlyInM")
       expect(@e.overrideThis()).toEqual(["overrideThis", "overridden"])
       expect(@e.foo).toEqual(["D", "M"])
-
     it "does not change from non-destructive mixins", ->
       expect("onlyInM" of @d).toBe(false, "onlyInM should not exist after non-destructive mixin")
       expect(@d.overrideThis()).toEqual("overrideThis", "The original class should not be changed by a non-destructive mixin")
       expect(@d.foo).toEqual(["D"])
-
     it "chains constructors from multiple mixins", ->
       expect(@f.foo).toEqual(["D", "M", "M2"])
-
     it "works with arguments", ->
       expect(@e.arguments(1, 3)).toEqual(2)
-
     it "works with arguments with multiple mixins", ->
       expect(@f.arguments(1, 3)).toEqual(3)
-
     it "static variables persist", ->
       expect(@E.static).toEqual(5)
       expect(@F.static).toEqual(5)

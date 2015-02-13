@@ -33,6 +33,10 @@ class Extensible
         throw Error("Cannot mix in a property with the reserved name \"#{key}\".")
       this::[key] = value
 
+    # Mix in the new static properties.
+    for key, value of mixin when key != "prototype"
+      this[key] = value
+
     # The constructor is special.  We want to call the parent
     # constructor without explicitly calling @super.
     if this::__mixinConstructor?
