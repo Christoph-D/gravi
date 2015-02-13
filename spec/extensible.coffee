@@ -88,11 +88,11 @@ describe "An Extensible derived class", ->
     it "super", ->
       class S
         super: -> 0
-      expect(-> @D.mixin S).toThrow()
+      expect(=> @D.mixin S).toThrow()
     it "mixinConstructor", ->
       class S
-        mixinConstructor: -> 0
-      expect(-> @D.mixin S).toThrow()
+        __mixinConstructor: -> 0
+      expect(=> @D.mixin S).toThrow()
 
   describe "with a non-destructive mixin", ->
     beforeEach ->
