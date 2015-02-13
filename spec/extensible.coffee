@@ -42,8 +42,8 @@ describe "An Extensible derived class", ->
     it "forbids jumps", ->
       @D2.mixin @M2
       d2 = new @D2
-      expect(d2.jumpToD).toThrow()
-      expect(d2.onlyInD).not.toThrow()
+      expect(-> d2.jumpToD()).toThrow()
+      expect(-> d2.onlyInD()).not.toThrow()
     it "works with static variables", ->
       expect(@D2.newStatic).toEqual(7)
 
@@ -80,7 +80,7 @@ describe "An Extensible derived class", ->
       it "arguments", ->
         expect((new @D).arguments(1, 3)).toEqual(3)
       it "without jumps", ->
-        expect((new @D).jumpToD).toThrow()
+        expect(=> (new @D).jumpToD()).toThrow()
       it "no old methods", ->
         expect((new @D).jumpToM()).toEqual("onlyInM")
 
