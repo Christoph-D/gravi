@@ -8,14 +8,14 @@ describe "An Extensible derived class", ->
       overrideThis: -> "overrideThis"
       arguments: (a, b) -> a
       @static = 5
-    @M =
+    class @M
       constructor: ->
         @foo ?= []
         @foo.push("M")
       overrideThis: -> [].concat(@super(), "overridden")
       newMethod: -> "newMethod"
       arguments: (a, b) -> @super(a, b) + 1
-    @M2 =
+    class @M2
       constructor: ->
         @foo ?= []
         @foo.push("M2")

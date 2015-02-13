@@ -1,5 +1,5 @@
 # Mixin to draw a vertex with a circular shape.
-VertexDrawableCircular =
+class VertexDrawableCircular
   # Returns the coordinates of the endpoint of an adjacent edge from
   # the given other node.
   edgeAnchor: (otherNode) ->
@@ -17,7 +17,7 @@ VertexDrawableCircular =
       .attr("cy", (d) -> d.y)
 
 # Mixin to draw an edge with an arrow at its head.
-EdgeDrawable =
+class EdgeDrawable
   drawEnter: (editor, svgGroup) ->
     svgGroup.append("line")
   drawUpdate: (editor, svgGroup) ->

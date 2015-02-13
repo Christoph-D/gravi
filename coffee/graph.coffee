@@ -3,13 +3,13 @@
 
 # Marks a vertex in the graph.  Useful to show the state of
 # depth-first search and related algorithms.
-GraphCursorMixin =
+class GraphCursorMixin
   constructor: -> @cursor = new TimedProperty null, ["x", "y"]
   setCursor: (cursor) -> @cursor.valueAtTime(@currentStep, cursor)
   getCursor: -> @cursor.valueAtTime(@currentStep)
 
 # Mixin to make a vertex or an edge highlightable.
-HighlightableMixin =
+class HighlightableMixin
   constructor: -> @highlightClass = new TimedProperty ""
   highlight: (graph, highlightId) ->
     if highlightId?
@@ -20,7 +20,7 @@ HighlightableMixin =
   getHighlightClass: (graph) -> @highlightClass.valueAtTime(graph.currentStep)
 
 # Mixin to make a graph highlightable.
-HighlightableGraphMixin =
+class HighlightableGraphMixin
   clearHistory: ->
     v.highlightClass.clear() for v in @getVertices()
     e.highlightClass.clear() for e in @getEdges()
