@@ -10,7 +10,15 @@ class Extensible
   # For this to work, derivative classes must call "super" in their
   # constructor last.
   @mixin: (mixin) ->
-    this::[key] = value for own key, value of mixin when key != "constructor"
+    for own key, value of mixin when key != "constructor"
+      do (key, value) =>
+        oldMethod = this::[key]
+        if typeof value != "function"
+          this::[key] = value
+        else
+          this::[key] = ->
+            @super = oldMethod
+            value.apply this, arguments
     if this::mixinConstructor?
       old = this::mixinConstructor
       this::mixinConstructor = ->
