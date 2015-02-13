@@ -39,9 +39,9 @@ class Extensible
       old = this::__mixinConstructor
       this::__mixinConstructor = ->
         old.apply this, arguments
-        mixin.prototype.constructor.apply this, arguments
+        mixin::constructor.apply this, arguments
     else
-      this::__mixinConstructor = mixin.prototype.constructor
+      this::__mixinConstructor = mixin::constructor
     this
 
   # The same as @mixin, but does not change the current class.
