@@ -26,7 +26,7 @@ describe "An Extensible derived class", ->
         @foo.push("M2#{b ? ""}")
       overrideThis: -> [].concat(@super.overrideThis(), "overridden again")
       arguments: (a, b) -> b
-      jumpToD: -> @super.onlyInD()
+      jumpToD: -> @super.onlyInD() # should not be possible
       jumpToM: -> @super.onlyInM()
 
   describe "with derived classes", ->
@@ -39,6 +39,11 @@ describe "An Extensible derived class", ->
       d2 = new @D2("a", "b")
       expect(d2.foo).toEqual(["D", "Mb"])
       expect(d2.overrideThis()).toEqual(["overrideThis", "overridden"])
+    it "forbids jumps", ->
+      @D2.mixin @M2
+      d2 = new @D2
+      expect(d2.jumpToD).toThrow()
+      expect(d2.onlyInD).not.toThrow()
     it "works with static variables", ->
       expect(@D2.newStatic).toEqual(7)
 
@@ -74,10 +79,10 @@ describe "An Extensible derived class", ->
         expect((new @D).overrideThis()).toEqual(["overrideThis", "overridden", "overridden again"])
       it "arguments", ->
         expect((new @D).arguments(1, 3)).toEqual(3)
-      it "old methods not", ->
-        d = new @D
-        expect(d.jumpToD()).toEqual("D")
-        expect(d.jumpToM()).toEqual("onlyInM")
+      it "without jumps", ->
+        expect((new @D).jumpToD).toThrow()
+      it "no old methods", ->
+        expect((new @D).jumpToM()).toEqual("onlyInM")
 
   describe "disallows mixin of reserved word", ->
     it "super", ->
