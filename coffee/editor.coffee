@@ -41,19 +41,19 @@ class GraphEditor
       .on("dragstart", (d) =>
         d3.event.sourceEvent.stopPropagation()
         @selectedV = d
-        @draw(svg)
+        @draw()
       )
       .on("drag", (d) =>
         d.x = d3.event.x
         d.y = d3.event.y
-        @draw(svg)
+        @draw()
       )
     # Global click handler to deselect everything.
     @svg.on("click", =>
       return if d3.event.defaultPrevented
       @selectedV = null
       @drawEdgeMode = false
-      @draw(svg)
+      @draw()
     )
     @setGraph g
 
