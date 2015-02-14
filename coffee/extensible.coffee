@@ -13,19 +13,19 @@ class Extensible
   # For this to work, classes inheriting Extensible must call "super"
   # in their constructor last.
   @mixin: (mixin) ->
-    # If mixin::foo calls @super.foo(), then foo() will be called in
-    # the context of @super.  So @super needs again a property named
-    # super.
-    if this::super?
-      this::super = Object.create(this::super)
-    else
-      this::super = {}
-      # Create a circular reference to allow super.super.super...
-      this::super.super = this::super
-
-    # Copy all currently existing methods into super.
+    oldSuper = this::super
+    this::super = {}
     for key, value of this.prototype when typeof value == "function"
-      this::super[key] = value
+      do (value) =>
+        this::super[key] = ->
+          # A mixin might call this anonymous function as
+          # @super.foo().  We set @super to its old value before
+          # calling the previous foo() method.  Because this
+          # assignment happens in the context of @super (the call was
+          # @super.foo()), we do not need to reset @super after the
+          # call.
+          @super = oldSuper
+          value.apply this, arguments
 
     # Mix in the new properties.
     for key, value of mixin.prototype

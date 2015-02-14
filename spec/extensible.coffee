@@ -6,6 +6,7 @@ describe "An Extensible derived class", ->
         @foo.push("D")
         super
       overrideThis: -> "overrideThis"
+      overrideThisLater: -> @super.overrideThisLater() # Should not be possible
       arguments: (a, b) -> a
       onlyInD: -> "D"
       @static = 5
@@ -25,8 +26,9 @@ describe "An Extensible derived class", ->
         @foo ?= []
         @foo.push("M2#{b ? ""}")
       overrideThis: -> [].concat(@super.overrideThis(), "overridden again")
+      overrideThisLater: -> [].concat(@super.overrideThisLater(), "overridden")
       arguments: (a, b) -> b
-      jumpToD: -> @super.onlyInD() # should not be possible
+      jumpToD: -> @super.onlyInD()
       jumpToM: -> @super.onlyInM()
 
   describe "with derived classes", ->
@@ -39,10 +41,10 @@ describe "An Extensible derived class", ->
       d2 = new @D2("a", "b")
       expect(d2.foo).toEqual(["D", "Mb"])
       expect(d2.overrideThis()).toEqual(["overrideThis", "overridden"])
-    it "forbids jumps", ->
+    it "cleans @super", ->
       @D2.mixin @M2
       d2 = new @D2
-      expect(-> d2.jumpToD()).toThrow()
+      expect(-> d2.overrideThisLater()).toThrow()
       expect(-> d2.onlyInD()).not.toThrow()
     it "works with static variables", ->
       expect(@D2.newStatic).toEqual(7)
@@ -79,8 +81,8 @@ describe "An Extensible derived class", ->
         expect((new @D).overrideThis()).toEqual(["overrideThis", "overridden", "overridden again"])
       it "arguments", ->
         expect((new @D).arguments(1, 3)).toEqual(3)
-      it "without jumps", ->
-        expect(=> (new @D).jumpToD()).toThrow()
+      it "with clean @super", ->
+        expect(=> (new @D).overrideThisLater()).toThrow()
       it "no old methods", ->
         expect((new @D).jumpToM()).toEqual("onlyInM")
 
