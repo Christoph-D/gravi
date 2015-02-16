@@ -9,6 +9,11 @@
   top: 20px;
   left: 750px;
 }
+#info2 {
+  position: absolute;
+  top: 50px;
+  left: 750px;
+}
 
 #run {
 }

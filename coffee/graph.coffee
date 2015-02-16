@@ -182,4 +182,45 @@ graphFromJSON = (json) ->
       g.addEdge(new Edge e)
   return g
 
-class FiniteAutomaton extends Graph
+
+addVertexProperty = (VertexType, descriptor) ->
+  name = descriptor.name
+
+  switch descriptor.type
+    when "string"
+      descriptor.appendToDom = (dom) ->
+        self = this
+        dom.append("input").attr("type", "text").attr("name", name)
+          .property("value", @[name])
+          .on("input", -> self[name] = this.value)
+    else
+      descriptor.appendToDom = (dom) ->
+
+  class VertexTypeWithProperty extends VertexType
+    if @properties?
+      @properties = (p for p in @properties)
+    else
+      @properties = []
+    for p in @properties
+      if p.name == name
+        throw TypeError("Vertex property \"#{name}\" already exists.")
+    @properties.push(descriptor)
+
+    constructor: ->
+      super
+      @[name] ?= descriptor.value
+      @pretty ?= {}
+      @pretty[name] ?= => descriptor.pretty @[name]
+
+    eachProperty: (f) -> f p for p in VertexTypeWithProperty.properties
+
+    appendPropertiesToDom: (dom) ->
+      self = this
+      @eachProperty (p) -> p.appendToDom.call self, dom
+
+Vertex = addVertexProperty(Vertex, name: "label", type: "string", value: "")
+Vertex = addVertexProperty(Vertex,
+  name: "accepting",
+  type: "boolean",
+  trueValue: "accepting",
+  falseValue: "rejecting")
