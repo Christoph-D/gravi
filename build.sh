@@ -34,10 +34,13 @@ fi
 
 compile() {
   coffee=js/gralog.coffee
-  # Ignore the output because coffeescript-concat sometimes fails when
-  # it tries to concat temporary hidden files created by an editor.
-  ./coffeescript-concat/coffeescript-concat -I coffee -o "$coffee" 2>/dev/null
-  # Recompile to javascript
+  {
+    echo '"use strict";';
+    # Ignore the output because coffeescript-concat sometimes fails when
+    # it tries to concat temporary hidden files created by an editor.
+    ./coffeescript-concat/coffeescript-concat -I coffee 2>/dev/null
+  } > "$coffee"
+  # Recompile to javascript.
   coffee $mapping -bco js/ "$coffee"
 }
 compiletests() {
