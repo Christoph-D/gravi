@@ -147,16 +147,21 @@ class Graph extends Extensible
   @mixin GraphCursorMixin
 
 
+vertexToJSONVertex = (v) ->
+  if v == null
+    return null
+  w = {}
+  for key in ["x", "y"]
+    w[key] = v[key]
+  for p in v.properties?() ? []
+    # Save only properties different from the default value.
+    if v[p.name]() != p.value
+      w[p.name] = v[p.name]()
+  return w
 graphToJSON = (graph) ->
   g = vertices: [], edges: []
   for v in graph.vertices
-    w = {}
-    if v == null
-      w = null
-    else
-      for key in ["x", "y"]
-        w[key] = v[key]
-    g.vertices.push(w)
+    g.vertices.push(vertexToJSONVertex v)
   for e in graph.edges
     f = {}
     if e == null
@@ -191,8 +196,8 @@ addVertexProperty = (VertexType, descriptor) ->
       descriptor.appendToDom = (dom) ->
         self = this
         dom.append("input").attr("type", "text").attr("name", name)
-          .property("value", @[name])
-          .on("input", -> self[name] = this.value)
+          .property("value", @[name]())
+          .on("input", -> self[name](this.value))
     else
       descriptor.appendToDom = (dom) ->
 
@@ -206,13 +211,28 @@ addVertexProperty = (VertexType, descriptor) ->
         throw TypeError("Vertex property \"#{name}\" already exists.")
     @properties.push(descriptor)
 
-    constructor: ->
+    propertyAccessor = -> (v) ->
+      if arguments.length == 0
+        this[name].value
+      else
+        this[name].value = v
+
+    constructor: (v) ->
       super
-      @[name] ?= descriptor.value
-      @pretty ?= {}
-      @pretty[name] ?= => descriptor.pretty @[name]
+      Object.defineProperty(this, name,
+        configurable: false
+        enumerable: true
+        value: propertyAccessor()
+        writable: false
+        )
+      if v?[name]?
+        @[name].value = v[name].value ? v[name]
+      else
+        @[name].value = descriptor.value
+      @[name].pretty = => descriptor.pretty @[name].value
 
     eachProperty: (f) -> f p for p in VertexTypeWithProperty.properties
+    properties: -> VertexTypeWithProperty.properties
 
     appendPropertiesToDom: (dom) ->
       self = this
@@ -222,5 +242,6 @@ Vertex = addVertexProperty(Vertex, name: "label", type: "string", value: "")
 Vertex = addVertexProperty(Vertex,
   name: "accepting",
   type: "boolean",
+  value: false,
   trueValue: "accepting",
   falseValue: "rejecting")
