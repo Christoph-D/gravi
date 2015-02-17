@@ -1,4 +1,5 @@
 #= require TimedProperty
+#= require <customproperty.coffee>
 #= require Extensible
 
 # Marks a vertex in the graph.  Useful to show the state of
@@ -189,70 +190,7 @@ graphFromJSON = (json) ->
       g.addEdge(new Edge e)
   return g
 
-# Adds a property to a vertex.  Contrast with TimedProperty.
-addVertexProperty = (VertexType, descriptor) ->
-  name = descriptor.name
-  Name = name[0].toUpperCase() + name[1..]
-
-  if descriptor.editable != false
-    switch descriptor.type
-      when "string", "number"
-        descriptor.appendToDom = (dom) ->
-          self = this
-          dom.append("span").text("#{Name}:").style("margin-right", "1em")
-          dom.append("input").attr("type", "text").attr("name", name)
-            .property("value", @[name])
-            .on("input", -> self[name] = this.value)
-
-  descriptor.appendToDom ?= (dom) ->
-
-  class VertexTypeWithProperty extends VertexType
-    if @propertyDescriptors?
-      @propertyDescriptors = (p for p in @propertyDescriptors)
-    else
-      @propertyDescriptors = []
-    for p in @propertyDescriptors
-      if p.name == name
-        throw TypeError("Vertex property \"#{name}\" already exists.")
-    @propertyDescriptors.push(descriptor)
-
-    constructor: (v) ->
-      super
-      if not @_properties?
-        Object.defineProperty this, '_properties',
-          configurable: true
-          enumerable: false
-          writable: true
-          value: {}
-      Object.defineProperty this, name,
-        configurable: true
-        enumerable: true
-        get: => @_properties[name]
-        set: (value) =>
-          @_properties[name] = value
-          @["onChange#{Name}"]?()
-      Object.defineProperty this, "pretty#{Name}",
-        configurable: true
-        enumerable: false
-        value: => descriptor.pretty @[name]
-      if v?[name]?
-        @_properties[name] = v[name]
-      else
-        @_properties[name] = descriptor.value
-
-    eachProperty: (f) -> f p for p in @propertyDescriptors()
-    propertyDescriptors: -> VertexTypeWithProperty.propertyDescriptors
-
-    appendPropertiesToDom: (dom) ->
-      self = this
-      @eachProperty (p) -> p.appendToDom.call self, dom
-
-Vertex = addVertexProperty(Vertex, name: "label", type: "string", value: "")
-Vertex = addVertexProperty(Vertex, name: "x", type: "number", value: 0, editable: false)
-Vertex = addVertexProperty(Vertex, name: "y", type: "number", value: 0, editable: false)
-Vertex = addVertexProperty(Vertex,
-  name: "accepting",
-  type: "boolean",
-  value: false,
-  trueValue: "accepting",
-  falseValue: "rejecting")
+# Add a few standard properties.
+Vertex = addCustomProperty(Vertex, name: "label", type: "string", value: "")
+Vertex = addCustomProperty(Vertex, name: "x", type: "number", value: 0, editable: false)
+Vertex = addCustomProperty(Vertex, name: "y", type: "number", value: 0, editable: false)
