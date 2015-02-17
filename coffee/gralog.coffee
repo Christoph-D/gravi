@@ -62,7 +62,7 @@ loadGraph = (json) ->
     json = document.getElementById("dump").value
   d3.select("#loading-message").text("")
   try
-    state.g = graphFromJSON(json)
+    state.g = graphFromJSON(json, FiniteAutomaton)
     state.g.compressEdgeIds()
     state.editor.setGraph(state.g)
     runAlgorithm()

@@ -166,9 +166,9 @@ graphToJSON = (graph) ->
     g.edges.push(vertexOrEdgeToJSONCompatible e)
   JSON.stringify(g, undefined, 2)
 
-graphFromJSON = (json) ->
+graphFromJSON = (json, Type = Graph) ->
   raw = JSON.parse(json)
-  g = new FiniteAutomaton # TODO: generalize
+  g = new Type
   for v, i in raw.vertices ? []
     if v == null
       g.vertices.push(null)
