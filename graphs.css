@@ -56,6 +56,7 @@
 
 .edge.highlight1 {
   stroke: #FF0000;
+  fill: #FF0000;
 }
 marker.highlight1 {
   fill: #FF0000;
@@ -63,6 +64,7 @@ marker.highlight1 {
 
 .edge.highlight2 {
   stroke: #BBBBBB;
+  fill: #BBBBBB;
 }
 marker.highlight2 {
   fill: #BBBBBB;

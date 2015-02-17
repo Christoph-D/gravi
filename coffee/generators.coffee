@@ -1,5 +1,5 @@
 generateRandomGraph = (n, p) ->
-  g = new Graph
+  g = new FiniteAutomaton
   for i in [0..n - 1]
     v = new Vertex
     v.x = -150 * Math.cos(2 * Math.PI / n * i) + 350
@@ -10,6 +10,7 @@ generateRandomGraph = (n, p) ->
       continue if i == j or g.hasEdge(i, j) or g.hasEdge(j, i)
       if Math.random() < p
         g.addEdge(new Edge head: i, tail: j)
+        g.edges[g.edges.length - 1].letter = "a"
   return g
 
 generatePath = (n) ->

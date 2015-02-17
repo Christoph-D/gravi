@@ -1,4 +1,5 @@
 #= require Graph
+#= require FiniteAutomaton
 #= require GraphEditor
 #= require <dfs.coffee>
 #= require <generators.coffee>
@@ -95,3 +96,4 @@ d3.select("#save").on("click", saveGraph)
 d3.select("#load").on("click", loadGraph)
 d3.select("#example1").on("click", -> loadGraph example1)
 generateGraph()
+loadGraph example1

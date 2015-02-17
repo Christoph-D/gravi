@@ -45,16 +45,19 @@ example1 = """
   "edges": [
     {
       "head": 0,
-      "tail": 8
+      "tail": 8,
+      "letter": "a"
     },
     null,
     {
       "head": 1,
-      "tail": 3
+      "tail": 3,
+      "letter": "a"
     },
     {
       "head": 1,
-      "tail": 7
+      "tail": 7,
+      "letter": "a"
     },
     null,
     {

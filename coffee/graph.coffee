@@ -168,17 +168,17 @@ graphToJSON = (graph) ->
 
 graphFromJSON = (json) ->
   raw = JSON.parse(json)
-  g = new Graph
+  g = new FiniteAutomaton # TODO: generalize
   for v, i in raw.vertices ? []
     if v == null
       g.vertices.push(null)
     else
-      g.addVertex(new Vertex v)
+      g.addVertex(new g.VertexType v)
   for e, i in raw.edges ? []
     if e == null
       g.edges.push(null)
     else
-      g.addEdge(new Edge e)
+      g.addEdge(new g.EdgeType e)
   return g
 
 # Add a few standard properties.

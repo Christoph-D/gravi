@@ -20,6 +20,7 @@ class VertexDrawableCircular
 class EdgeDrawable
   drawEnter: (editor, svgGroup) ->
     svgGroup.append("line")
+    svgGroup.append("text")
   drawUpdate: (editor, svgGroup) ->
     s = editor.g.vertices[@tail]
     t = editor.g.vertices[@head]
@@ -29,6 +30,15 @@ class EdgeDrawable
       .attr("y1", (d) -> s.edgeAnchor(t).y)
       .attr("x2", (d) -> t.edgeAnchor(s).x)
       .attr("y2", (d) -> t.edgeAnchor(s).y)
+    if @letter?
+      svgGroup.selectAll("text").text(@letter)
+        .attr("x", (s.x + t.x) / 2 + 10)
+        .attr("y", (s.y + t.y) / 2 - 10)
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "20")
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "central")
+        .style("stroke", "none")
 
 class GraphEditor
   # This class may modify the graph @g.
@@ -74,6 +84,7 @@ class GraphEditor
       else
         w = new @g.VertexType v
         w.onChangeLabel = @draw.bind(this)
+        w.onChangeLetter = @draw.bind(this)
         newV.push w
     @g.vertices = newV
     @g.EdgeType = @g.EdgeType.newTypeWithMixin EdgeDrawable
