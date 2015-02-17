@@ -28,7 +28,7 @@ describe "A graph", ->
                   """
                 return result
             for p in v.propertyDescriptors()
-              if v[p.name] != w[p.name]
+              if not util.equals(v[p.name], w[p.name], customEqualityTesters)
                 result.message = """
                   Custom property "#{p.name}" of vertex ##{i} differs.
                   Expected #{JSON.stringify(v[p.name])} but received #{JSON.stringify(w[p.name])}.

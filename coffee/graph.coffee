@@ -21,12 +21,6 @@ class HighlightableMixin
   getHighlightClass: (graph) -> @highlightClass.valueAtTime(graph.currentStep)
 
 class Vertex extends Extensible
-  constructor: (v) ->
-    @outE = []
-    @inE = []
-    this[key] = value for own key, value of v
-    super
-
   addOutEdge: (e) -> @outE.push(e)
   addInEdge: (e) -> @inE.push(e)
 
@@ -45,13 +39,18 @@ class Vertex extends Extensible
 
   @mixin HighlightableMixin
 
-class Edge extends Extensible
-  # e should contain at least the keys "tail" and "head".
-  constructor: (e) ->
-    this[key] = value for own key, value of e
-    super
+Vertex = addCustomProperty(Vertex, name: "id", type: "number", editable: false, shouldBeSaved: false)
+Vertex = addCustomProperty(Vertex, name: "outE", type: "array", editable: false, shouldBeSaved: false)
+Vertex = addCustomProperty(Vertex, name: "inE", type: "array", editable: false, shouldBeSaved: false)
 
+
+class Edge extends Extensible
   @mixin HighlightableMixin
+
+Edge = addCustomProperty(Edge, name: "id", type: "number", editable: false, shouldBeSaved: false)
+Edge = addCustomProperty(Edge, name: "head", type: "number", editable: false)
+Edge = addCustomProperty(Edge, name: "tail", type: "number", editable: false)
+
 
 class Graph extends Extensible
   constructor: (options = {}) ->
@@ -150,29 +149,21 @@ class Graph extends Extensible
   @mixin GraphCursorMixin
 
 
-vertexToJSONVertex = (v) ->
+vertexOrEdgeToJSONCompatible = (v) ->
   if v == null
     return null
   w = {}
-  for key in ["x", "y"]
-    w[key] = v[key]
   for p in v.propertyDescriptors?() ? []
     # Save only properties different from the default value.
-    if v[p.name] != p.value
+    if p.shouldBeSaved != false and v[p.name] != p.value
       w[p.name] = v[p.name]
   return w
 graphToJSON = (graph) ->
   g = vertices: [], edges: []
   for v in graph.vertices
-    g.vertices.push(vertexToJSONVertex v)
+    g.vertices.push(vertexOrEdgeToJSONCompatible v)
   for e in graph.edges
-    f = {}
-    if e == null
-      f = null
-    else
-      for key in ["head", "tail"]
-        f[key] = e[key]
-    g.edges.push(f)
+    g.edges.push(vertexOrEdgeToJSONCompatible e)
   JSON.stringify(g, undefined, 2)
 
 graphFromJSON = (json) ->

@@ -14,8 +14,6 @@ addCustomProperty = (Type, descriptor) ->
             .property("value", @[name])
             .on("input", -> self[name] = this.value)
 
-  descriptor.appendToDom ?= (dom) ->
-
   class TypeWithProperty extends Type
     if @propertyDescriptors?
       @propertyDescriptors = (p for p in @propertyDescriptors)
@@ -36,23 +34,30 @@ addCustomProperty = (Type, descriptor) ->
           value: {}
       Object.defineProperty this, name,
         configurable: true
-        enumerable: true
+        enumerable: descriptor.enumerable != false
         get: => @_properties[name]
         set: (value) =>
           @_properties[name] = value
           @["onChange#{Name}"]?()
           value
-      Object.defineProperty this, "pretty#{Name}",
-        configurable: true
-        enumerable: false
-        value: => descriptor.pretty @[name]
+      if descriptor.pretty?
+        Object.defineProperty this, "pretty#{Name}",
+          configurable: true
+          enumerable: false
+          value: => descriptor.pretty @[name]
       if v?[name]?
-        @_properties[name] = v[name]
+        if descriptor.type == "array"
+          @_properties[name] = v[name].slice()
+        else
+          @_properties[name] = v[name]
       else
-        @_properties[name] = descriptor.value
+        if descriptor.type == "array"
+          @_properties[name] = []
+        else
+          @_properties[name] = descriptor.value
 
     eachProperty: (f) -> f p for p in @propertyDescriptors()
     propertyDescriptors: -> TypeWithProperty.propertyDescriptors
 
     appendPropertiesToDom: (dom) ->
-      @eachProperty (p) => p.appendToDom.call this, dom
+      @eachProperty (p) => p.appendToDom?.call this, dom
