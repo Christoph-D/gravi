@@ -153,10 +153,10 @@ vertexToJSONVertex = (v) ->
   w = {}
   for key in ["x", "y"]
     w[key] = v[key]
-  for p in v.properties?() ? []
+  for p in v.propertyDescriptors?() ? []
     # Save only properties different from the default value.
-    if v[p.name]() != p.value
-      w[p.name] = v[p.name]()
+    if v[p.name] != p.value
+      w[p.name] = v[p.name]
   return w
 graphToJSON = (graph) ->
   g = vertices: [], edges: []
@@ -190,56 +190,60 @@ graphFromJSON = (json) ->
 
 addVertexProperty = (VertexType, descriptor) ->
   name = descriptor.name
+  Name = name[0].toUpperCase() + name[1..]
 
   switch descriptor.type
-    when "string"
+    when "string", "number"
       descriptor.appendToDom = (dom) ->
         self = this
         dom.append("input").attr("type", "text").attr("name", name)
-          .property("value", @[name]())
-          .on("input", -> self[name](this.value))
+          .property("value", @[name])
+          .on("input", -> self[name] = this.value)
     else
       descriptor.appendToDom = (dom) ->
 
   class VertexTypeWithProperty extends VertexType
-    if @properties?
-      @properties = (p for p in @properties)
+    if @propertyDescriptors?
+      @propertyDescriptors = (p for p in @propertyDescriptors)
     else
-      @properties = []
-    for p in @properties
+      @propertyDescriptors = []
+    for p in @propertyDescriptors
       if p.name == name
         throw TypeError("Vertex property \"#{name}\" already exists.")
-    @properties.push(descriptor)
-
-    propertyAccessor = -> (v) ->
-      if arguments.length == 0
-        this[name].value
-      else
-        this[name].value = v
-        this[name].onChange?()
+    @propertyDescriptors.push(descriptor)
 
     constructor: (v) ->
       super
-      Object.defineProperty(this, name,
-        configurable: false
+      if not @_properties?
+        Object.defineProperty this, '_properties',
+          configurable: true
+          enumerable: false
+          writable: true
+          value: {}
+      self = this
+      Object.defineProperty this, name,
+        configurable: true
         enumerable: true
-        value: propertyAccessor()
-        writable: false
-        )
+        get: -> self._properties[name]
+        set: (value) ->
+          self._properties[name] = value
+          self["onChange#{Name}"]?()
       if v?[name]?
-        @[name].value = v[name].value ? v[name]
+        @_properties[name] = v[name]
       else
-        @[name].value = descriptor.value
-      @[name].pretty = => descriptor.pretty @[name].value
+        @_properties[name] = descriptor.value
+      @["pretty#{Name}"] = => descriptor.pretty @[name]
 
-    eachProperty: (f) -> f p for p in VertexTypeWithProperty.properties
-    properties: -> VertexTypeWithProperty.properties
+    eachProperty: (f) -> f p for p in @propertyDescriptors()
+    propertyDescriptors: -> VertexTypeWithProperty.propertyDescriptors
 
     appendPropertiesToDom: (dom) ->
       self = this
       @eachProperty (p) -> p.appendToDom.call self, dom
 
 Vertex = addVertexProperty(Vertex, name: "label", type: "string", value: "")
+Vertex = addVertexProperty(Vertex, name: "x", type: "number", value: 0)
+Vertex = addVertexProperty(Vertex, name: "y", type: "number", value: 0)
 Vertex = addVertexProperty(Vertex,
   name: "accepting",
   type: "boolean",

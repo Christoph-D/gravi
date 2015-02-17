@@ -73,9 +73,7 @@ class GraphEditor
         newV.push null
       else
         w = new @g.VertexType v
-        w.x = 0 unless w.x?
-        w.y = 0 unless w.y?
-        w.label.onChange = @draw.bind(this)
+        w.onChangeLabel = @draw.bind(this)
         newV.push w
     @g.vertices = newV
     @g.EdgeType = @g.EdgeType.newTypeWithMixin EdgeDrawable

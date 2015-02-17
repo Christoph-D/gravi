@@ -21,17 +21,17 @@ describe "A graph", ->
                   Expected #{JSON.stringify(w[key])} but received #{JSON.stringify(v[key])}.
                   """
                 return result
-            if not util.equals(v.properties(), w.properties(), customEqualityTesters)
+            if not util.equals(v.propertyDescriptors(), w.propertyDescriptors(), customEqualityTesters)
                 result.message = """
                   List of custom properties of vertex ##{i} differs.
-                  Expected #{JSON.stringify(v.properties())} but received #{JSON.stringify(w.properties())}.
+                  Expected #{JSON.stringify(v.propertyDescriptors())} but received #{JSON.stringify(w.propertyDescriptors())}.
                   """
                 return result
-            for p in v.properties()
-              if v[p.name]() != w[p.name]()
+            for p in v.propertyDescriptors()
+              if v[p.name] != w[p.name]
                 result.message = """
                   Custom property "#{p.name}" of vertex ##{i} differs.
-                  Expected #{JSON.stringify(v[p.name]())} but received #{JSON.stringify(w[p.name]())}.
+                  Expected #{JSON.stringify(v[p.name])} but received #{JSON.stringify(w[p.name])}.
                   """
                 return result
           for e, i in actual.edges
@@ -52,8 +52,8 @@ describe "A graph", ->
     g = {}
     beforeEach ->
       g = new Graph numVertices: 4, edgeList: [[0,1], [0,2], [3,2], [3,0]]
-      g.vertices[0].label("first label")
-      g.vertices[1].label("second label")
+      g.vertices[0].label = "first label"
+      g.vertices[1].label = "second label"
 
     it "leaves the graph intact", ->
       expect(graphFromJSON(graphToJSON(g))).toBeGraphEquivalent(g)

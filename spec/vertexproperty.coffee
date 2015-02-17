@@ -9,42 +9,36 @@ describe "A VertexProperty", ->
     @v = new @V
 
   it "exists", ->
-    expect(@v.foo()).toEqual("foo")
+    expect(@v.foo).toEqual("foo")
   it "takes values", ->
-    @v.foo("bar")
-    expect(@v.foo()).toEqual("bar")
+    @v.foo = "bar"
+    expect(@v.foo).toEqual("bar")
   it "can be pretty printed", ->
-    expect(@v.foo.pretty()).toEqual("<foo>")
+    expect(@v.prettyFoo()).toEqual("<foo>")
   it "cannot be declared twice", ->
     expect(=> addVertexProperty(@V, @D)).toThrow(
       new TypeError("Vertex property \"foo\" already exists."))
-  it "cannot accidentally be overriden", ->
-    expect(=> @v.foo = "bar").toThrow()
-  it "cannot be deleted", ->
-    expect(=> delete @v.foo).toThrow()
   it "is enumerable", ->
     expect(p for own p of @v).toContain("foo")
   it "calls the onChange function exactly once per change", ->
     a = f: ->
     spyOn(a, 'f')
-    @v.foo.onChange = a.f
-    @v.foo("bar")
+    @v.onChangeFoo = a.f
+    @v.foo = "bar"
     expect(a.f.calls.count()).toEqual(1)
 
   describe "when copied", ->
     beforeEach ->
-      @v.foo("v") # Change from the default value
+      @v.foo = "v" # Change from the default value
       @w = new @V @v
     it "is preserved", ->
-      expect(@w.foo()).toEqual("v")
+      expect(@w.foo).toEqual("v")
     describe "after modification", ->
-      beforeEach -> @w.foo("w")
+      beforeEach -> @w.foo = "w"
       it "has the new value", ->
-        expect(@w.foo()).toEqual("w")
+        expect(@w.foo).toEqual("w")
       it "can be pretty printed", ->
-        expect(@w.foo.pretty()).toEqual("<w>")
+        expect(@w.prettyFoo()).toEqual("<w>")
       it "has been really copied", ->
         # Modifying @w should not modify @v.
-        expect(@v.foo()).toEqual("v")
-      it "cannot accidentally be overriden", ->
-        expect(=> @w.foo = "bar").toThrow()
+        expect(@v.foo).toEqual("v")
