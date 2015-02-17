@@ -19,14 +19,6 @@ class HighlightableMixin
     @highlightClass.valueAtTime(graph.currentStep, c)
   getHighlightClass: (graph) -> @highlightClass.valueAtTime(graph.currentStep)
 
-# Mixin to make a graph highlightable.
-class HighlightableGraphMixin
-  clearHistory: ->
-    v.highlightClass.clear() for v in @getVertices()
-    e.highlightClass.clear() for e in @getEdges()
-    @totalSteps = 0
-    @currentStep = 0
-
 class Vertex extends Extensible
   constructor: (v) ->
     @outE = []
@@ -143,7 +135,17 @@ class Graph extends Extensible
     ++@totalSteps
     ++@currentStep
 
-  @mixin HighlightableGraphMixin
+  clearHistory: ->
+    # Reset all timed properties to their default value.
+    for v in @getVertices()
+      for key, value of v when value instanceof TimedProperty
+        value.reset()
+    for e in @getEdges()
+      for key, value of e when value instanceof TimedProperty
+        value.reset()
+    @totalSteps = 0
+    @currentStep = 0
+
   @mixin GraphCursorMixin
 
 

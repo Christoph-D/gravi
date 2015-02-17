@@ -1,6 +1,6 @@
 class TimedProperty
-  constructor: (initialValue = null, @interpolateKeys = []) ->
-    @value = { 0: initialValue }
+  constructor: (@initialValue = null, @interpolateKeys = []) ->
+    @value = { 0: @initialValue }
 
   interpolate: (x, y, t) ->
     result = {}
@@ -23,5 +23,5 @@ class TimedProperty
       else
         return @value[lastTime]
 
-  clear: () ->
-    @value = { 0: @value[0] }
+  reset: ->
+    @value = { 0: @initialValue }

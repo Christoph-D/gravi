@@ -20,7 +20,7 @@ describe "A non-interpolating TimedProperty on a string", ->
   it "is resettable", ->
     t.valueAtTime(1, "first")
     t.valueAtTime(3, "third")
-    t.clear()
+    t.reset()
     values = (t.valueAtTime time for time in [0..4])
     expect(values).toEqual("initial" for t in [0..4])
 
@@ -52,6 +52,6 @@ describe "An interpolating TimedProperty on an x/y position", ->
   it "is resettable", ->
     t.valueAtTime(1, x: 2, y: 1)
     t.valueAtTime(3, x: 0, y: 0)
-    t.clear()
+    t.reset()
     values = (t.valueAtTime time for time in [0..4])
     expect(values).toEqual(x: 0, y: 0 for t in [0..4])
