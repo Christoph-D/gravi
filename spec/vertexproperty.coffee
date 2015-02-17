@@ -24,6 +24,12 @@ describe "A VertexProperty", ->
     expect(=> delete @v.foo).toThrow()
   it "is enumerable", ->
     expect(p for own p of @v).toContain("foo")
+  it "calls the onChange function exactly once per change", ->
+    a = f: ->
+    spyOn(a, 'f')
+    @v.foo.onChange = a.f
+    @v.foo("bar")
+    expect(a.f.calls.count()).toEqual(1)
 
   describe "when copied", ->
     beforeEach ->

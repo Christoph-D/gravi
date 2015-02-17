@@ -216,6 +216,7 @@ addVertexProperty = (VertexType, descriptor) ->
         this[name].value
       else
         this[name].value = v
+        this[name].onChange?()
 
     constructor: (v) ->
       super
