@@ -45,7 +45,8 @@ compile() {
 }
 compiletests() {
   coffee=jasmine/spec/gralog.coffee
-  cat spec/*.coffee > "$coffee"
+  echo '"use strict";' > "$coffee"
+  cat spec/*.coffee >> "$coffee"
   coffee $mapping -bco jasmine/spec/ "$coffee"
 }
 
