@@ -222,19 +222,21 @@ addVertexProperty = (VertexType, descriptor) ->
           enumerable: false
           writable: true
           value: {}
-      self = this
       Object.defineProperty this, name,
         configurable: true
         enumerable: true
-        get: -> self._properties[name]
-        set: (value) ->
-          self._properties[name] = value
-          self["onChange#{Name}"]?()
+        get: => @_properties[name]
+        set: (value) =>
+          @_properties[name] = value
+          @["onChange#{Name}"]?()
+      Object.defineProperty this, "pretty#{Name}",
+        configurable: true
+        enumerable: false
+        value: => descriptor.pretty @[name]
       if v?[name]?
         @_properties[name] = v[name]
       else
         @_properties[name] = descriptor.value
-      @["pretty#{Name}"] = => descriptor.pretty @[name]
 
     eachProperty: (f) -> f p for p in @propertyDescriptors()
     propertyDescriptors: -> VertexTypeWithProperty.propertyDescriptors

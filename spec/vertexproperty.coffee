@@ -20,6 +20,10 @@ describe "A VertexProperty", ->
       new TypeError("Vertex property \"foo\" already exists."))
   it "is enumerable", ->
     expect(p for own p of @v).toContain("foo")
+  it "internal property list is not enumerable", ->
+    expect(p for own p of @v).not.toContain("_properties")
+  it "pretty printed property is not enumerable", ->
+    expect(p for own p of @v).not.toContain("prettyFoo")
   it "calls the onChange function exactly once per change", ->
     a = f: ->
     spyOn(a, 'f')
