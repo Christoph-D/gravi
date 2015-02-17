@@ -189,20 +189,22 @@ graphFromJSON = (json) ->
       g.addEdge(new Edge e)
   return g
 
-
+# Adds a property to a vertex.  Contrast with TimedProperty.
 addVertexProperty = (VertexType, descriptor) ->
   name = descriptor.name
   Name = name[0].toUpperCase() + name[1..]
 
-  switch descriptor.type
-    when "string", "number"
-      descriptor.appendToDom = (dom) ->
-        self = this
-        dom.append("input").attr("type", "text").attr("name", name)
-          .property("value", @[name])
-          .on("input", -> self[name] = this.value)
-    else
-      descriptor.appendToDom = (dom) ->
+  if descriptor.editable != false
+    switch descriptor.type
+      when "string", "number"
+        descriptor.appendToDom = (dom) ->
+          self = this
+          dom.append("span").text("#{Name}:").style("margin-right", "1em")
+          dom.append("input").attr("type", "text").attr("name", name)
+            .property("value", @[name])
+            .on("input", -> self[name] = this.value)
+
+  descriptor.appendToDom ?= (dom) ->
 
   class VertexTypeWithProperty extends VertexType
     if @propertyDescriptors?
@@ -246,8 +248,8 @@ addVertexProperty = (VertexType, descriptor) ->
       @eachProperty (p) -> p.appendToDom.call self, dom
 
 Vertex = addVertexProperty(Vertex, name: "label", type: "string", value: "")
-Vertex = addVertexProperty(Vertex, name: "x", type: "number", value: 0)
-Vertex = addVertexProperty(Vertex, name: "y", type: "number", value: 0)
+Vertex = addVertexProperty(Vertex, name: "x", type: "number", value: 0, editable: false)
+Vertex = addVertexProperty(Vertex, name: "y", type: "number", value: 0, editable: false)
 Vertex = addVertexProperty(Vertex,
   name: "accepting",
   type: "boolean",
