@@ -83,11 +83,11 @@ class Graph extends Extensible
     else
       e = new @EdgeType tail: tail, head: head
     if not e.tail?
-      throw new Error("Missing property \"tail\".")
+      throw new Error("Missing property \"tail\"")
     if not @vertices[e.tail]?
       throw new Error("Invalid property \"tail\". Not a vertex id: #{e.tail}")
     if not e.head?
-      throw new Error("Missing property \"head\".")
+      throw new Error("Missing property \"head\"")
     if not @vertices[e.head]?
       throw new Error("Invalid property \"head\". Not a vertex id: #{e.head}")
     return e

@@ -71,14 +71,14 @@ describe "A graph", ->
       expect(g).toBeGraphEquivalent(h)
 
     it "checks head/tail ids of edges in the constructor", ->
-      expect(-> new Graph numVertices: 1, edgeList: [[0,1]]).toThrow()
-      expect(-> new Graph numVertices: 2, edgeList: [[0,-1]]).toThrow()
-      expect(-> new Graph numVertices: 3, edgeList: [[0]]).toThrow()
+      expect(-> new Graph numVertices: 1, edgeList: [[0,1]]).toThrow(new Error('Invalid property "head". Not a vertex id: 1'))
+      expect(-> new Graph numVertices: 2, edgeList: [[0,-1]]).toThrow(new Error('Invalid property "head". Not a vertex id: -1'))
+      expect(-> new Graph numVertices: 3, edgeList: [[0]]).toThrow(new Error('Missing property "tail"'))
 
     it "checks head/tail ids of added edges", ->
       g = new Graph numVertices: 2
-      expect(-> g.addEdge(tail: 0, head: 2)).toThrow()
-      expect(-> g.addEdge(new Edge tail: 0, head: 2)).toThrow()
+      expect(-> g.addEdge(tail: 0, head: 2)).toThrow(new Error('Invalid property "head". Not a vertex id: 2'))
+      expect(-> g.addEdge(new Edge tail: 0, head: 2)).toThrow(new Error('Invalid property "head". Not a vertex id: 2'))
       expect(-> g.addEdge(new Edge tail: 0, head: 1)).not.toThrow()
       h = new Graph numVertices: 2, edgeList: [[0,1]]
       expect(g).toBeGraphEquivalent(h)
