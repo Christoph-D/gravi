@@ -9,10 +9,19 @@ addCustomProperty = (Type, descriptor) ->
       when "string", "number"
         descriptor.appendToDom = (dom) ->
           self = this
+          dom = dom.append("p")
           dom.append("span").text("#{Name}:").style("margin-right", "1em")
           dom.append("input").attr("type", "text").attr("name", name)
             .property("value", @[name])
             .on("input", -> self[name] = this.value)
+      when "boolean"
+        descriptor.appendToDom = (dom) ->
+          self = this
+          dom = dom.append("p")
+          dom.append("label").text("#{Name}:").attr("for", name)
+          dom.append("input").attr("type", "checkbox").attr("id", name)
+            .property("checked", @[name])
+            .on("change", -> self[name] = this.checked)
 
   class TypeWithProperty extends Type
     if @propertyDescriptors?
