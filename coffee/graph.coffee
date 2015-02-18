@@ -2,24 +2,6 @@
 #= require <customproperty.coffee>
 #= require Extensible
 
-# Marks a vertex in the graph.  Useful to show the state of
-# depth-first search and related algorithms.
-class GraphCursorMixin
-  constructor: -> @cursor = new TimedProperty null, ["x", "y"]
-  setCursor: (cursor) -> @cursor.valueAtTime(@currentStep, cursor)
-  getCursor: -> @cursor.valueAtTime(@currentStep)
-
-# Mixin to make a vertex or an edge highlightable.
-class HighlightableMixin
-  constructor: -> @highlightClass = new TimedProperty ""
-  highlight: (highlightId) ->
-    if highlightId?
-      c = "highlight#{highlightId}"
-    else
-      c = ""
-    @highlightClass.valueAtTime(@graph.currentStep, c)
-  getHighlightClass: -> @highlightClass.valueAtTime(@graph.currentStep)
-
 class Vertex extends Extensible
   addOutEdge: (e) -> @outE.push(e)
   addInEdge: (e) -> @inE.push(e)
@@ -37,16 +19,16 @@ class Vertex extends Extensible
   outNeighbors: -> @graph.vertices[e.head] for e in @outEdges(graph)
   inNeighbors: -> @graph.vertices[e.tail] for e in @inEdges(graph)
 
-  @mixin HighlightableMixin
-
 Vertex = addCustomProperty(Vertex, name: "graph", type: "object", editable: false, shouldBeSaved: false)
 Vertex = addCustomProperty(Vertex, name: "id", type: "number", editable: false, shouldBeSaved: false)
 Vertex = addCustomProperty(Vertex, name: "outE", type: "array", editable: false, shouldBeSaved: false)
 Vertex = addCustomProperty(Vertex, name: "inE", type: "array", editable: false, shouldBeSaved: false)
+Vertex = addCustomProperty(Vertex, name: "label", type: "string", value: "")
+Vertex = addCustomProperty(Vertex, name: "x", type: "number", value: 0, editable: false)
+Vertex = addCustomProperty(Vertex, name: "y", type: "number", value: 0, editable: false)
 
 
 class Edge extends Extensible
-  @mixin HighlightableMixin
 
 Edge = addCustomProperty(Edge, name: "graph", type: "object", editable: false, shouldBeSaved: false)
 Edge = addCustomProperty(Edge, name: "id", type: "number", editable: false, shouldBeSaved: false)
@@ -150,8 +132,6 @@ class Graph extends Extensible
     @totalSteps = 0
     @currentStep = 0
 
-  @mixin GraphCursorMixin
-
 
 vertexOrEdgeToJSONCompatible = (v) ->
   if v == null
@@ -185,7 +165,25 @@ graphFromJSON = (json, Type = Graph) ->
       g.addEdge(new g.EdgeType e)
   return g
 
-# Add a few standard properties.
-Vertex = addCustomProperty(Vertex, name: "label", type: "string", value: "")
-Vertex = addCustomProperty(Vertex, name: "x", type: "number", value: 0, editable: false)
-Vertex = addCustomProperty(Vertex, name: "y", type: "number", value: 0, editable: false)
+
+# Marks a vertex in the graph.  Useful to show the state of
+# depth-first search and related algorithms.
+class GraphCursorMixin
+  constructor: -> @cursor = new TimedProperty null, ["x", "y"]
+  setCursor: (cursor) -> @cursor.valueAtTime(@currentStep, cursor)
+  getCursor: -> @cursor.valueAtTime(@currentStep)
+
+# Mixin to make a vertex or an edge highlightable.
+class HighlightableMixin
+  constructor: -> @highlightClass = new TimedProperty ""
+  highlight: (highlightId) ->
+    if highlightId?
+      c = "highlight#{highlightId}"
+    else
+      c = ""
+    @highlightClass.valueAtTime(@graph.currentStep, c)
+  getHighlightClass: -> @highlightClass.valueAtTime(@graph.currentStep)
+
+Vertex.mixin HighlightableMixin
+Edge.mixin HighlightableMixin
+Graph.mixin GraphCursorMixin

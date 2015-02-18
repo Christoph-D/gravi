@@ -1,4 +1,5 @@
 #= require Graph
+#= require <customproperty.coffee>
 
 class FiniteAutomaton extends Graph
   accepting =
@@ -32,8 +33,8 @@ class FiniteAutomaton extends Graph
       dx /= D
       dy /= D
       svgGroup.selectAll("text.letter").text(@letter)
-        .attr("x", (s.x + t.x) / 2 + dy * 10)#+ 10)
-        .attr("y", (s.y + t.y) / 2 - dx * 10)#- 10)
+        .attr("x", (s.x + t.x) / 2 + dy * 10)
+        .attr("y", (s.y + t.y) / 2 - dx * 10)
         .attr("font-family", "sans-serif")
         .attr("font-size", "20")
         .attr("text-anchor", "middle")
