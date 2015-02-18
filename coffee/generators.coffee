@@ -10,7 +10,9 @@ generateRandomGraph = (n, p) ->
       continue if i == j or g.hasEdge(i, j) or g.hasEdge(j, i)
       if Math.random() < p
         g.addEdge(new Edge head: i, tail: j)
-        g.edges[g.edges.length - 1].letter = "a"
+        a = "a".charCodeAt(0)
+        b = "b".charCodeAt(0)
+        g.edges[g.edges.length - 1].letter = String.fromCharCode(Math.round(Math.random() * (b - a)) + a)
   return g
 
 generatePath = (n) ->
