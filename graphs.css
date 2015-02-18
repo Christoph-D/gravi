@@ -53,8 +53,12 @@
   stroke: #000000;
   stroke-width: 2px;
   stroke-dasharray: 4,3;
-  animation: vertex-selected 1s infinite;
-  animation-timing-function: linear;
+  -webkit-animation: vertex-selected 1s linear infinite;
+  animation: vertex-selected 1s linear infinite;
+}
+@-webkit-keyframes vertex-selected {
+  0% { stroke-dashoffset: 7; }
+  100% { stroke-dashoffset: 0; }
 }
 @keyframes vertex-selected {
   0% { stroke-dashoffset: 7; }
@@ -92,8 +96,12 @@ marker.highlight2 {
 .edge .selected {
   stroke-width: 3px;
   stroke-dasharray: 5,3;
-  animation: edge-selected 1s infinite;
-  animation-timing-function: linear;
+  -webkit-animation: edge-selected 1s linear infinite;
+  animation: edge-selected 1s linear infinite;
+}
+@-webkit-keyframes edge-selected {
+  0% { stroke-dashoffset: 8; }
+  100% { stroke-dashoffset: 0; }
 }
 @keyframes edge-selected {
   0% { stroke-dashoffset: 8; }
