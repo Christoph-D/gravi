@@ -134,6 +134,9 @@ class GraphEditor
     @oldSelection = @selection
 
   drawCursor: ->
+    if @g.getCursor() == null
+      @svg.selectAll("#cursor").data([]).exit().remove()
+      return
     cursor = @svg.selectAll("#cursor").data([@g.getCursor()])
     cursor.enter().append("circle").attr("id", "cursor")
       .attr("r", "5")
