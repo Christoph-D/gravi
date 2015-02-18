@@ -47,11 +47,25 @@
 .vertex.selected {
   stroke: #000000;
   stroke-width: 2px;
+  stroke-dasharray: 4,3;
+  animation: vertex-selected 1s infinite;
+  animation-timing-function: linear;
+}
+@keyframes vertex-selected {
+  0% { stroke-dashoffset: 7; }
+  100% { stroke-dashoffset: 0; }
 }
 
 .edge {
   stroke: #000000;
   stroke-width: 1.5px;
+}
+.edge .click-target {
+  stroke-opacity: 0;
+  stroke-width: 30px;
+  stroke-linecap: round;
+  marker-end: none !important;
+  pointer-events: all;
 }
 
 .edge.highlight1 {
@@ -68,4 +82,15 @@ marker.highlight1 {
 }
 marker.highlight2 {
   fill: #BBBBBB;
+}
+
+.edge.selected {
+  stroke-width: 3px;
+  stroke-dasharray: 5,3;
+  animation: edge-selected 1s infinite;
+  animation-timing-function: linear;
+}
+@keyframes edge-selected {
+  0% { stroke-dashoffset: 8; }
+  100% { stroke-dashoffset: 0; }
 }

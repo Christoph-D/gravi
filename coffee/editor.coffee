@@ -2,16 +2,16 @@
 class VertexDrawableCircular
   # Returns the coordinates of the endpoint of an adjacent edge from
   # the given other node.
-  edgeAnchor: (otherNode) ->
+  edgeAnchor: (otherNode, distanceOffset = 0) ->
     a = Math.atan2(@y - otherNode.y, @x - otherNode.x)
-    return { x: @x - Math.cos(a) * 10, y: @y - Math.sin(a) * 10}
+    return { x: @x - Math.cos(a) * (10 + distanceOffset), y: @y - Math.sin(a) * (10 + distanceOffset)}
   drawEnter: (editor, svgGroup) ->
     svgGroup.append("circle").attr("r", 10)
   drawUpdate: (editor, svgGroup) ->
     svgGroup.attr("class",
       "vertex " +
       @getHighlightClass(editor.g) +
-      (if editor.selectedV == this then " selected" else ""))
+      (if editor.selection == this then " selected" else ""))
     svgGroup.selectAll("circle")
       .attr("cx", (d) -> d.x)
       .attr("cy", (d) -> d.y)
@@ -20,16 +20,20 @@ class VertexDrawableCircular
 class EdgeDrawable
   drawEnter: (editor, svgGroup) ->
     svgGroup.append("line")
+    svgGroup.append("line").attr("class", "click-target")
     svgGroup.append("text")
   drawUpdate: (editor, svgGroup) ->
     s = editor.g.vertices[@tail]
     t = editor.g.vertices[@head]
-    svgGroup.attr("class", "edge " + @getHighlightClass(editor.g))
+    svgGroup.attr("class",
+      "edge " +
+      @getHighlightClass(editor.g) +
+      (if editor.selection == this then " selected" else ""))
     svgGroup.selectAll("line")
       .attr("x1", (d) -> s.edgeAnchor(t).x)
       .attr("y1", (d) -> s.edgeAnchor(t).y)
-      .attr("x2", (d) -> t.edgeAnchor(s).x)
-      .attr("y2", (d) -> t.edgeAnchor(s).y)
+      .attr("x2", (d) -> t.edgeAnchor(s, 11).x)
+      .attr("y2", (d) -> t.edgeAnchor(s, 11).y)
     if @letter?
       svgGroup.selectAll("text").text(@letter)
         .attr("x", (s.x + t.x) / 2 + 10)
@@ -50,7 +54,7 @@ class GraphEditor
     @drag = d3.behavior.drag()
       .on("dragstart", (d) =>
         d3.event.sourceEvent.stopPropagation()
-        @selectedV = d
+        @selection = d
         @draw()
       )
       .on("drag", (d) =>
@@ -61,7 +65,7 @@ class GraphEditor
     # Global click handler to deselect everything.
     @svg.on("click", =>
       return if d3.event.defaultPrevented
-      @selectedV = null
+      @selection = null
       @drawEdgeMode = false
       @draw()
     )
@@ -73,7 +77,7 @@ class GraphEditor
     @drawEdgeMode = false
 
     # The currently selected vertex.
-    @selectedV = null
+    @selection = null
 
     # Patch the vertices and edges to make them drawable.
     @g.VertexType = @g.VertexType.newTypeWithMixin VertexDrawableCircular
@@ -93,7 +97,9 @@ class GraphEditor
       if e == null
         newE.push null
       else
-        newE.push new @g.EdgeType e
+        f = new @g.EdgeType e
+        f.onChangeLetter = @draw.bind(this)
+        newE.push f
     @g.edges = newE
 
     # Make sure that the svg nodes we need are clean.
@@ -108,18 +114,18 @@ class GraphEditor
       .call(@drag)
       .on("click", (d) =>
         d3.event.stopPropagation()
-        @selectedV = d
+        @selection = d
         @draw()
       )
       .on("dblclick", (d) =>
         d3.event.stopPropagation()
-        @selectedV = d
+        @selection = d
         @drawEdgeMode = true
         @draw()
       )
       .on("mouseover", (d) =>
-        if @drawEdgeMode and @selectedV != d
-          e = new @g.EdgeType tail: @selectedV.id, head: d.id
+        if @drawEdgeMode and @selection != d
+          e = new @g.EdgeType tail: @selection.id, head: d.id
           if @g.hasEdge e
             @g.removeEdge e
           else
@@ -130,11 +136,11 @@ class GraphEditor
     vertices.exit().remove()
     vertices.each((v) -> v.drawUpdate(editor, d3.select(this)))
     @drawCursor()
-    d3.select("#info2").text(JSON.stringify(vertexOrEdgeToJSONCompatible(@selectedV), undefined, 2))
-    if @oldSelection != @selectedV
+    d3.select("#info2").text(JSON.stringify(vertexOrEdgeToJSONCompatible(@selection), undefined, 2))
+    if @oldSelection != @selection
       d3.selectAll("#info *").remove()
-      @selectedV?.appendPropertiesToDom(d3.select("#info"))
-    @oldSelection = @selectedV
+      @selection?.appendPropertiesToDom(d3.select("#info"))
+    @oldSelection = @selection
 
   drawCursor: ->
     cursor = @svg.selectAll("#cursor").data([@g.getCursor()])
@@ -149,6 +155,11 @@ class GraphEditor
     edges = @svg.select("#edges").selectAll(".edge").data(@g.getEdges())
     editor = this
     edges.enter().append("g").each((e) -> e.drawEnter(editor, d3.select(this)))
+      .on("click", (d) =>
+        d3.event.stopPropagation()
+        @selection = d
+        @draw()
+      )
     edges.exit().remove()
     edges.each((e) -> e.drawUpdate(editor, d3.select(this)))
 
@@ -157,8 +168,8 @@ class GraphEditor
       pointer = @svg.selectAll(".edge.pointer").data([@mouse])
       pointer.enter().append("line").attr("class", "edge pointer")
       pointer
-          .attr("x1", (d) => @selectedV.edgeAnchor(d).x)
-          .attr("y1", (d) => @selectedV.edgeAnchor(d).y)
+          .attr("x1", (d) => @selection.edgeAnchor(d).x)
+          .attr("y1", (d) => @selection.edgeAnchor(d).y)
           .attr("x2", (d) -> d.x)
           .attr("y2", (d) -> d.y)
     else
