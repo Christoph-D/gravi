@@ -1,6 +1,7 @@
 #= require Graph
 #= require FiniteAutomaton
 #= require GraphEditor
+#= require AlgorithmRunner
 #= require <dfs.coffee>
 #= require <generators.coffee>
 #= require <examples.coffee>
@@ -22,13 +23,15 @@ addHighlightedMarkers()
 state = {}
 runAlgorithm = ->
   g = state.g
-  g.clearHistory()
-  dfs(g)
-  g.currentStep = 0
-  state.slider.min(0).max(g.totalSteps - 1)#.step(1)
-    .value(0)
-    .axis(d3.svg.axis().ticks(g.totalSteps - 1))
-  d3.select("#slider").call(state.slider)
+  d3.select("#loading-message").text("")
+  try
+    state.alg.run(g)
+    state.slider.min(0).max(g.totalSteps - 1)
+      .value(0)
+      .axis(d3.svg.axis().ticks(g.totalSteps - 1))
+    d3.select("#slider").call(state.slider)
+  catch error
+    d3.select("#loading-message").text(error.message)
   d3.select("body").on("keydown", () ->
     return unless document.activeElement.id != "dump"
     stopAnimation()
@@ -65,9 +68,9 @@ loadGraph = (json) ->
     state.g = graphFromJSON(json, FiniteAutomaton)
     state.g.compressEdgeIds()
     state.editor.setGraph(state.g)
-    runAlgorithm()
   catch e
     d3.select("#loading-message").text(e.message)
+  runAlgorithm()
 
 saveGraph = ->
   state.g.compressEdgeIds()
@@ -89,6 +92,8 @@ animateAlgorithm = ->
         state.g.currentStep = state.slider.value()
         state.editor.draw()
         return ""
+
+state.alg = new AlgorithmRunner(dfs)
 
 d3.select("#run").on("click", animateAlgorithm)
 d3.select("#generate").on("click", generateGraph)
