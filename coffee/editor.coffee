@@ -10,7 +10,7 @@ class VertexDrawableCircular
   drawUpdate: (editor, svgGroup) ->
     svgGroup.attr("class",
       "vertex " +
-      @getHighlightClass(editor.g) +
+      @getHighlightClass() +
       (if editor.selection == this then " selected" else ""))
     svgGroup.selectAll("circle")
       .attr("cx", (d) -> d.x)
@@ -23,11 +23,11 @@ class EdgeDrawable
     svgGroup.append("line").attr("class", "click-target")
     svgGroup.append("text")
   drawUpdate: (editor, svgGroup) ->
-    s = editor.g.vertices[@tail]
-    t = editor.g.vertices[@head]
+    s = @graph.vertices[@tail]
+    t = @graph.vertices[@head]
     svgGroup.attr("class",
       "edge " +
-      @getHighlightClass(editor.g) +
+      @getHighlightClass() +
       (if editor.selection == this then " selected" else ""))
     svgGroup.selectAll("line")
       .attr("x1", (d) -> s.edgeAnchor(t).x)

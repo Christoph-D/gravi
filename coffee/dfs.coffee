@@ -6,18 +6,18 @@ dfs = (graph) ->
       graph.saveStep()
       return
     visited[v.id] = true
-    v.highlight(graph, 1)
+    v.highlight(1)
     graph.saveStep()
-    v.highlight(graph, 2)
+    v.highlight(2)
     for e in v.outEdges(graph)
       w = graph.vertices[e.head]
-      e.highlight(graph, 1)
+      e.highlight(1)
       dfsStep(w)
       graph.setCursor(v)
-      e.highlight(graph, 2)
+      e.highlight(2)
       graph.saveStep()
 
   initialVertex = graph.vertices[0]
-  initialVertex.highlight(graph, 1)
+  initialVertex.highlight(1)
   graph.setCursor(initialVertex)
   dfsStep(initialVertex)

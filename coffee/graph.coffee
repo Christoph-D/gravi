@@ -12,13 +12,13 @@ class GraphCursorMixin
 # Mixin to make a vertex or an edge highlightable.
 class HighlightableMixin
   constructor: -> @highlightClass = new TimedProperty ""
-  highlight: (graph, highlightId) ->
+  highlight: (highlightId) ->
     if highlightId?
       c = "highlight#{highlightId}"
     else
       c = ""
-    @highlightClass.valueAtTime(graph.currentStep, c)
-  getHighlightClass: (graph) -> @highlightClass.valueAtTime(graph.currentStep)
+    @highlightClass.valueAtTime(@graph.currentStep, c)
+  getHighlightClass: -> @highlightClass.valueAtTime(@graph.currentStep)
 
 class Vertex extends Extensible
   addOutEdge: (e) -> @outE.push(e)
@@ -30,15 +30,16 @@ class Vertex extends Extensible
 
   # @outE contains only the ids of outgoing edges.  @outEdges()
   # returns the corresponding list of Edge objects.
-  outEdges: (graph) -> graph.edges[e] for e in @outE
-  inEdges: (graph) -> graph.edges[e] for e in @inE
+  outEdges: -> @graph.edges[e] for e in @outE
+  inEdges: -> @graph.edges[e] for e in @inE
 
   # Returns a list of Vertex objects.
-  outNeighbors: (graph) -> graph.vertices[e.head] for e in @outEdges(graph)
-  inNeighbors: (graph) -> graph.vertices[e.tail] for e in @inEdges(graph)
+  outNeighbors: -> @graph.vertices[e.head] for e in @outEdges(graph)
+  inNeighbors: -> @graph.vertices[e.tail] for e in @inEdges(graph)
 
   @mixin HighlightableMixin
 
+Vertex = addCustomProperty(Vertex, name: "graph", type: "object", editable: false, shouldBeSaved: false)
 Vertex = addCustomProperty(Vertex, name: "id", type: "number", editable: false, shouldBeSaved: false)
 Vertex = addCustomProperty(Vertex, name: "outE", type: "array", editable: false, shouldBeSaved: false)
 Vertex = addCustomProperty(Vertex, name: "inE", type: "array", editable: false, shouldBeSaved: false)
@@ -47,6 +48,7 @@ Vertex = addCustomProperty(Vertex, name: "inE", type: "array", editable: false, 
 class Edge extends Extensible
   @mixin HighlightableMixin
 
+Edge = addCustomProperty(Edge, name: "graph", type: "object", editable: false, shouldBeSaved: false)
 Edge = addCustomProperty(Edge, name: "id", type: "number", editable: false, shouldBeSaved: false)
 Edge = addCustomProperty(Edge, name: "head", type: "number", editable: false)
 Edge = addCustomProperty(Edge, name: "tail", type: "number", editable: false)
@@ -67,6 +69,7 @@ class Graph extends Extensible
 
   addVertex: (v) ->
     v.id = @vertices.length
+    v.graph = this
     @vertices.push(v)
 
   parseEdge: (tail, head) ->
@@ -89,6 +92,7 @@ class Graph extends Extensible
     if @hasEdge e
       return # no duplicate edges
     e.id = @edges.length
+    e.graph = this
     @vertices[e.tail].addOutEdge e.id
     @vertices[e.head].addInEdge e.id
     @edges.push e
