@@ -4,14 +4,9 @@
   height: 400px;
 }
 
-#info {
+#infocol {
   position: absolute;
   top: 20px;
-  left: 750px;
-}
-#info2 {
-  position: absolute;
-  top: 50px;
   left: 750px;
 }
 
@@ -43,8 +38,18 @@
 .vertex.highlight2 {
   fill: #009900;
 }
+.vertex .accepting1 {
+  fill: none;
+  stroke: #000000;
+  stroke-width: 2px;
+}
+.vertex .accepting2 {
+  fill: none;
+  stroke: #000000;
+  stroke-width: 2px;
+}
 
-.vertex.selected {
+.vertex .selected {
   stroke: #000000;
   stroke-width: 2px;
   stroke-dasharray: 4,3;
@@ -84,7 +89,7 @@ marker.highlight2 {
   fill: #BBBBBB;
 }
 
-.edge.selected {
+.edge .selected {
   stroke-width: 3px;
   stroke-dasharray: 5,3;
   animation: edge-selected 1s infinite;

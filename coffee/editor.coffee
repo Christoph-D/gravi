@@ -6,43 +6,34 @@ class VertexDrawableCircular
     a = Math.atan2(@y - otherNode.y, @x - otherNode.x)
     return { x: @x - Math.cos(a) * (10 + distanceOffset), y: @y - Math.sin(a) * (10 + distanceOffset)}
   drawEnter: (editor, svgGroup) ->
-    svgGroup.append("circle").attr("r", 10)
+    svgGroup.append("circle").attr("class", "main").attr("r", 10)
+    @eachProperty (p) => p.drawEnter?.call this, editor, svgGroup
   drawUpdate: (editor, svgGroup) ->
-    svgGroup.attr("class",
-      "vertex " +
-      @getHighlightClass() +
-      (if editor.selection == this then " selected" else ""))
-    svgGroup.selectAll("circle")
-      .attr("cx", (d) -> d.x)
-      .attr("cy", (d) -> d.y)
+    svgGroup.attr("class", "vertex " + @getHighlightClass())
+    svgGroup.selectAll("circle.main")
+      .classed("selected", editor.selection == this)
+      .attr("cx", @x)
+      .attr("cy", @y)
+    @eachProperty (p) => p.drawUpdate?.call this, editor, svgGroup
 
 # Mixin to draw an edge with an arrow at its head.
 class EdgeDrawable
   drawEnter: (editor, svgGroup) ->
-    svgGroup.append("line")
+    svgGroup.append("line").attr("class", "main")
     svgGroup.append("line").attr("class", "click-target")
-    svgGroup.append("text")
+    @eachProperty (p) => p.drawEnter?.call this, editor, svgGroup
   drawUpdate: (editor, svgGroup) ->
     s = @graph.vertices[@tail]
     t = @graph.vertices[@head]
-    svgGroup.attr("class",
-      "edge " +
-      @getHighlightClass() +
-      (if editor.selection == this then " selected" else ""))
-    svgGroup.selectAll("line")
+    svgGroup.attr("class", "edge " + @getHighlightClass())
+    svgGroup.selectAll("line.main")
+      .classed("selected", editor.selection == this)
+    svgGroup.selectAll("line.main, line.click-target")
       .attr("x1", (d) -> s.edgeAnchor(t).x)
       .attr("y1", (d) -> s.edgeAnchor(t).y)
       .attr("x2", (d) -> t.edgeAnchor(s, 11).x)
       .attr("y2", (d) -> t.edgeAnchor(s, 11).y)
-    if @letter?
-      svgGroup.selectAll("text").text(@letter)
-        .attr("x", (s.x + t.x) / 2 + 10)
-        .attr("y", (s.y + t.y) / 2 - 10)
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "20")
-        .attr("text-anchor", "middle")
-        .attr("dominant-baseline", "central")
-        .style("stroke", "none")
+    @eachProperty (p) => p.drawUpdate?.call this, editor, svgGroup
 
 class GraphEditor
   # This class may modify the graph @g.
@@ -88,7 +79,7 @@ class GraphEditor
       else
         w = new @g.VertexType v
         w.onChangeLabel = @draw.bind(this)
-        w.onChangeLetter = @draw.bind(this)
+        w.onChangeAccepting = @draw.bind(this)
         newV.push w
     @g.vertices = newV
     @g.EdgeType = @g.EdgeType.newTypeWithMixin EdgeDrawable
