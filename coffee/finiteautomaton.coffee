@@ -1,7 +1,6 @@
-#= require Graph
-#= require <customproperty.coffee>
+#= require SimpleGraph
 
-class FiniteAutomaton extends Graph
+class FiniteAutomaton extends SimpleGraph
   accepting =
     name: "accepting"
     type: "boolean"
@@ -43,4 +42,6 @@ class FiniteAutomaton extends Graph
   constructor: (options = {}) ->
     options.VertexType = addCustomProperty(options.VertexType ? Vertex, accepting)
     options.EdgeType = addCustomProperty(options.EdgeType ? Edge, letter)
+    options.EdgeType::onChangeLetter = -> @onRedrawNeeded?()
+    options.VertexType::onChangeAccepting = -> @onRedrawNeeded?()
     super options

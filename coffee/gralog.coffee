@@ -1,5 +1,6 @@
 #= require Graph
 #= require FiniteAutomaton
+#= require SimpleGraph
 #= require GraphEditor
 #= require AlgorithmRunner
 #= require <dfs.coffee>

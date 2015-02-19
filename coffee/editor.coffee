@@ -1,39 +1,4 @@
-# Mixin to draw a vertex with a circular shape.
-class VertexDrawableCircular
-  # Returns the coordinates of the endpoint of an adjacent edge from
-  # the given other node.
-  edgeAnchor: (otherNode, distanceOffset = 0) ->
-    a = Math.atan2(@y - otherNode.y, @x - otherNode.x)
-    return { x: @x - Math.cos(a) * (10 + distanceOffset), y: @y - Math.sin(a) * (10 + distanceOffset)}
-  drawEnter: (editor, svgGroup) ->
-    svgGroup.append("circle").attr("class", "main").attr("r", 10)
-    @eachProperty (p) => p.drawEnter?.call this, editor, svgGroup
-  drawUpdate: (editor, svgGroup) ->
-    svgGroup.attr("class", "vertex " + @getHighlightClass())
-    svgGroup.selectAll("circle.main")
-      .classed("selected", editor.selection == this)
-      .attr("cx", @x)
-      .attr("cy", @y)
-    @eachProperty (p) => p.drawUpdate?.call this, editor, svgGroup
-
-# Mixin to draw an edge with an arrow at its head.
-class EdgeDrawable
-  drawEnter: (editor, svgGroup) ->
-    svgGroup.append("line").attr("class", "main")
-    svgGroup.append("line").attr("class", "click-target")
-    @eachProperty (p) => p.drawEnter?.call this, editor, svgGroup
-  drawUpdate: (editor, svgGroup) ->
-    s = @graph.vertices[@tail]
-    t = @graph.vertices[@head]
-    svgGroup.attr("class", "edge " + @getHighlightClass())
-    svgGroup.selectAll("line.main")
-      .classed("selected", editor.selection == this)
-    svgGroup.selectAll("line.main, line.click-target")
-      .attr("x1", (d) -> s.edgeAnchor(t).x)
-      .attr("y1", (d) -> s.edgeAnchor(t).y)
-      .attr("x2", (d) -> t.edgeAnchor(s, 11).x)
-      .attr("y2", (d) -> t.edgeAnchor(s, 11).y)
-    @eachProperty (p) => p.drawUpdate?.call this, editor, svgGroup
+#= require Graph
 
 class GraphEditor
   # This class may modify the graph @g.
@@ -67,31 +32,13 @@ class GraphEditor
     # This is true when the user is drawing a new edge.
     @drawEdgeMode = false
 
-    # The currently selected vertex.
+    # The currently selected vertex or edge.
     @selection = null
 
-    # Patch the vertices and edges to make them drawable.
-    @g.VertexType = @g.VertexType.newTypeWithMixin VertexDrawableCircular
-    newV = []
-    for v in @g.vertices
-      if v == null
-        newV.push null
-      else
-        w = new @g.VertexType v
-        w.onChangeLabel = @draw.bind(this)
-        w.onChangeAccepting = @draw.bind(this)
-        newV.push w
-    @g.vertices = newV
-    @g.EdgeType = @g.EdgeType.newTypeWithMixin EdgeDrawable
-    newE = []
-    for e in @g.edges
-      if e == null
-        newE.push null
-      else
-        f = new @g.EdgeType e
-        f.onChangeLetter = @draw.bind(this)
-        newE.push f
-    @g.edges = newE
+    for v in @g.getVertices()
+      v.onRedrawNeeded = @draw.bind(this)
+    for e in @g.getEdges()
+      e.onRedrawNeeded = @draw.bind(this)
 
     # Make sure that the svg nodes we need are clean.
     @svg.select("#vertices").selectAll(".vertex").remove()
@@ -159,18 +106,17 @@ class GraphEditor
 
     # Draw an edge from the selected node to the mouse cursor.
     if @drawEdgeMode
-      pointer = @svg.selectAll(".edge.pointer").data([@mouse])
+      pointer = @svg.selectAll(".edge.pointer").data([null])
       pointer.enter().append("line").attr("class", "edge pointer")
       pointer
-          .attr("x1", (d) => @selection.edgeAnchor(d).x)
-          .attr("y1", (d) => @selection.edgeAnchor(d).y)
-          .attr("x2", (d) -> d.x)
-          .attr("y2", (d) -> d.y)
+          .attr("x1", @selection.edgeAnchor(@mouse).x)
+          .attr("y1", @selection.edgeAnchor(@mouse).y)
+          .attr("x2", @mouse.x)
+          .attr("y2", @mouse.y)
     else
       @svg.selectAll(".edge.pointer").remove()
 
   draw: ->
-    #d3.select("#dump").text(graphToJSON(@g))
     editor = this
     @svg.on("mousemove", ->
       [editor.mouse.x, editor.mouse.y] = d3.mouse(this)
