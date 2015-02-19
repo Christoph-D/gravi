@@ -27,26 +27,29 @@ class GraphEditor
       d3.event.stopPropagation()
       d3.event.preventDefault()
       v = new @g.VertexType x: @mouse.x, y: @mouse.y
-      v.onRedrawNeeded = @draw.bind(this)
       @g.addVertex(v)
       if @drawEdgeMode
         e = new @g.EdgeType tail: @selection.id, head: v.id
-        e.onRedrawNeeded = @draw.bind(this)
         @g.addEdge e
         @drawEdgeMode = false
       @draw())
     @setGraph g
 
   # Sets the underlying graph of this editor instance.
-  setGraph: (@g) ->
+  setGraph: (g) ->
+    if @g == g
+      return
+    @g = g
     # This is true when the user is drawing a new edge.
     @drawEdgeMode = false
     # The currently selected vertex or edge.
     @selection = null
-    for v in @g.getVertices()
-      v.onRedrawNeeded = @draw.bind(this)
-    for e in @g.getEdges()
-      e.onRedrawNeeded = @draw.bind(this)
+    if @g.VertexType::onRedrawNeeded?
+      throw TypeError("VertexType already has onRedrawNeeded. Cowardly refusing to override it.")
+    if @g.EdgeType::onRedrawNeeded?
+      throw TypeError("EdgeType already has onRedrawNeeded. Cowardly refusing to override it.")
+    @g.VertexType::onRedrawNeeded = @draw.bind(this)
+    @g.EdgeType::onRedrawNeeded = @draw.bind(this)
 
   drawVertices: ->
     vertices = @svg.select("#vertices").selectAll(".vertex").data(@g.getVertices())
@@ -76,7 +79,6 @@ class GraphEditor
       .on("mouseover", (d) =>
         if @drawEdgeMode and @selection != d
           e = new @g.EdgeType tail: @selection.id, head: d.id
-          e.onRedrawNeeded = @draw.bind(this)
           if @g.hasEdge e
             @g.removeEdge e
           else
