@@ -67,14 +67,14 @@ loadGraph = (json) ->
   d3.select("#loading-message").text("")
   try
     state.g = graphFromJSON(json, FiniteAutomaton)
-    state.g.compressEdgeIds()
+    state.g.compressIds()
     state.editor.setGraph(state.g)
   catch e
     d3.select("#loading-message").text(e.message)
   runAlgorithm()
 
 saveGraph = ->
-  state.g.compressEdgeIds()
+  state.g.compressIds()
   document.getElementById("dump").value = graphToJSON(state.g)
 
 stopAnimation = ->

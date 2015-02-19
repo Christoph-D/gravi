@@ -71,13 +71,20 @@ describe "A graph", ->
       g = new Graph numVertices: 4, edgeList: [[0,1], [1,2]]
       h = new Graph numVertices: 4, edgeList: [[1,2]]
       g.removeEdge(0, 1)
-      g.compressEdgeIds()
+      g.compressIds()
       expect(g).toBeGraphEquivalent(h)
 
     it "allows adding edges", ->
       g = new Graph numVertices: 4, edgeList: [[0,1], [1,2]]
       h = new Graph numVertices: 4, edgeList: [[0,1], [1,2], [0,3]]
       g.addEdge(0, 3)
+      expect(g).toBeGraphEquivalent(h)
+
+    it "allows removing vertices", ->
+      g = new Graph numVertices: 4, edgeList: [[0,1], [3,2], [1,2]]
+      h = new Graph numVertices: 3, edgeList: [[2,1]]
+      g.removeVertex(g.vertices[1])
+      g.compressIds()
       expect(g).toBeGraphEquivalent(h)
 
     it "allows adding vertices", ->

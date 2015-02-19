@@ -54,6 +54,17 @@ class Graph extends Extensible
     v.graph = this
     @vertices.push(v)
 
+  removeVertex: (v) ->
+    for w, i in @vertices
+      continue unless w?
+      if v == w
+        for e in v.inEdges()
+          @removeEdge(e)
+        for e in v.outEdges()
+          @removeEdge(e)
+        @vertices[i] = null
+        return
+
   parseEdge: (tail, head) ->
     if not head?
       e = tail # assume that tail is already an Edge object
@@ -89,24 +100,31 @@ class Graph extends Extensible
         @vertices[e.head].removeEdgeId i
         # We set the entry to null in order to preserve the indices in
         # @edges.  Removing/adding lots of edges will thus clutter
-        # @edges with null entries.  See @compressEdgeIds().
+        # @edges with null entries.  See @compressIds().
         @edges[i] = null
         return
 
-  # Removes null edges by reassigning all edge ids.
-  compressEdgeIds: ->
-    ids = {} # translation table for the ids
-    j = 0
-    for e, i in @edges when e != null
-      ids[i] = j++
-    # Convert the edge references in the vertices.
+  # Removes null vertices and edges by reassigning all ids.
+  compressIds: ->
+    translationTable = (what) ->
+      ids = {}; j = 0
+      for x, i in what when x != null
+        ids[i] = j++
+      ids
+    idsV = translationTable @vertices
+    idsE = translationTable @edges
+
     for v in @getVertices()
-      v.outE = (ids[i] for i in v.outE)
-      v.inE = (ids[i] for i in v.inE)
-    # Remove all null edges.
+      v.outE = (idsE[i] for i in v.outE)
+      v.inE = (idsE[i] for i in v.inE)
+    for e in @getEdges()
+      e.tail = idsV[e.tail]
+      e.head = idsV[e.head]
+
     @edges = @getEdges()
-    # Fix the edge ids.
-    e.id = ids[e.id] for e, i in @edges
+    @vertices = @getVertices()
+    e.id = idsE[e.id] for e, i in @edges
+    v.id = idsV[v.id] for v, i in @vertices
 
   hasEdge: (tail, head) ->
     e = @parseEdge(tail, head)
