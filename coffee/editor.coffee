@@ -10,16 +10,22 @@ class GraphEditor
     @drag = d3.behavior.drag()
       .on("dragstart", (d) =>
         d3.event.sourceEvent.stopPropagation()
+        @selection?.modified = true
         @selection = d
         @draw()
       )
       .on("drag", (d) =>
         d.x = d3.event.x
         d.y = d3.event.y
+        for e in d.outEdges()
+          e.modified = true
+        for e in d.inEdges()
+          e.modified = true
         @draw()
       )
     # Global click handler to deselect everything.
     @svg.on("click", =>
+      @selection?.modified = true
       @selection = null
       @drawEdgeMode = false
       @draw())
@@ -43,6 +49,7 @@ class GraphEditor
     # This is true when the user is drawing a new edge.
     @drawEdgeMode = false
     # The currently selected vertex or edge.
+    @selection?.modified = true
     @selection = null
     if @g.VertexType::onRedrawNeeded?
       throw TypeError("VertexType already has onRedrawNeeded. Cowardly refusing to override it.")
@@ -50,6 +57,17 @@ class GraphEditor
       throw TypeError("EdgeType already has onRedrawNeeded. Cowardly refusing to override it.")
     @g.VertexType::onRedrawNeeded = @draw.bind(this)
     @g.EdgeType::onRedrawNeeded = @draw.bind(this)
+
+  totalSteps: -> @g.totalSteps
+  currentStep: (step) ->
+    if arguments.length == 0
+      return @g.currentStep
+    # If the current step changes, every edge could change their
+    # highlight.
+    if step != @g.currentStep
+      for e in @g.getEdges()
+        e.modified = true
+    @g.currentStep = step
 
   drawVertices: ->
     vertices = @svg.select("#vertices").selectAll(".vertex").data(@g.getVertices())
@@ -59,11 +77,13 @@ class GraphEditor
       .call(@drag)
       .on("click", (d) =>
         d3.event.stopPropagation()
+        @selection?.modified = true
         @selection = d
         @draw()
       )
       .on("dblclick", (d) =>
         d3.event.stopPropagation()
+        @selection?.modified = true
         @selection = d
         @drawEdgeMode = true
         @draw()
@@ -113,11 +133,16 @@ class GraphEditor
     edges.enter().append("g").each((e) -> e.drawEnter(editor, d3.select(this)))
       .on("click", (d) =>
         d3.event.stopPropagation()
+        @selection?.modified = true
         @selection = d
+        d.modified = true
         @draw()
       )
     edges.exit().remove()
-    edges.each((e) -> e.drawUpdate(editor, d3.select(this)))
+    edges.each((e) ->
+      if e.modified
+        e.drawUpdate(editor, d3.select(this))
+        e.modified = false)
 
     # Draw an edge from the selected node to the mouse cursor.
     if @drawEdgeMode

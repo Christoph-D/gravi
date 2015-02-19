@@ -3,6 +3,7 @@
 addCustomProperty = (Type, descriptor) ->
   name = descriptor.name
   Name = name[0].toUpperCase() + name[1..]
+  onChange = "onChange#{Name}"
 
   if descriptor.editable != false
     switch descriptor.type
@@ -47,7 +48,8 @@ addCustomProperty = (Type, descriptor) ->
         get: => @_properties[name]
         set: (value) =>
           @_properties[name] = value
-          @["onChange#{Name}"]?()
+          @modified = true
+          @[onChange]?()
           value
       if descriptor.pretty?
         Object.defineProperty this, "pretty#{Name}",
@@ -64,6 +66,7 @@ addCustomProperty = (Type, descriptor) ->
           @_properties[name] = []
         else
           @_properties[name] = descriptor.value
+      @modified = true
 
     eachProperty: (f) -> f p for p in @propertyDescriptors()
     propertyDescriptors: -> TypeWithProperty.propertyDescriptors

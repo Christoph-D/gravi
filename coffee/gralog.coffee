@@ -36,10 +36,12 @@ runAlgorithm = ->
   d3.select("body").on("keydown", () ->
     return unless document.activeElement.id != "dump"
     stopAnimation()
+    newStep = editor.currentStep()
     switch d3.event.keyCode
-      when 37 then --g.currentStep if g.currentStep >= 1
-      when 39 then ++g.currentStep if g.currentStep <= g.totalSteps - 2
-    state.slider.value(g.currentStep)
+      when 37 then --newStep if newStep >= 1
+      when 39 then ++newStep if newStep <= editor.totalSteps() - 2
+    editor.currentStep(newStep)
+    state.slider.value(newStep)
     state.editor.draw())
   state.editor.draw()
 
@@ -55,7 +57,7 @@ generateGraph = ->
   unless state.slider?
     state.slider = d3.slider().on("slide", (event, value) ->
       stopAnimation()
-      state.g.currentStep = value
+      state.editor.currentStep(value)
       state.editor.draw()
     )
   runAlgorithm()
@@ -90,7 +92,7 @@ animateAlgorithm = ->
       (t) ->
         return "" unless state.animating
         state.slider.value(state.slider.max() * t)
-        state.g.currentStep = state.slider.value()
+        state.editor.currentStep(state.slider.value())
         state.editor.draw()
         return ""
 
