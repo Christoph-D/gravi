@@ -27,9 +27,11 @@ class GraphEditor
       d3.event.stopPropagation()
       d3.event.preventDefault()
       v = new @g.VertexType x: @mouse.x, y: @mouse.y
+      v.onRedrawNeeded = @draw.bind(this)
       @g.addVertex(v)
       if @drawEdgeMode
         e = new @g.EdgeType tail: @selection.id, head: v.id
+        e.onRedrawNeeded = @draw.bind(this)
         @g.addEdge e
         @drawEdgeMode = false
       @draw())
@@ -74,6 +76,7 @@ class GraphEditor
       .on("mouseover", (d) =>
         if @drawEdgeMode and @selection != d
           e = new @g.EdgeType tail: @selection.id, head: d.id
+          e.onRedrawNeeded = @draw.bind(this)
           if @g.hasEdge e
             @g.removeEdge e
           else
