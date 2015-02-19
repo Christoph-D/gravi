@@ -33,8 +33,8 @@ class Extensible
         throw Error("Cannot mix in a property with the reserved name \"#{key}\".")
       this::[key] = value
 
-    # Mix in the new static properties.
-    for key, value of mixin when key != "prototype"
+    # Mix in the new static properties.  Exclude private properties.
+    for key, value of mixin when key != "prototype" and key[..1] != "__"
       this[key] = value
 
     # The constructor is special.  We want to call the parent

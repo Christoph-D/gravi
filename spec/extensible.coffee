@@ -49,6 +49,21 @@ describe "An Extensible derived class", ->
     it "works with static variables", ->
       expect(@D2.newStatic).toEqual(7)
 
+  describe "with derived mixins", ->
+    beforeEach ->
+      @D.mixin @M2
+      class @M3 extends @M
+        overrideThis: -> [].concat(super, "overriden in M3")
+      @D.mixin @M3
+
+    it "allows mixins", ->
+      d = new @D("a", "b")
+      expect(d.foo).toEqual(["D", "M2b", "Ma"])
+      expect(d.overrideThis()).toEqual(["overrideThis", "overridden again", "overridden", "overriden in M3"])
+      expect(d.onlyInM()).toEqual("onlyInM")
+    it "works with static variables", ->
+      expect(@D.newStatic).toEqual(7)
+
   describe "with a destructive mixin", ->
     beforeEach -> @D.mixin @M
 
