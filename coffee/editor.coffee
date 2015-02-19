@@ -4,9 +4,9 @@ class GraphEditor
   # This class may modify the graph @g.
   constructor: (g, @svg) ->
     # The current mouse position.
-    @mouse = { x: 0, y: 0 }
+    @mouse = x: 0, y: 0
 
-    # Make vertices draggable.
+    # The drag behavior for the vertices.
     @drag = d3.behavior.drag()
       .on("dragstart", (d) =>
         d3.event.sourceEvent.stopPropagation()
@@ -20,29 +20,31 @@ class GraphEditor
       )
     # Global click handler to deselect everything.
     @svg.on("click", =>
-      return if d3.event.defaultPrevented
       @selection = null
       @drawEdgeMode = false
-      @draw()
-    )
+      @draw())
+    @svg.on("contextmenu", =>
+      d3.event.stopPropagation()
+      d3.event.preventDefault()
+      v = new @g.VertexType x: @mouse.x, y: @mouse.y
+      @g.addVertex(v)
+      if @drawEdgeMode
+        e = new @g.EdgeType tail: @selection.id, head: v.id
+        @g.addEdge e
+        @drawEdgeMode = false
+      @draw())
     @setGraph g
 
   # Sets the underlying graph of this editor instance.
   setGraph: (@g) ->
     # This is true when the user is drawing a new edge.
     @drawEdgeMode = false
-
     # The currently selected vertex or edge.
     @selection = null
-
     for v in @g.getVertices()
       v.onRedrawNeeded = @draw.bind(this)
     for e in @g.getEdges()
       e.onRedrawNeeded = @draw.bind(this)
-
-    # Make sure that the svg nodes we need are clean.
-    @svg.select("#vertices").selectAll(".vertex").remove()
-    @svg.select("#edges").selectAll(".edge").remove()
 
   drawVertices: ->
     vertices = @svg.select("#vertices").selectAll(".vertex").data(@g.getVertices())
@@ -59,6 +61,14 @@ class GraphEditor
         d3.event.stopPropagation()
         @selection = d
         @drawEdgeMode = true
+        @draw()
+      )
+      .on("contextmenu", (d) =>
+        d3.event.stopPropagation()
+        d3.event.preventDefault()
+        @drawEdgeMode = false
+        @g.removeVertex(d)
+        @g.compressIds()
         @draw()
       )
       .on("mouseover", (d) =>
