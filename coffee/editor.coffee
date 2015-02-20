@@ -7,13 +7,16 @@ class GraphEditor
     @mouse = x: 0, y: 0
 
     # The drag behavior for the vertices.
+    leftClickDrag = false
     @drag = d3.behavior.drag()
       .on("dragstart", (d) =>
-        d3.event.sourceEvent.stopPropagation()
+        leftClickDrag = d3.event.sourceEvent.which == 1
+        return unless leftClickDrag
         @select(d)
         @draw()
       )
       .on("drag", (d) =>
+        return unless leftClickDrag
         d.x = d3.event.x
         d.y = d3.event.y
         for e in d.outEdges()
