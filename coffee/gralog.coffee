@@ -7,20 +7,6 @@
 #= require <generators.coffee>
 #= require <examples.coffee>
 
-# We need to add a new marker for every possible highlighting because
-# marker elements do not inherit their css from the referencing
-# element.
-addHighlightedMarkers = ->
-  template = document.getElementById("edgeArrow")
-  defs = document.getElementById("graphDefinitions")
-  for i in [1..2]
-    t = template.cloneNode(true)
-    t.id = "edgeArrowHighlight#{i}"
-    t.setAttribute("class", "highlight#{i}")
-    defs.appendChild(t)
-addHighlightedMarkers()
-
-
 state = {}
 runAlgorithm = ->
   g = state.g

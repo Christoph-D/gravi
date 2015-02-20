@@ -1,10 +1,38 @@
 #= require Graph
 
 class GraphEditor
+  addHighlightedMarkers = (svg) ->
+    defs = svg.append("defs")
+    appendMarker = ->
+      marker = defs.append("marker").attr("id", "edgeArrow")
+        .attr("viewBox", "0 0 10 10")
+        .attr("refX", "2").attr("refY", "5")
+        .attr("markerUnits", "userSpaceOnUse")
+        .attr("markerWidth", "20").attr("markerHeight", "14")
+        .attr("orient", "auto")
+      # An arrow head.
+      marker.append("path").attr("d", "M 0 0 L 10 5 L 0 10 z")
+      marker
+    appendMarker()
+    # We need to add a new marker for every possible highlighting because
+    # marker elements do not inherit their css from the referencing
+    # element.
+    for i in [1..2]
+      marker = appendMarker()
+      marker.attr("id", "edgeArrowHighlight#{i}")
+      marker.attr("class", "highlight#{i}")
+
   # This class may modify the graph @g.
   constructor: (g, @svg) ->
     # The current mouse position.
     @mouse = x: 0, y: 0
+
+    @svg.selectAll("*").remove()
+    addHighlightedMarkers(@svg)
+    # Append the vertices after the edges or the click targets of
+    # edges would obscure the vertices.
+    @svg.append("g").attr("id", "edges")
+    @svg.append("g").attr("id", "vertices")
 
     # The drag behavior for the vertices.
     leftClickDrag = false
