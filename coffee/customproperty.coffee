@@ -7,7 +7,7 @@ addCustomProperty = (Type, descriptor) ->
 
   if descriptor.editable != false
     switch descriptor.type
-      when "string", "number"
+      when "string"
         descriptor.appendToDom = (dom) ->
           self = this
           dom = dom.append("p")
@@ -15,6 +15,19 @@ addCustomProperty = (Type, descriptor) ->
           dom.append("input").attr("type", "text").attr("name", name)
             .property("value", @[name])
             .on("input", -> self[name] = this.value)
+      when "number"
+        descriptor.appendToDom = (dom) ->
+          self = this
+          dom = dom.append("p")
+          dom.append("span").text("#{Name}:").style("margin-right", "1em")
+          dom.append("input").attr("type", "text").attr("name", name)
+            .property("value", @[name])
+            .on("input", ->
+              i = parseInt this.value
+              if not isNaN(i)
+                self[name] = i
+              else
+                self[name] = descriptor.value)
       when "boolean"
         descriptor.appendToDom = (dom) ->
           self = this
