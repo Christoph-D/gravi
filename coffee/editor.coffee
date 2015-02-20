@@ -10,8 +10,7 @@ class GraphEditor
     @drag = d3.behavior.drag()
       .on("dragstart", (d) =>
         d3.event.sourceEvent.stopPropagation()
-        @selection?.modified = true
-        @selection = d
+        @select(d)
         @draw()
       )
       .on("drag", (d) =>
@@ -25,8 +24,7 @@ class GraphEditor
       )
     # Global click handler to deselect everything.
     @svg.on("click", =>
-      @selection?.modified = true
-      @selection = null
+      @select(null)
       @drawEdgeMode = false
       @draw())
     @svg.on("contextmenu", =>
@@ -48,15 +46,20 @@ class GraphEditor
     @g = g
     # This is true when the user is drawing a new edge.
     @drawEdgeMode = false
-    # The currently selected vertex or edge.
-    @selection?.modified = true
-    @selection = null
+    @select(null)
     if @g.VertexType::onRedrawNeeded?
       throw TypeError("VertexType already has onRedrawNeeded. Cowardly refusing to override it.")
     if @g.EdgeType::onRedrawNeeded?
       throw TypeError("EdgeType already has onRedrawNeeded. Cowardly refusing to override it.")
     @g.VertexType::onRedrawNeeded = @draw.bind(this)
     @g.EdgeType::onRedrawNeeded = @draw.bind(this)
+
+  select: (vertexOrEdge) ->
+    # Mark the previous selection as modified so that we redraw it
+    # without the selection marker.
+    @selection?.modified = true
+    @selection = vertexOrEdge
+    @selection?.modified = true
 
   totalSteps: -> @g.totalSteps
   currentStep: (step) ->
@@ -77,14 +80,12 @@ class GraphEditor
       .call(@drag)
       .on("click", (d) =>
         d3.event.stopPropagation()
-        @selection?.modified = true
-        @selection = d
+        @select(d)
         @draw()
       )
       .on("dblclick", (d) =>
         d3.event.stopPropagation()
-        @selection?.modified = true
-        @selection = d
+        @select(d)
         @drawEdgeMode = true
         @draw()
       )
@@ -133,9 +134,7 @@ class GraphEditor
     edges.enter().append("g").each((e) -> e.drawEnter(editor, d3.select(this)))
       .on("click", (d) =>
         d3.event.stopPropagation()
-        @selection?.modified = true
-        @selection = d
-        d.modified = true
+        @select(d)
         @draw()
       )
     edges.exit().remove()
