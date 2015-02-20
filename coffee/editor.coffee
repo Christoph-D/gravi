@@ -103,6 +103,7 @@ class GraphEditor
           e = new @g.EdgeType tail: @selection.id, head: d.id
           if @g.hasEdge e
             @g.removeEdge e
+            @g.compressIds()
           else
             @g.addEdge e
           @drawEdgeMode = false
