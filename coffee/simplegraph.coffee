@@ -3,7 +3,7 @@
 
 circleEdgeAnchor = (s, t, distance) ->
   result = x: s.x, y: s.y
-  if distance != 0
+  if distance != 0 and (s.x != t.x or s.y != t.y)
     dx = s.x - t.x
     dy = s.y - t.y
     D = Math.sqrt(dx * dx + dy * dy)

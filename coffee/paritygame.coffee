@@ -9,6 +9,8 @@ class VertexDrawableParity
   rectangle = "M -#{radiusR},-#{radiusR} v #{radiusR*2} h #{radiusR*2} v -#{radiusR*2} z"
 
   edgeAnchor: (otherNode, distanceOffset = 0) ->
+    if @x == otherNode.x and @y == otherNode.y
+      return x: @x, y: @y
     if @player0
       circleEdgeAnchor this, otherNode, distanceOffset + radiusC
     else
