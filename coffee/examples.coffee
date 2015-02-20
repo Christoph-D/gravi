@@ -1,6 +1,6 @@
 example1 = """
 {
-  "type": "FiniteAutomaton",
+  "type": "ParityGame",
   "vertices": [
     {
       "x": 140,

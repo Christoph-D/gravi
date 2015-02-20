@@ -174,7 +174,7 @@ class Graph extends Extensible
     g
 
 
-graphFromJSON = (json, validTypes = ["SimpleGraph", "FiniteAutomaton"]) ->
+graphFromJSON = (json, validTypes = ["SimpleGraph", "FiniteAutomaton", "ParityGame"]) ->
   raw = JSON.parse(json)
   if raw.type?
     if raw.type in validTypes
