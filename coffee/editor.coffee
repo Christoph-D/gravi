@@ -53,6 +53,7 @@ class GraphEditor
       @select(null)
       @drawEdgeMode = false
       @draw())
+    # Global click handler to create new vertices.
     @svg.on("contextmenu", =>
       d3.event.stopPropagation()
       d3.event.preventDefault()
@@ -63,6 +64,12 @@ class GraphEditor
         @g.addEdge e
         @drawEdgeMode = false
       @draw())
+    # Global mousemove handler to keep track of the mouse.
+    editor = this
+    @svg.on("mousemove", ->
+      [editor.mouse.x, editor.mouse.y] = d3.mouse(this)
+      if editor.drawEdgeMode
+        editor.drawPointer())
     @setGraph g
 
   # Sets the underlying graph of this editor instance.
@@ -190,11 +197,6 @@ class GraphEditor
       @svg.selectAll(".edge.pointer").remove()
 
   draw: ->
-    editor = this
-    @svg.on("mousemove", ->
-      [editor.mouse.x, editor.mouse.y] = d3.mouse(this)
-      if editor.drawEdgeMode
-        editor.drawPointer())
     @drawEdges()
     @drawPointer()
     @drawVertices()
