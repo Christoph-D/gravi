@@ -3,10 +3,10 @@
 class VertexDrawableParity
   # The radius for circles is a little larger than for rectangles so
   # that the area of the shape is the same.
-  radiusC = 11.28
-  radiusR = 10
-  circle = "M #{radiusC},0 A #{radiusC},#{radiusC} 0 1,0 #{radiusC},0.00001 z"
+  radiusR = 11
+  radiusC = Math.round(radiusR * 100 * Math.sqrt(4 / Math.PI)) / 100
   rectangle = "M -#{radiusR},-#{radiusR} v #{radiusR*2} h #{radiusR*2} v -#{radiusR*2} z"
+  circle = "M #{radiusC},0 A #{radiusC},#{radiusC} 0 1,0 #{radiusC},0.00001 z"
 
   edgeAnchor: (otherNode, distanceOffset = 0) ->
     if @x == otherNode.x and @y == otherNode.y
@@ -42,12 +42,24 @@ class VertexDrawableParity
       result
   drawEnter: (editor, svgGroup) ->
     svgGroup.append("path").attr("class", "main")
+    svgGroup.append("text").attr("class", "priority")
+      .attr("font-family", "sans-serif")
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "central")
+      .attr("cursor", "default")
+      .style("fill", "#FFFFFF")
+      .style("stroke", "none")
   drawUpdate: (editor, svgGroup) ->
     svgGroup.attr("class", "vertex " + @getHighlightClass())
+    svgGroup.attr("transform", "translate(#{@x},#{@y})")
     svgGroup.selectAll("path.main")
       .classed("selected", editor.selection == this)
       .attr("d", if @player0 then circle else rectangle)
-      .attr("transform", "translate(#{@x},#{@y})")
+    priority = svgGroup.selectAll("text.priority").text(@priority)
+    if (@priority + "").length > 1
+      priority.attr("font-size", "15")
+    else
+      priority.attr("font-size", "20")
 
 class ParityGame extends Graph
   player0 =
