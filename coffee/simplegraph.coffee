@@ -1,12 +1,17 @@
 #= require Graph
 #= require <customproperty.coffee>
 
+circleEdgeAnchor = (s, t, distance) ->
+  result = x: s.x, y: s.y
+  if distance != 0
+    dx = s.x - t.x
+    dy = s.y - t.y
+    D = Math.sqrt(dx * dx + dy * dy)
+    result.x -= dx / D * distance
+    result.y -= dy / D * distance
+  return result
+
 class VertexDrawableDefault
-  # Returns the coordinates of the endpoint of an adjacent edge from
-  # the given other node.
-  edgeAnchor: (otherNode, distanceOffset = 0) ->
-    a = Math.atan2(@y - otherNode.y, @x - otherNode.x)
-    return { x: @x - Math.cos(a) * distanceOffset, y: @y - Math.sin(a) * distanceOffset}
   drawEnter: (editor, svgGroup) ->
     @eachProperty (p) => p.drawEnter?.call this, editor, svgGroup
   drawUpdate: (editor, svgGroup) ->
@@ -14,9 +19,11 @@ class VertexDrawableDefault
 
 # Mixin to draw a vertex with a circular shape.
 class VertexDrawableCircular extends VertexDrawableDefault
-  edgeAnchor: (otherNode, distanceOffset = 0) -> super(otherNode, distanceOffset + 10)
+  radius: 10
+  edgeAnchor: (otherNode, distanceOffset = 0) ->
+    circleEdgeAnchor this, otherNode, distanceOffset + @radius
   drawEnter: (editor, svgGroup) ->
-    svgGroup.append("circle").attr("class", "main").attr("r", 10)
+    svgGroup.append("circle").attr("class", "main").attr("r", @radius)
     super
   drawUpdate: (editor, svgGroup) ->
     svgGroup.attr("class", "vertex " + @getHighlightClass())
@@ -41,13 +48,15 @@ class EdgeDrawable extends EdgeDrawableDefault
   drawUpdate: (editor, svgGroup) ->
     s = @graph.vertices[@tail]
     t = @graph.vertices[@head]
+    anchorS = s.edgeAnchor(t)
+    anchorT = t.edgeAnchor(s, 10)
     svgGroup.attr("class", "edge " + @getHighlightClass())
     svgGroup.selectAll("line.main").classed("selected", editor.selection == this)
     svgGroup.selectAll("line.main, line.click-target")
-      .attr("x1", s.edgeAnchor(t).x)
-      .attr("y1", s.edgeAnchor(t).y)
-      .attr("x2", t.edgeAnchor(s, 11).x)
-      .attr("y2", t.edgeAnchor(s, 11).y)
+      .attr("x1", anchorS.x)
+      .attr("y1", anchorS.y)
+      .attr("x2", anchorT.x)
+      .attr("y2", anchorT.y)
     super
 
 class SimpleGraph extends Graph

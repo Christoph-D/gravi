@@ -149,11 +149,13 @@ class GraphEditor
     if @drawEdgeMode
       pointer = @svg.selectAll(".edge.pointer").data([null])
       pointer.enter().append("line").attr("class", "edge pointer")
+      edgeAnchorS = @selection.edgeAnchor @mouse
+      edgeAnchorT = circleEdgeAnchor @mouse, @selection, 7
       pointer
-          .attr("x1", @selection.edgeAnchor(@mouse).x)
-          .attr("y1", @selection.edgeAnchor(@mouse).y)
-          .attr("x2", @mouse.x)
-          .attr("y2", @mouse.y)
+          .attr("x1", edgeAnchorS.x)
+          .attr("y1", edgeAnchorS.y)
+          .attr("x2", edgeAnchorT.x)
+          .attr("y2", edgeAnchorT.y)
     else
       @svg.selectAll(".edge.pointer").remove()
 
