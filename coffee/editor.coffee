@@ -148,11 +148,17 @@ class GraphEditor
       if v.modified
         v.drawUpdate(editor, d3.select(this))
         v.modified = false)
+
     @drawCursor()
-    d3.select("#info2").text(JSON.stringify(Graph.vertexOrEdgeToJSON(@selection), undefined, 2))
-    if @oldSelection != @selection
+
+    if @selection != null
+      d3.select("#info2").text(JSON.stringify(Graph.vertexOrEdgeToJSON(@selection), undefined, 2))
+      if @oldSelection != @selection
+        d3.selectAll("#info *").remove()
+        @selection?.appendPropertiesToDom(d3.select("#info"))
+    else if @oldSelection != @selection
       d3.selectAll("#info *").remove()
-      @selection?.appendPropertiesToDom(d3.select("#info"))
+      d3.select("#info2").text("")
     @oldSelection = @selection
 
   drawCursor: ->
