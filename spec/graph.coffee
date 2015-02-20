@@ -56,15 +56,15 @@ describe "A graph", ->
       g.vertices[1].label = "second label"
 
     it "leaves the graph intact", ->
-      expect(graphFromJSON(graphToJSON(g))).toBeGraphEquivalent(g)
+      expect(graphFromJSON(graphToJSON(g), ["Graph"])).toBeGraphEquivalent(g)
 
     it "leaves the graph intact after removing an edge", ->
       g.removeEdge(0, 2)
-      expect(graphFromJSON(graphToJSON(g))).toBeGraphEquivalent(g)
+      expect(graphFromJSON(graphToJSON(g), ["Graph"])).toBeGraphEquivalent(g)
 
     it "leaves the graph intact after adding an edge", ->
       g.addEdge(2,1)
-      expect(graphFromJSON(graphToJSON(g))).toBeGraphEquivalent(g)
+      expect(graphFromJSON(graphToJSON(g), ["Graph"])).toBeGraphEquivalent(g)
 
   describe "with ordinary vertices/edges", ->
     it "allows removing edges", ->

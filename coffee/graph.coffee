@@ -166,11 +166,19 @@ graphToJSON = (graph) ->
     g.vertices.push(vertexOrEdgeToJSONCompatible v)
   for e in graph.edges
     g.edges.push(vertexOrEdgeToJSONCompatible e)
+  g.type = graph.constructor.name
+  g.version = graph.version
   JSON.stringify(g, undefined, 2)
 
-graphFromJSON = (json, Type = Graph) ->
+graphFromJSON = (json, validTypes = ["SimpleGraph", "FiniteAutomaton"]) ->
   raw = JSON.parse(json)
-  g = new Type
+  if raw.type?
+    if raw.type in validTypes
+      g = new window[raw.type]
+    else
+      throw TypeError("Don't know how to make a graph of type \"#{raw.type}\". Known types: #{validTypes}")
+  else
+    g = new window[validTypes[0]]
   for v, i in raw.vertices ? []
     if v == null
       g.vertices.push(null)

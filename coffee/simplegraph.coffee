@@ -51,6 +51,8 @@ class EdgeDrawable extends EdgeDrawableDefault
     super
 
 class SimpleGraph extends Graph
+  @version = "0.1"
+
   constructor: (options = {}) ->
     options.VertexType ?= Vertex
     options.VertexType = options.VertexType.newTypeWithMixin(VertexDrawableCircular)

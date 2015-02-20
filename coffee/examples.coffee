@@ -1,5 +1,6 @@
 example1 = """
 {
+  "type": "FiniteAutomaton",
   "vertices": [
     {
       "x": 140,
