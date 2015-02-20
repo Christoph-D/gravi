@@ -36,11 +36,11 @@ runAlgorithm = ->
   d3.select("body").on("keydown", () ->
     return unless document.activeElement.id != "dump"
     stopAnimation()
-    newStep = editor.currentStep()
+    newStep = state.editor.currentStep()
     switch d3.event.keyCode
       when 37 then --newStep if newStep >= 1
-      when 39 then ++newStep if newStep <= editor.totalSteps() - 2
-    editor.currentStep(newStep)
+      when 39 then ++newStep if newStep <= state.editor.totalSteps() - 2
+    state.editor.currentStep(newStep)
     state.slider.value(newStep)
     state.editor.draw())
   state.editor.draw()
