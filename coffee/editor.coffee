@@ -57,6 +57,10 @@ class GraphEditor
     @g.VertexType::onRedrawNeeded = @draw.bind(this)
     @g.EdgeType::onRedrawNeeded = @draw.bind(this)
 
+    # Rid the svg of previous clutter.
+    @svg.selectAll("#vertices > *").remove()
+    @svg.selectAll("#edges > *").remove()
+
   select: (vertexOrEdge) ->
     # Mark the previous selection as modified so that we redraw it
     # without the selection marker.
