@@ -117,7 +117,7 @@ class GraphEditor
     vertices.exit().remove()
     vertices.each((v) -> v.drawUpdate(editor, d3.select(this)))
     @drawCursor()
-    d3.select("#info2").text(JSON.stringify(vertexOrEdgeToJSONCompatible(@selection), undefined, 2))
+    d3.select("#info2").text(JSON.stringify(Graph.vertexOrEdgeToJSON(@selection), undefined, 2))
     if @oldSelection != @selection
       d3.selectAll("#info *").remove()
       @selection?.appendPropertiesToDom(d3.select("#info"))

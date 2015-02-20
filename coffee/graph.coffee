@@ -150,25 +150,23 @@ class Graph extends Extensible
     @totalSteps = 0
     @currentStep = 0
 
+  @vertexOrEdgeToJSON = (v) ->
+    if v == null
+      return null
+    w = {}
+    for p in v.propertyDescriptors?() ? []
+      # Save only properties different from the default value.
+      if p.shouldBeSaved != false and v[p.name] != p.value
+        w[p.name] = v[p.name]
+    return w
+  toJSON: ->
+    g = type: @constructor.name, version: @version, vertices: [], edges: []
+    for v in @vertices
+      g.vertices.push(Graph.vertexOrEdgeToJSON v)
+    for e in @edges
+      g.edges.push(Graph.vertexOrEdgeToJSON e)
+    g
 
-vertexOrEdgeToJSONCompatible = (v) ->
-  if v == null
-    return null
-  w = {}
-  for p in v.propertyDescriptors?() ? []
-    # Save only properties different from the default value.
-    if p.shouldBeSaved != false and v[p.name] != p.value
-      w[p.name] = v[p.name]
-  return w
-graphToJSON = (graph) ->
-  g = vertices: [], edges: []
-  for v in graph.vertices
-    g.vertices.push(vertexOrEdgeToJSONCompatible v)
-  for e in graph.edges
-    g.edges.push(vertexOrEdgeToJSONCompatible e)
-  g.type = graph.constructor.name
-  g.version = graph.version
-  JSON.stringify(g, undefined, 2)
 
 graphFromJSON = (json, validTypes = ["SimpleGraph", "FiniteAutomaton"]) ->
   raw = JSON.parse(json)

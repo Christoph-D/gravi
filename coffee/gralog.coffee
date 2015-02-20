@@ -77,7 +77,7 @@ loadGraph = (json) ->
 
 saveGraph = ->
   state.g.compressIds()
-  document.getElementById("dump").value = graphToJSON(state.g)
+  document.getElementById("dump").value = JSON.stringify(state.g, undefined, 2)
 
 stopAnimation = ->
   d3.select("#slider").transition().duration(0)
