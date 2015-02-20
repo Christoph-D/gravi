@@ -13,18 +13,13 @@ class GraphEditor
         leftClickDrag = d3.event.sourceEvent.which == 1
         return unless leftClickDrag
         @select(d)
-        @draw()
-      )
+        @draw())
       .on("drag", (d) =>
         return unless leftClickDrag
         d.x = d3.event.x
         d.y = d3.event.y
-        for e in d.outEdges()
-          e.modified = true
-        for e in d.inEdges()
-          e.modified = true
-        @draw()
-      )
+        d.edgesModified()
+        @draw())
     # Global click handler to deselect everything.
     @svg.on("click", =>
       @select(null)
@@ -72,9 +67,11 @@ class GraphEditor
   currentStep: (step) ->
     if arguments.length == 0
       return @g.currentStep
-    # If the current step changes, every edge could change their
-    # highlight.
+    # If the current step changes, every vertex and edge could change
+    # their highlight.
     if step != @g.currentStep
+      for v in @g.getVertices()
+        v.modified = true
       for e in @g.getEdges()
         e.modified = true
     @g.currentStep = step
@@ -88,22 +85,19 @@ class GraphEditor
       .on("click", (d) =>
         d3.event.stopPropagation()
         @select(d)
-        @draw()
-      )
+        @draw())
       .on("dblclick", (d) =>
         d3.event.stopPropagation()
         @select(d)
         @drawEdgeMode = true
-        @draw()
-      )
+        @draw())
       .on("contextmenu", (d) =>
         d3.event.stopPropagation()
         d3.event.preventDefault()
         @drawEdgeMode = false
         @g.removeVertex(d)
         @g.compressIds()
-        @draw()
-      )
+        @draw())
       .on("mouseover", (d) =>
         if @drawEdgeMode and @selection != d
           e = new @g.EdgeType tail: @selection.id, head: d.id
@@ -112,10 +106,12 @@ class GraphEditor
           else
             @g.addEdge e
           @drawEdgeMode = false
-          @draw()
-      )
+          @draw())
     vertices.exit().remove()
-    vertices.each((v) -> v.drawUpdate(editor, d3.select(this)))
+    vertices.each((v) ->
+      if v.modified
+        v.drawUpdate(editor, d3.select(this))
+        v.modified = false)
     @drawCursor()
     d3.select("#info2").text(JSON.stringify(Graph.vertexOrEdgeToJSON(@selection), undefined, 2))
     if @oldSelection != @selection
@@ -142,8 +138,7 @@ class GraphEditor
       .on("click", (d) =>
         d3.event.stopPropagation()
         @select(d)
-        @draw()
-      )
+        @draw())
     edges.exit().remove()
     edges.each((e) ->
       if e.modified

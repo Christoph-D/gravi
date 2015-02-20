@@ -19,6 +19,12 @@ class Vertex extends Extensible
   outNeighbors: -> @graph.vertices[e.head] for e in @outEdges(graph)
   inNeighbors: -> @graph.vertices[e.tail] for e in @inEdges(graph)
 
+  edgesModified: ->
+    for e in @outEdges()
+      e.modified = true
+    for e in @inEdges()
+      e.modified = true
+
 Vertex = addCustomProperty(Vertex, name: "graph", type: "object", editable: false, shouldBeSaved: false)
 Vertex = addCustomProperty(Vertex, name: "id", type: "number", editable: false, shouldBeSaved: false)
 Vertex = addCustomProperty(Vertex, name: "outE", type: "array", editable: false, shouldBeSaved: false)
