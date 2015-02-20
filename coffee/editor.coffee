@@ -174,6 +174,7 @@ class GraphEditor
         e.drawUpdate(editor, d3.select(this))
         e.modified = false)
 
+  drawPointer: ->
     # Draw an edge from the selected node to the mouse cursor.
     if @drawEdgeMode
       pointer = @svg.selectAll(".edge.pointer").data([null])
@@ -193,7 +194,7 @@ class GraphEditor
     @svg.on("mousemove", ->
       [editor.mouse.x, editor.mouse.y] = d3.mouse(this)
       if editor.drawEdgeMode
-        editor.draw()
-    )
+        editor.drawPointer())
     @drawEdges()
+    @drawPointer()
     @drawVertices()
