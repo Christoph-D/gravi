@@ -6,8 +6,8 @@ class FiniteAutomaton extends SimpleGraph
     type: "boolean"
     value: false
     drawEnter: (editor, svgGroup) ->
-      svgGroup.append("circle").attr("class", "accepting accepting1").attr("r", 9)
-      svgGroup.append("circle").attr("class", "accepting accepting2").attr("r", 6)
+      svgGroup.append("circle").attr("class", "accepting accepting1").attr("r", @radius - 1)
+      svgGroup.append("circle").attr("class", "accepting accepting2").attr("r", @radius - 4)
     drawUpdate: (editor, svgGroup) ->
       if @accepting
         opacity = 1
