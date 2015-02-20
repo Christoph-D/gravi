@@ -66,6 +66,12 @@ describe "A graph", ->
       g.addEdge(2,1)
       expect(graphFromJSON(JSON.stringify(g), ["Graph"])).toBeGraphEquivalent(g)
 
+    it "refuses to load a graph with unknown type", ->
+      j = JSON.parse(JSON.stringify(g))
+      j.type = "InvalidType"
+      expect(-> graphFromJSON(JSON.stringify(j), ["Dummy"])).toThrow(
+        TypeError("Don't know how to make a graph of type \"InvalidType\". Known types: Dummy"))
+
   describe "with ordinary vertices/edges", ->
     it "allows removing edges", ->
       g = new Graph numVertices: 4, edgeList: [[0,1], [1,2]]
