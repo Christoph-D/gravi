@@ -39,7 +39,7 @@ addCustomProperty = (Type, descriptor) ->
 
   class TypeWithProperty extends Type
     if @propertyDescriptors?
-      @propertyDescriptors = (p for p in @propertyDescriptors)
+      @propertyDescriptors = @propertyDescriptors.slice()
     else
       @propertyDescriptors = []
     for p in @propertyDescriptors
