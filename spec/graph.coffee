@@ -1,6 +1,9 @@
 describe "A graph", ->
   beforeEach ->
     jasmine.addMatchers
+      # To graphs are considered equivalent if they have equivalent
+      # vertex and edge lists, including ids.  This is a stronger
+      # condition than just being isomorphic.
       toBeGraphEquivalent: (util, customEqualityTesters) ->
         compare: (actual, expected) ->
           result = pass: false
@@ -10,41 +13,33 @@ describe "A graph", ->
           if actual.edges.length != expected.edges.length
             result.message = "Different number of edges.  Expected #{expected.edges.length} but received #{actual.edges.length}."
             return result
+
+          compareCustomProperties = (a, b, i, what) ->
+            if a == null and b == null
+              return true
+            if not util.equals(a.propertyDescriptors(), b.propertyDescriptors(), customEqualityTesters)
+                result.message = """
+                  List of custom properties of #{what} ##{i} differs.
+                  Expected #{JSON.stringify(a.propertyDescriptors())} but received #{JSON.stringify(b.propertyDescriptors())}.
+                  """
+                return false
+            # Don't compare the "graph" property because it simply
+            # points to the graph.
+            for p in a.propertyDescriptors() when p.name != "graph"
+              if not util.equals(a[p.name], b[p.name], customEqualityTesters)
+                result.message = """
+                  Custom property "#{p.name}" of #{what} ##{i} differs.
+                  Expected #{JSON.stringify(a[p.name])} but received #{JSON.stringify(b[p.name])}.
+                  """
+                return false
+            return true
+
           for v, i in actual.vertices
-            w = expected.vertices[i]
-            if v == null and w == null
-              continue
-            for key in ["id", "outE", "inE", "x", "y"]
-              if not util.equals(v[key], w[key], customEqualityTesters)
-                result.message = """
-                  Property "#{key}" of vertex ##{i} differs.
-                  Expected #{JSON.stringify(w[key])} but received #{JSON.stringify(v[key])}.
-                  """
-                return result
-            if not util.equals(v.propertyDescriptors(), w.propertyDescriptors(), customEqualityTesters)
-                result.message = """
-                  List of custom properties of vertex ##{i} differs.
-                  Expected #{JSON.stringify(v.propertyDescriptors())} but received #{JSON.stringify(w.propertyDescriptors())}.
-                  """
-                return result
-            for p in v.propertyDescriptors()
-              if not util.equals(v[p.name], w[p.name], customEqualityTesters)
-                result.message = """
-                  Custom property "#{p.name}" of vertex ##{i} differs.
-                  Expected #{JSON.stringify(v[p.name])} but received #{JSON.stringify(w[p.name])}.
-                  """
-                return result
+            if not compareCustomProperties v, expected.vertices[i], i, "vertex"
+              return result
           for e, i in actual.edges
-            f = expected.edges[i]
-            if e == null and f == null
-              continue
-            for key in ["id", "head", "tail"]
-              if not util.equals(e[key], f[key], customEqualityTesters)
-                result.message = """
-                  Property "#{key}" of edge ##{i} differs.
-                  Expected #{JSON.stringify(f[key])} but received #{JSON.stringify(e[key])}.
-                  """
-                return result
+            if not compareCustomProperties e, expected.edges[i], i, "edge"
+              return result
           result.pass = true
           return result
 
