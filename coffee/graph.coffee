@@ -29,7 +29,7 @@ Vertex = addCustomProperty(Vertex, name: "graph", type: "object", editable: fals
 Vertex = addCustomProperty(Vertex, name: "id", type: "number", editable: false, shouldBeSaved: false)
 Vertex = addCustomProperty(Vertex, name: "outE", type: "array", editable: false, shouldBeSaved: false)
 Vertex = addCustomProperty(Vertex, name: "inE", type: "array", editable: false, shouldBeSaved: false)
-Vertex = addCustomProperty(Vertex, name: "label", type: "string", defaultValue: "")
+#Vertex = addCustomProperty(Vertex, name: "label", type: "string", defaultValue: "")
 Vertex = addCustomProperty(Vertex, name: "x", type: "number", defaultValue: 0, editable: false)
 Vertex = addCustomProperty(Vertex, name: "y", type: "number", defaultValue: 0, editable: false)
 
