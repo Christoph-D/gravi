@@ -58,8 +58,8 @@ addCustomProperty = (Type, descriptor) ->
       Object.defineProperty this, name,
         configurable: true
         enumerable: descriptor.enumerable != false
-        get: => @_properties[name]
-        set: (value) =>
+        get: -> @_properties[name]
+        set: (value) ->
           @_properties[name] = value
           @modified = true
           @[onChange]?()
