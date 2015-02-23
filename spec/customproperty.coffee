@@ -5,7 +5,7 @@ describe "A custom property", ->
         @D =
           name: "foo",
           type: "string",
-          value: "foo",
+          defaultValue: "foo",
           pretty: (v) -> "<#{v}>"
         @T = addCustomProperty(T, @D)
         @v = new @T

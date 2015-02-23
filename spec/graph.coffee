@@ -69,8 +69,8 @@ describe "A graph", ->
     it "refuses to load a graph with unknown type", ->
       j = JSON.parse(JSON.stringify(g))
       j.type = "InvalidType"
-      expect(-> graphFromJSON(JSON.stringify(j), ["Dummy"])).toThrow(
-        TypeError("Don't know how to make a graph of type \"InvalidType\". Known types: Dummy"))
+      expect(-> graphFromJSON(JSON.stringify(j), ["Dummy"]))
+        .toThrow(TypeError("Don't know how to make a graph of type \"InvalidType\". Known types: Dummy"))
 
   describe "with ordinary vertices/edges", ->
     it "allows removing edges", ->
@@ -100,14 +100,20 @@ describe "A graph", ->
       expect(g).toBeGraphEquivalent(h)
 
     it "checks head/tail ids of edges in the constructor", ->
-      expect(-> new Graph numVertices: 1, edgeList: [[0,1]]).toThrow(new Error('Invalid property "head". Not a vertex id: 1'))
-      expect(-> new Graph numVertices: 2, edgeList: [[0,-1]]).toThrow(new Error('Invalid property "head". Not a vertex id: -1'))
-      expect(-> new Graph numVertices: 3, edgeList: [[0]]).toThrow(new Error('Missing property "tail"'))
+      expect(-> new Graph numVertices: 1, edgeList: [[0,1]])
+        .toThrow(new Error('Invalid property "head". Not a vertex id: 1'))
+      expect(-> new Graph numVertices: 2, edgeList: [[0,-1]])
+        .toThrow(new Error('Invalid property "head". Not a vertex id: -1'))
+      expect(-> new Graph numVertices: 3, edgeList: [[0]])
+        .toThrow(new Error('Missing property "tail"'))
 
     it "checks head/tail ids of added edges", ->
       g = new Graph numVertices: 2
-      expect(-> g.addEdge(tail: 0, head: 2)).toThrow(new Error('Invalid property "head". Not a vertex id: 2'))
-      expect(-> g.addEdge(new Edge tail: 0, head: 2)).toThrow(new Error('Invalid property "head". Not a vertex id: 2'))
-      expect(-> g.addEdge(new Edge tail: 0, head: 1)).not.toThrow()
+      expect(-> g.addEdge(tail: 0, head: 2))
+        .toThrow(new Error('Invalid property "head". Not a vertex id: 2'))
+      expect(-> g.addEdge(new Edge tail: 0, head: 2))
+        .toThrow(new Error('Invalid property "head". Not a vertex id: 2'))
+      expect(-> g.addEdge(new Edge tail: 0, head: 1))
+        .not.toThrow()
       h = new Graph numVertices: 2, edgeList: [[0,1]]
       expect(g).toBeGraphEquivalent(h)
