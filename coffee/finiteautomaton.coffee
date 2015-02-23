@@ -4,7 +4,7 @@ class FiniteAutomaton extends SimpleGraph
   accepting =
     name: "accepting"
     type: "boolean"
-    value: false
+    defaultValue: false
     drawEnter: (editor, svgGroup) ->
       svgGroup.append("circle").attr("class", "accepting accepting1").attr("r", @radius - 1)
       svgGroup.append("circle").attr("class", "accepting accepting2").attr("r", @radius - 4)
@@ -20,7 +20,7 @@ class FiniteAutomaton extends SimpleGraph
   letter =
     name: "letter"
     type: "string"
-    value: ""
+    defaultValue: ""
     drawEnter: (editor, svgGroup) ->
       svgGroup.append("text").attr("class", "letter")
         .attr("font-family", "sans-serif")

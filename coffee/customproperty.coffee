@@ -27,7 +27,7 @@ addCustomProperty = (Type, descriptor) ->
               if not isNaN(i)
                 self[name] = i
               else
-                self[name] = descriptor.value)
+                self[name] = descriptor.defaultValue)
       when "boolean"
         descriptor.appendToDom = (dom) ->
           self = this
@@ -78,7 +78,7 @@ addCustomProperty = (Type, descriptor) ->
         if descriptor.type == "array"
           @_properties[name] = []
         else
-          @_properties[name] = descriptor.value
+          @_properties[name] = descriptor.defaultValue
       @modified = true
 
     eachProperty: (f) -> f p for p in @propertyDescriptors()

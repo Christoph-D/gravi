@@ -65,11 +65,11 @@ class ParityGame extends Graph
   player0 =
     name: "player0"
     type: "boolean"
-    value: false
+    defaultValue: false
   priority =
     name: "priority"
     type: "number"
-    value: 0
+    defaultValue: 0
   constructor: (options = {}) ->
     options.VertexType ?= Vertex
     options.VertexType = addCustomProperty(options.VertexType, player0)

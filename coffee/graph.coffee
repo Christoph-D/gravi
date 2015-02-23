@@ -29,9 +29,9 @@ Vertex = addCustomProperty(Vertex, name: "graph", type: "object", editable: fals
 Vertex = addCustomProperty(Vertex, name: "id", type: "number", editable: false, shouldBeSaved: false)
 Vertex = addCustomProperty(Vertex, name: "outE", type: "array", editable: false, shouldBeSaved: false)
 Vertex = addCustomProperty(Vertex, name: "inE", type: "array", editable: false, shouldBeSaved: false)
-Vertex = addCustomProperty(Vertex, name: "label", type: "string", value: "")
-Vertex = addCustomProperty(Vertex, name: "x", type: "number", value: 0, editable: false)
-Vertex = addCustomProperty(Vertex, name: "y", type: "number", value: 0, editable: false)
+Vertex = addCustomProperty(Vertex, name: "label", type: "string", defaultValue: "")
+Vertex = addCustomProperty(Vertex, name: "x", type: "number", defaultValue: 0, editable: false)
+Vertex = addCustomProperty(Vertex, name: "y", type: "number", defaultValue: 0, editable: false)
 
 
 class Edge extends Extensible
@@ -162,7 +162,7 @@ class Graph extends Extensible
     w = {}
     for p in v.propertyDescriptors?() ? []
       # Save only properties different from the default value.
-      if p.shouldBeSaved != false and v[p.name] != p.value
+      if p.shouldBeSaved != false and v[p.name] != p.defaultValue
         w[p.name] = v[p.name]
     return w
   toJSON: ->
