@@ -19,6 +19,8 @@ class Vertex extends Extensible
   outNeighbors: -> @graph.vertices[e.head] for e in @outEdges(graph)
   inNeighbors: -> @graph.vertices[e.tail] for e in @inEdges(graph)
 
+  # Marks all incident edges as modified.  Useful if the vertex shape
+  # changes and the edges need to be redrawn.
   edgesModified: ->
     for e in @outEdges()
       e.modified = true
