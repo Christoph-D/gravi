@@ -1,4 +1,4 @@
-example1 = """
+define -> [ """
 {
   "type": "ParityGame",
   "vertices": [
@@ -116,3 +116,4 @@ example1 = """
   ]
 }
 """
+]
