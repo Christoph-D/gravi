@@ -102,9 +102,11 @@
    */
   var currentWindowOnload = window.onload;
 
-  require(["specs"], function() {
-    htmlReporter.initialize();
-    env.execute();
+  require(["speclist"], function(speclist) {
+    require(speclist, function() {
+      htmlReporter.initialize();
+      env.execute();
+    });
   });
 
   /**

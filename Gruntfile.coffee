@@ -7,7 +7,6 @@ module.exports = (grunt) ->
        '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;
       ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */
       """
-
     coffee:
       options:
         bare: true
@@ -15,24 +14,18 @@ module.exports = (grunt) ->
       gralog:
         expand: true,
         flatten: true,
-        src: 'coffee/*.coffee',
-        dest: 'js',
+        src: 'coffee/*.coffee'
+        dest: 'js'
         ext: '.js'
       tests:
         expand: true,
         flatten: true,
-        src: 'spec/*.coffee',
-        dest: 'jasmine/spec',
+        src: 'spec/*.coffee'
+        dest: 'jasmine/spec'
         ext: '.js'
       viewer:
-        src: 'viewer.coffee',
+        src: 'viewer.coffee'
         dest: 'js/viewer.js'
-
-    concat:
-      tests:
-        src: 'jasmine/spec/*.js'
-        dest: 'jasmine/spec/gralog.js'
-
     requirejs:
       compile:
         options:
@@ -40,7 +33,6 @@ module.exports = (grunt) ->
           name: "viewer"
           out: "js/viewer.min.js"
           optimize: "uglify2"
-
     watch:
       gralog:
         files: 'coffee/*.coffee',
@@ -49,14 +41,26 @@ module.exports = (grunt) ->
         files: 'viewer.coffee',
         tasks: ['coffee:viewer']
       tests:
-        files: [ 'coffee/*.coffee', 'spec/*.coffee' ],
-        tasks: ['coffee:tests']
+        files: [ 'coffee/*.coffee', 'spec/*.coffee' ]
+        tasks: ['tests']
+    "file-creator":
+      options:
+        openFlags: 'w'
+      tests:
+        "jasmine/speclist.js": (fs, fd, done) ->
+          glob = grunt.file.glob;
+          _ = grunt.util._;
+          glob 'jasmine/spec/*.js', (err, files) ->
+            files = ("\"#{f.replace(/^jasmine\/(.*)\.js/, '$1')}\"" for f in files)
+            fs.writeSync(fd, "define(function(){return [\n  ")
+            fs.writeSync(fd, files.join(",\n  "))
+            fs.writeSync(fd, "\n];});")
+            done()
 
-  grunt.loadNpmTasks('grunt-contrib-coffee');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-requirejs');
+  grunt.loadNpmTasks('grunt-contrib-coffee')
+  grunt.loadNpmTasks('grunt-contrib-watch')
+  grunt.loadNpmTasks('grunt-contrib-requirejs')
+  grunt.loadNpmTasks('grunt-file-creator')
 
-  grunt.registerTask('gralog', ['coffee:gralog', 'coffee:viewer', 'requirejs']);
-  grunt.registerTask('tests', ['coffee:tests', 'concat:tests']);
+  grunt.registerTask('gralog', ['coffee:gralog', 'coffee:viewer', 'requirejs'])
+  grunt.registerTask('tests', ['coffee:tests', 'file-creator:tests'])
