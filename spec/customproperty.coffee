@@ -1,4 +1,5 @@
-describe "A custom property", ->
+define [ "gralog/graph", "gralog/customproperty"
+], (G, CustomProperty) -> describe "A custom property", ->
   tests = (description, T, v) ->
     describe description, ->
       beforeEach ->
@@ -7,7 +8,7 @@ describe "A custom property", ->
           type: "string",
           defaultValue: "foo",
           pretty: (v) -> "<#{v}>"
-        @T = addCustomProperty(T, @D)
+        @T = CustomProperty.add(T, @D)
         @v = new @T
       it "exists", ->
         expect(@v.foo).toEqual("foo")
@@ -17,7 +18,7 @@ describe "A custom property", ->
       it "can be pretty printed", ->
         expect(@v.prettyFoo()).toEqual("<foo>")
       it "cannot be declared twice", ->
-        expect(=> addCustomProperty(@T, @D)).toThrow(
+        expect(=> CustomProperty.add(@T, @D)).toThrow(
           new TypeError("Custom property \"foo\" already exists."))
       it "is enumerable", ->
         expect(p for own p of @v).toContain("foo")
@@ -48,5 +49,5 @@ describe "A custom property", ->
             # Modifying @w should not modify @v.
             expect(@v.foo).toEqual("v")
 
-  tests "on vertices", Vertex
-  tests "on edges", Edge
+  tests "on vertices", G.Vertex
+  tests "on edges", G.Edge

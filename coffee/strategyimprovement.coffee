@@ -18,7 +18,7 @@ define [ "./graph" ], (G) ->
           else
             other.k <= @k
 
-  G.SI =
+  G.SI = SI =
     reward: (v) ->
       if v.priority?
         v = v.priority

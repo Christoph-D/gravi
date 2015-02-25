@@ -18,9 +18,20 @@ module.exports = (grunt) ->
         src: 'coffee/*.coffee',
         dest: 'js',
         ext: '.js'
+      tests:
+        expand: true,
+        flatten: true,
+        src: 'spec/*.coffee',
+        dest: 'jasmine/spec',
+        ext: '.js'
       viewer:
         src: 'viewer.coffee',
         dest: 'js/viewer.js'
+
+    concat:
+      tests:
+        src: 'jasmine/spec/*.js'
+        dest: 'jasmine/spec/gralog.js'
 
     requirejs:
       compile:
@@ -37,6 +48,9 @@ module.exports = (grunt) ->
       viewer:
         files: 'viewer.coffee',
         tasks: ['coffee:viewer']
+      tests:
+        files: [ 'coffee/*.coffee', 'spec/*.coffee' ],
+        tasks: ['coffee:tests']
 
   grunt.loadNpmTasks('grunt-contrib-coffee');
   grunt.loadNpmTasks('grunt-contrib-concat');
@@ -44,4 +58,5 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
 
-  grunt.registerTask('deploy', ['coffee', 'requirejs']);
+  grunt.registerTask('gralog', ['coffee:gralog', 'coffee:viewer', 'requirejs']);
+  grunt.registerTask('tests', ['coffee:tests', 'concat:tests']);
