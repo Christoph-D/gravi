@@ -22,12 +22,13 @@ module.exports = (grunt) ->
         src: 'viewer.coffee',
         dest: 'js/viewer.js'
 
-    uglify:
-      options:
-        banner: '<%= banner %>'
-      dist:
-        src: '<%= concat.dist.dest %>',
-        dest: 'dist/<%= pkg.name %>.min.js'
+    requirejs:
+      compile:
+        options:
+          baseUrl: "js"
+          name: "viewer"
+          out: "js/viewer.min.js"
+          optimize: "uglify2"
 
     watch:
       gralog:
@@ -43,4 +44,4 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
 
-  grunt.registerTask('default', ['concat', 'uglify']);
+  grunt.registerTask('deploy', ['coffee', 'requirejs']);
