@@ -68,3 +68,4 @@ module.exports = (grunt) ->
 
   grunt.registerTask('gralog', ['coffee:gralog', 'coffee:viewer', 'requirejs'])
   grunt.registerTask('tests', ['coffee:tests', 'file-creator:tests'])
+  grunt.registerTask('default', ['gralog', 'tests'])
