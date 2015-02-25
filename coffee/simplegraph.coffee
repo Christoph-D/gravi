@@ -1,6 +1,3 @@
-#= require Graph
-#= require <customproperty.coffee>
-
 define [ "./graph" ], (G) ->
   G.circleEdgeAnchor = (s, t, distance) ->
     result = x: s.x, y: s.y

@@ -1,5 +1,3 @@
-#= require SimpleGraph
-
 define [ "./graph", "./customproperty" ], (G, CustomProperty) ->
   class VertexDrawableParity
     # The radius for circles is a little larger than for rectangles so

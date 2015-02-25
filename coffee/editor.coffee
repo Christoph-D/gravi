@@ -1,5 +1,3 @@
-#= require Graph
-
 define [ "./graph" ], (G) ->
   class G.GraphEditor
     addHighlightedMarkers = (svg) ->

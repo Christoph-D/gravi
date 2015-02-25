@@ -1,6 +1,3 @@
-#= require TimedProperty
-#= require <customproperty.coffee>
-#= require Extensible
 define [
   "./extensible", "./timed", "./customproperty"
 ], (Extensible, TimedProperty, CustomProperty) ->

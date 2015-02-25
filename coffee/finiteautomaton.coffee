@@ -1,5 +1,3 @@
-#= require SimpleGraph
-
 define [ "./graph", "./simplegraph" ], (G) ->
   class G.FiniteAutomaton extends G.SimpleGraph
     accepting =

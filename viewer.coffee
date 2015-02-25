@@ -1,14 +1,4 @@
-#= require Graph
-#= require FiniteAutomaton
-#= require SimpleGraph
-#= require GraphEditor
-#= require AlgorithmRunner
-#= require <dfs.coffee>
-#= require <generators.coffee>
-#= require <examples.coffee>
-
-require [ "./gralog", "./examples",
-], (G, examples) ->
+require [ "./gralog", "./examples" ], (G, examples) ->
   state = {}
   runAlgorithm = ->
     g = state.g
