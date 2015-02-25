@@ -56,11 +56,15 @@ module.exports = (grunt) ->
             fs.writeSync(fd, files.join(",\n  "))
             fs.writeSync(fd, "\n];});")
             done()
+    clean:
+      gralog: [ "js/*.js", "js/*.js.map" ]
+      tests: [ "jasmine/spec/*.js", "jasmine/spec/*.js.map" ]
 
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-watch')
   grunt.loadNpmTasks('grunt-contrib-requirejs')
   grunt.loadNpmTasks('grunt-file-creator')
+  grunt.loadNpmTasks('grunt-contrib-clean')
 
   grunt.registerTask('gralog', ['coffee:gralog', 'coffee:viewer', 'requirejs'])
   grunt.registerTask('tests', ['coffee:tests', 'file-creator:tests'])
