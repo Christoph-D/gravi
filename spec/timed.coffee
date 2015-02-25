@@ -1,6 +1,7 @@
-define [ "gralog/timed" ], (TimedProperty) ->
-  describe "A non-interpolating TimedProperty on a string", ->
-    t = {}
+define [ "gralog/timed"
+], (TimedProperty) -> describe "A TimedProperty", ->
+  t = {}
+  describe "non-interpolating on a string", ->
     beforeEach -> t = new TimedProperty "initial"
 
     it "has the correct initial value", ->
@@ -25,8 +26,7 @@ define [ "gralog/timed" ], (TimedProperty) ->
       values = (t.valueAtTime time for time in [0..4])
       expect(values).toEqual("initial" for t in [0..4])
 
-  describe "An interpolating TimedProperty on an x/y position", ->
-    t = {}
+  describe "interpolating on an x/y position", ->
     beforeEach -> t = new TimedProperty x: 0, y: 0, ["x", "y"]
 
     it "has the correct initial value", ->
