@@ -3,11 +3,14 @@
 G = require './graph'
 CustomProperty = require './customproperty'
 
+# Vertex mixin.  Draws a vertex either as a rectangle (player 1) or as
+# a circle (player 0).  Also draws the priority inside the vertex.
 class VertexDrawableParity
   # The radius for circles is a little larger than for rectangles so
   # that the area of the shape is the same.
   _radiusR: 11
   _radiusC: Math.round(@::_radiusR * 100 * Math.sqrt(4 / Math.PI)) / 100
+  # SVG paths.
   _rectangle: "M -#{@::_radiusR},-#{@::_radiusR} v #{@::_radiusR*2} h #{@::_radiusR*2} v -#{@::_radiusR*2} z"
   _circle: "M #{@::_radiusC},0 A #{@::_radiusC},#{@::_radiusC} 0 1,0 #{@::_radiusC},0.00001 z"
 

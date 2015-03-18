@@ -2,6 +2,14 @@
 
 G = require './graph'
 
+# A GraphEditor expects vertices and edges to offer the methods
+# drawEnter() and drawUpdate().  It calls drawEnter() once on every
+# new vertex/edge and drawUpdate() every time a redraw is needed.
+#
+# It also excepts vertices and edges to *not* have a method
+# onRedrawNeeded because GraphEditor will add this method under the
+# expectation that it will be called whenever something changes.
+
 class G.GraphEditor
   addHighlightedMarkers = (svg) ->
     defs = svg.append("defs")
@@ -37,17 +45,20 @@ class G.GraphEditor
     @svg.append("g").attr("id", "vertices")
 
     # The drag behavior for the vertices.
-    leftClickDrag = false
+    isLeftClickDrag = false
     @drag = d3.behavior.drag()
       .on("dragstart", (d) =>
-        leftClickDrag = d3.event.sourceEvent.which == 1
-        return unless leftClickDrag
+        isLeftClickDrag = d3.event.sourceEvent.which == 1
+        return unless isLeftClickDrag
         @select(d)
         @draw())
       .on("drag", (d) =>
-        return unless leftClickDrag
+        # No dragging except on left clicks.
+        return unless isLeftClickDrag
+        # Update the vertex position.
         d.x = d3.event.x
         d.y = d3.event.y
+        # Invalidate the incident edges because the vertex moved.
         d.edgesModified()
         @draw())
     # Global click handler to deselect everything.
@@ -55,8 +66,8 @@ class G.GraphEditor
       @select(null)
       @drawEdgeMode = false
       @draw())
-    # Global click handler to create new vertices.
     @svg.on("contextmenu", =>
+    # Global click handler to create new vertices on right click.
       d3.event.stopPropagation()
       d3.event.preventDefault()
       v = new @g.VertexType x: @mouse.x, y: @mouse.y
@@ -116,6 +127,8 @@ class G.GraphEditor
   drawVertices: ->
     vertices = @svg.select("#vertices").selectAll(".vertex").data(@g.getVertices())
     editor = this
+    # For each new vertex, add a <g> element to the svg, call
+    # drawEnter() and install the handlers.
     vertices.enter().append("g")
       .each((v) -> v.drawEnter(editor, d3.select(this)))
       .call(@drag)
@@ -170,6 +183,7 @@ class G.GraphEditor
     cursor = @svg.selectAll("#cursor").data([@g.getCursor()])
     cursor.enter().append("circle").attr("id", "cursor")
       .attr("r", "5")
+      # Make the cursor transparent to mouse clicks.
       .style("pointer-events", "none")
     cursor
       .attr("cx", (d) -> d.x)
