@@ -7,7 +7,6 @@ define [ "gralog/graph", "gralog/customproperty"
           name: "foo",
           type: "string",
           defaultValue: "foo",
-          pretty: (v) -> "<#{v}>"
         @T = CustomProperty.add(T, @D)
         @v = new @T
       it "exists", ->
@@ -15,8 +14,6 @@ define [ "gralog/graph", "gralog/customproperty"
       it "takes values", ->
         @v.foo = "bar"
         expect(@v.foo).toEqual("bar")
-      it "can be pretty printed", ->
-        expect(@v.prettyFoo()).toEqual("<foo>")
       it "cannot be declared twice", ->
         expect(=> CustomProperty.add(@T, @D)).toThrow(
           new TypeError("Custom property \"foo\" already exists."))
@@ -24,8 +21,6 @@ define [ "gralog/graph", "gralog/customproperty"
         expect(p for own p of @v).toContain("foo")
       it "internal property list is not enumerable", ->
         expect(p for own p of @v).not.toContain("_properties")
-      it "pretty printed property is not enumerable", ->
-        expect(p for own p of @v).not.toContain("prettyFoo")
       it "calls the onChange function exactly once per change", ->
         a = f: ->
         spyOn(a, 'f')
@@ -43,8 +38,6 @@ define [ "gralog/graph", "gralog/customproperty"
           beforeEach -> @w.foo = "w"
           it "has the new value", ->
             expect(@w.foo).toEqual("w")
-          it "can be pretty printed", ->
-            expect(@w.prettyFoo()).toEqual("<w>")
           it "has been really copied", ->
             # Modifying @w should not modify @v.
             expect(@v.foo).toEqual("v")

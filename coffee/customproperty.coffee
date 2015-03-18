@@ -65,11 +65,6 @@ define
             @modified = true
             @[onChange]?()
             value
-        if descriptor.pretty?
-          Object.defineProperty this, "pretty#{Name}",
-            configurable: true
-            enumerable: false
-            value: => descriptor.pretty @[name]
         if v?[name]?
           if descriptor.type == "array"
             @_properties[name] = v[name].slice()
