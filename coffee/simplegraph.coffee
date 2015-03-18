@@ -19,7 +19,7 @@ define [ "./graph" ], (G) ->
   class G.VertexDrawableCircular extends G.VertexDrawableDefault
     radius: 10
     edgeAnchor: (otherNode, distanceOffset = 0) ->
-      circleEdgeAnchor this, otherNode, distanceOffset + @radius
+      G.circleEdgeAnchor this, otherNode, distanceOffset + @radius
     drawEnter: (editor, svgGroup) ->
       svgGroup.append("circle").attr("class", "main").attr("r", @radius)
       super
@@ -62,10 +62,10 @@ define [ "./graph" ], (G) ->
 
     constructor: (options = {}) ->
       options.VertexType ?= G.Vertex
-      options.VertexType = options.VertexType.newTypeWithMixin(VertexDrawableCircular)
+      options.VertexType = options.VertexType.newTypeWithMixin(G.VertexDrawableCircular)
       options.VertexType::onChangeLabel = -> @onRedrawNeeded?()
       options.EdgeType ?= G.Edge
-      options.EdgeType = options.EdgeType.newTypeWithMixin(EdgeDrawable)
+      options.EdgeType = options.EdgeType.newTypeWithMixin(G.EdgeDrawable)
       super options
 
   return G

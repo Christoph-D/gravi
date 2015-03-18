@@ -1,4 +1,4 @@
-define [ "./graph", "./simplegraph" ], (G) ->
+define [ "./graph", "./customproperty", "./simplegraph" ], (G, CustomProperty) ->
   class G.FiniteAutomaton extends G.SimpleGraph
     accepting =
       name: "accepting"
@@ -40,8 +40,8 @@ define [ "./graph", "./simplegraph" ], (G) ->
           .attr("x", (s.x + t.x) / 2 + dy * 10)
           .attr("y", (s.y + t.y) / 2 - dx * 10)
     constructor: (options = {}) ->
-      options.VertexType = addCustomProperty(options.VertexType ? Vertex, accepting)
-      options.EdgeType = addCustomProperty(options.EdgeType ? Edge, letter)
+      options.VertexType = CustomProperty.add(options.VertexType ? G.Vertex, accepting)
+      options.EdgeType = CustomProperty.add(options.EdgeType ? G.Edge, letter)
       options.EdgeType::onChangeLetter = -> @onRedrawNeeded?()
       options.VertexType::onChangeAccepting = -> @onRedrawNeeded?()
       super options
