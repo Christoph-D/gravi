@@ -1,6 +1,6 @@
 `define(function(require){`
 
-G = require './graph'
+G = require './historygraph'
 
 # A GraphEditor expects vertices and edges to offer the methods
 # drawEnter() and drawUpdate().  It calls drawEnter() once on every

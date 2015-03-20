@@ -1,6 +1,8 @@
 `define(function(require){`
 
 G = require './graph'
+require './graphjson'
+require './historygraph'
 require './algorithmrunner'
 require './dfs'
 require './simplegraph'

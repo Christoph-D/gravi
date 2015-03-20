@@ -1,7 +1,6 @@
 `define(function(require){`
 
 Extensible = require './extensible'
-TimedProperty = require './timed'
 CustomProperty = require './customproperty'
 
 G = {}
@@ -40,6 +39,7 @@ Vertex = CustomProperty.add(Vertex, name: "y", type: "number", defaultValue: 0, 
 G.Vertex = Vertex
 
 class Edge extends Extensible
+  # No methods here.  Everything is in custom properties.
 
 Edge = CustomProperty.add(Edge, name: "graph", type: "object", editable: false, shouldBeSaved: false)
 Edge = CustomProperty.add(Edge, name: "id", type: "number", editable: false, shouldBeSaved: false)
@@ -47,7 +47,7 @@ Edge = CustomProperty.add(Edge, name: "head", type: "number", editable: false)
 Edge = CustomProperty.add(Edge, name: "tail", type: "number", editable: false)
 G.Edge = Edge
 
-class Graph extends Extensible
+class G.Graph extends Extensible
   constructor: (options = {}) ->
     @VertexType = options.VertexType ? Vertex
     @EdgeType = options.EdgeType ? Edge
@@ -56,8 +56,6 @@ class Graph extends Extensible
       @addVertex new @VertexType for i in [1..options.numVertices]
     @edges = []
     @addEdge e[0], e[1] for e in options.edgeList ? []
-    @totalSteps = 0
-    @currentStep = 0
     super
 
   addVertex: (v) ->
@@ -146,92 +144,6 @@ class Graph extends Extensible
   getVertices: -> v for v in @vertices when v != null
   getEdges: -> e for e in @edges when e != null
 
-  saveStep: ->
-    ++@totalSteps
-    ++@currentStep
-
-  clearHistory: ->
-    # Reset all timed properties to their default value.
-    for v in @getVertices()
-      for key, value of v when value instanceof TimedProperty
-        value.reset()
-    for e in @getEdges()
-      for key, value of e when value instanceof TimedProperty
-        value.reset()
-    @totalSteps = 0
-    @currentStep = 0
-
-  @vertexOrEdgeToJSON = (v) ->
-    if v == null
-      return null
-    w = {}
-    for p in v.propertyDescriptors?() ? []
-      # Save only properties different from the default value.
-      if p.shouldBeSaved != false and v[p.name] != p.defaultValue
-        w[p.name] = v[p.name]
-    return w
-  toJSON: ->
-    g = type: @constructor.name, version: @version, vertices: [], edges: []
-    for v in @vertices
-      g.vertices.push(Graph.vertexOrEdgeToJSON v)
-    for e in @edges
-      g.edges.push(Graph.vertexOrEdgeToJSON e)
-    g
-G.Graph = Graph
-
-G.graphFromJSON = (json, validTypes = ["SimpleGraph", "FiniteAutomaton", "ParityGame"]) ->
-  raw = JSON.parse(json)
-  if raw.type?
-    if raw.type in validTypes
-      if raw.type of G
-        g = new G[raw.type]
-      else
-        g = new window[raw.type]
-    else
-      throw TypeError("Don't know how to make a graph of type \"#{raw.type}\". Known types: #{validTypes}")
-  else
-    g = new window[validTypes[0]]
-  for v, i in raw.vertices ? []
-    if v == null
-      g.vertices.push(null)
-    else
-      try
-        g.addVertex(new g.VertexType v)
-      catch error
-        error.message += " on vertex ##{i}: #{JSON.stringify(v)}"
-        throw error
-  for e, i in raw.edges ? []
-    if e == null
-      g.edges.push(null)
-    else
-      try
-        g.addEdge(new g.EdgeType e)
-      catch error
-        error.message += " on edge ##{i}: #{JSON.stringify(e)}"
-        throw error
-  return g
-
-# Marks a vertex in the graph.  Useful to show the state of
-# depth-first search and related algorithms.
-class GraphCursorMixin
-  constructor: -> @cursor = new TimedProperty null, ["x", "y"]
-  setCursor: (cursor) -> @cursor.valueAtTime(@currentStep, cursor)
-  getCursor: -> @cursor.valueAtTime(@currentStep)
-
-# Mixin to make a vertex or an edge highlightable.
-class HighlightableMixin
-  constructor: -> @highlightClass = new TimedProperty ""
-  highlight: (highlightId) ->
-    if highlightId?
-      c = "highlight#{highlightId}"
-    else
-      c = ""
-    @highlightClass.valueAtTime(@graph.currentStep, c)
-  getHighlightClass: -> @highlightClass.valueAtTime(@graph.currentStep)
-
-G.Vertex.mixin HighlightableMixin
-G.Edge.mixin HighlightableMixin
-G.Graph.mixin GraphCursorMixin
 return G
 
 `})`
