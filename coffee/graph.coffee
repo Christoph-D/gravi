@@ -195,12 +195,20 @@ G.graphFromJSON = (json, validTypes = ["SimpleGraph", "FiniteAutomaton", "Parity
     if v == null
       g.vertices.push(null)
     else
-      g.addVertex(new g.VertexType v)
+      try
+        g.addVertex(new g.VertexType v)
+      catch error
+        error.message += " on vertex ##{i}: #{JSON.stringify(v)}"
+        throw error
   for e, i in raw.edges ? []
     if e == null
       g.edges.push(null)
     else
-      g.addEdge(new g.EdgeType e)
+      try
+        g.addEdge(new g.EdgeType e)
+      catch error
+        error.message += " on edge ##{i}: #{JSON.stringify(e)}"
+        throw error
   return g
 
 # Marks a vertex in the graph.  Useful to show the state of

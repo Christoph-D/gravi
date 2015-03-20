@@ -14,6 +14,13 @@ define [ "gralog/graph", "gralog/customproperty"
       it "takes values", ->
         @v.foo = "bar"
         expect(@v.foo).toEqual("bar")
+      it "rejects values of wrong type", ->
+        expect(=> @v.foo = 1).toThrow(
+          new TypeError('Property "foo" received invalid type "number", excepted "string"'))
+        expect(=> @v.foo = []).toThrow(
+          new TypeError('Property "foo" received invalid type "object", excepted "string"'))
+        expect(=> @v.foo = {}).toThrow(
+          new TypeError('Property "foo" received invalid type "object", excepted "string"'))
       it "cannot be declared twice", ->
         expect(=> CustomProperty.add(@T, @D)).toThrow(
           new TypeError("Custom property \"foo\" already exists."))
