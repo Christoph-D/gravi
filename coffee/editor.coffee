@@ -167,7 +167,7 @@ class G.GraphEditor
     @drawCursor()
 
     if @selection != null
-      d3.select("#info2").text(JSON.stringify(G.Graph.vertexOrEdgeToJSON(@selection), undefined, 2))
+      d3.select("#info2").text(JSON.stringify(G.vertexOrEdgeToJSON(@selection), undefined, 2))
       if @oldSelection != @selection
         d3.selectAll("#info *").remove()
         @selection?.appendPropertiesToDom(d3.select("#info"))

@@ -3,7 +3,7 @@
 
 G = require './graph'
 
-vertexOrEdgeToJSON = (v) ->
+G.vertexOrEdgeToJSON = (v) ->
   if v == null
     return null
   w = {}
@@ -16,9 +16,9 @@ vertexOrEdgeToJSON = (v) ->
 G.Graph::toJSON = ->
   g = type: @constructor.name, version: @version, vertices: [], edges: []
   for v in @vertices
-    g.vertices.push(vertexOrEdgeToJSON v)
+    g.vertices.push(G.vertexOrEdgeToJSON v)
   for e in @edges
-    g.edges.push(vertexOrEdgeToJSON e)
+    g.edges.push(G.vertexOrEdgeToJSON e)
   g
 
 G.graphFromJSON = (json, validTypes = ["SimpleGraph", "FiniteAutomaton", "ParityGame"]) ->
