@@ -19,21 +19,23 @@ G.Graph::toJSON = ->
     g.vertices.push(G.vertexOrEdgeToJSON v)
   for e in @edges
     g.edges.push(G.vertexOrEdgeToJSON e)
-  g
+  return g
 
 G.graphFromJSON = (json, validTypes = ["SimpleGraph", "FiniteAutomaton", "ParityGame"]) ->
   raw = JSON.parse(json)
-  if raw.type?
-    if raw.type in validTypes
-      if raw.type of G
-        g = new G[raw.type]
-      else
-        g = new window[raw.type]
-    else
-      throw TypeError("Don't know how to make a graph of type \"#{raw.type}\". Known types: #{validTypes}")
+  # If the input has no type, assume it has the first valid type.
+  raw.type ?= validTypes[0]
+
+  if raw.type not in validTypes
+    throw TypeError("Don't know how to make a graph of type \"#{raw.type}\". Known types: #{validTypes}")
+
+  if raw.type of G
+    g = new G[raw.type]
   else
-    g = new window[validTypes[0]]
+    g = new window[raw.type]
+
   for v, i in raw.vertices ? []
+    # Also insert null vertices to preserve the vertex ids.
     if v == null
       g.vertices.push(null)
     else
@@ -42,6 +44,7 @@ G.graphFromJSON = (json, validTypes = ["SimpleGraph", "FiniteAutomaton", "Parity
       catch error
         error.message += " on vertex ##{i}: #{JSON.stringify(v)}"
         throw error
+
   for e, i in raw.edges ? []
     if e == null
       g.edges.push(null)
@@ -51,6 +54,7 @@ G.graphFromJSON = (json, validTypes = ["SimpleGraph", "FiniteAutomaton", "Parity
       catch error
         error.message += " on edge ##{i}: #{JSON.stringify(e)}"
         throw error
+
   return g
 
 return G
