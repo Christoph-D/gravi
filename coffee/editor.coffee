@@ -11,9 +11,15 @@ G = require './historygraph'
 # expectation that it will be called whenever something changes.
 
 class G.GraphEditor
+  # Changing stroke-color etc. on edges does not affect the marker
+  # (the arrow head).  In order to affect the marker, we need
+  # different markers for each possible edge highlight.  Highlighting
+  # an edge then amounts to changing the css class of the edge, which
+  # selects the correct marker.
   addHighlightedMarkers = (svg) ->
+    # Markers have to be defined once in <defs> in the svg.
     defs = svg.append("defs")
-    appendMarker = ->
+    newMarker = ->
       marker = defs.append("marker").attr("id", "edgeArrow")
         .attr("viewBox", "0 0 10 10")
         .attr("refX", "2").attr("refY", "5")
@@ -23,16 +29,14 @@ class G.GraphEditor
       # An arrow head.
       marker.append("path").attr("d", "M 0 0 L 10 5 L 0 10 z")
       marker
-    appendMarker()
-    # We need to add a new marker for every possible highlighting because
-    # marker elements do not inherit their css from the referencing
-    # element.
+    # Create one marker without highlights.
+    newMarker()
+    # Create markers for all possible edge highlights.
     for i in [1..2]
-      marker = appendMarker()
-      marker.attr("id", "edgeArrowHighlight#{i}")
-      marker.attr("class", "highlight#{i}")
+      newMarker()
+        .attr("id", "edgeArrowHighlight#{i}")
+        .attr("class", "highlight#{i}")
 
-  # This class may modify the graph @g.
   constructor: (g, @svg) ->
     # The current mouse position.
     @mouse = x: 0, y: 0
@@ -100,7 +104,7 @@ class G.GraphEditor
     @g.VertexType::onRedrawNeeded = @draw.bind(this)
     @g.EdgeType::onRedrawNeeded = @draw.bind(this)
 
-    # Rid the svg of previous clutter.
+    # Rid the svg of previous clutter (keep the <defs>).
     @svg.selectAll("#vertices > *").remove()
     @svg.selectAll("#edges > *").remove()
 
