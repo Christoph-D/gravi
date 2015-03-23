@@ -36,6 +36,7 @@ Vertex = CustomProperty.add(Vertex, name: "inE", type: "array", editable: false,
 Vertex = CustomProperty.add(Vertex, name: "label", type: "string", defaultValue: "")
 Vertex = CustomProperty.add(Vertex, name: "x", type: "number", defaultValue: 0, editable: false)
 Vertex = CustomProperty.add(Vertex, name: "y", type: "number", defaultValue: 0, editable: false)
+Vertex::onChangeLabel = -> @onRedrawNeeded?()
 G.Vertex = Vertex
 
 class Edge extends Extensible
