@@ -5,12 +5,17 @@ CustomProperty = require './customproperty'
 
 G = {}
 class Vertex extends Extensible
-  addOutEdge: (e) -> @outE.push(e)
-  addInEdge: (e) -> @inE.push(e)
+  addOutEdge: (e) ->
+    @outE.push(e)
+    @
+  addInEdge: (e) ->
+    @inE.push(e)
+    @
 
   removeEdgeId: (edgeId) ->
     @outE = (e for e in @outE when e != edgeId)
     @inE = (e for e in @inE when e != edgeId)
+    @
 
   # @outE contains only the ids of outgoing edges.  @outEdges()
   # returns the corresponding list of Edge objects.
@@ -18,8 +23,8 @@ class Vertex extends Extensible
   inEdges: -> @graph.edges[e] for e in @inE
 
   # Returns a list of Vertex objects.
-  outNeighbors: -> @graph.vertices[e.head] for e in @outEdges(graph)
-  inNeighbors: -> @graph.vertices[e.tail] for e in @inEdges(graph)
+  outNeighbors: -> @graph.vertices[e.head] for e in @outE
+  inNeighbors: -> @graph.vertices[e.tail] for e in @inE
 
   # Marks all incident edges as modified.  Useful if the vertex shape
   # changes and the edges need to be redrawn.
@@ -28,6 +33,7 @@ class Vertex extends Extensible
       e.modified = true
     for e in @inEdges()
       e.modified = true
+    @
 
 Vertex = CustomProperty.add(Vertex, name: "graph", type: "object", editable: false, shouldBeSaved: false)
 Vertex = CustomProperty.add(Vertex, name: "id", type: "number", editable: false, shouldBeSaved: false)
@@ -63,6 +69,7 @@ class G.Graph extends Extensible
     v.id = @vertices.length
     v.graph = this
     @vertices.push(v)
+    @
 
   removeVertex: (v) ->
     for w, i in @vertices
@@ -73,7 +80,8 @@ class G.Graph extends Extensible
         for e in v.outEdges()
           @removeEdge(e)
         @vertices[i] = null
-        return
+        return @
+    @
 
   parseEdge: (tail, head) ->
     if not head?
@@ -93,12 +101,13 @@ class G.Graph extends Extensible
   addEdge: (tail, head) ->
     e = @parseEdge(tail, head)
     if @hasEdge e
-      return # no duplicate edges
+      return @ # no duplicate edges
     e.id = @edges.length
     e.graph = this
     @vertices[e.tail].addOutEdge e.id
     @vertices[e.head].addInEdge e.id
     @edges.push e
+    @
 
   # Accepts a single Edge object or tail, head.  Ignores the edge id.
   removeEdge: (tail, head) ->
@@ -112,7 +121,8 @@ class G.Graph extends Extensible
         # @edges.  Removing/adding lots of edges will thus clutter
         # @edges with null entries.  See @compressIds().
         @edges[i] = null
-        return
+        return @
+    @
 
   # Removes null vertices and edges by reassigning all ids.
   compressIds: ->
@@ -135,6 +145,7 @@ class G.Graph extends Extensible
     @vertices = @getVertices()
     e.id = idsE[e.id] for e, i in @edges
     v.id = idsV[v.id] for v, i in @vertices
+    @
 
   hasEdge: (tail, head) ->
     e = @parseEdge(tail, head)

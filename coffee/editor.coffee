@@ -221,10 +221,12 @@ class G.GraphEditor
           .attr("y2", edgeAnchorT.y)
     else
       @svg.selectAll(".edge.pointer").remove()
+    @
 
   draw: ->
     @drawEdges()
     @drawPointer()
     @drawVertices()
+    @
 
 `})`

@@ -83,7 +83,10 @@ return add: (Type, descriptor) ->
         else
           @[name] = descriptor.defaultValue
 
-    eachProperty: (f) -> f p for p in @propertyDescriptors()
+    eachProperty: (f) ->
+      for p in @propertyDescriptors()
+        f p
+      @
     propertyDescriptors: -> TypeWithProperty.propertyDescriptors
 
     appendPropertiesToDom: (dom) ->

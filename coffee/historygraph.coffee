@@ -13,6 +13,7 @@ G.Graph.mixin class
   saveStep: ->
     ++@totalSteps
     ++@currentStep
+    @
 
   clearHistory: ->
     # Reset all timed properties to their default value.
@@ -24,13 +25,16 @@ G.Graph.mixin class
         value.reset()
     @totalSteps = 0
     @currentStep = 0
+    @
 
 # Marks a vertex in the graph.  Useful to show the state of
 # depth-first search and related algorithms.
 G.Graph.mixin class
   constructor: -> @cursor = new TimedProperty null, ["x", "y"]
 
-  setCursor: (cursor) -> @cursor.valueAtTime(@currentStep, cursor)
+  setCursor: (cursor) ->
+    @cursor.valueAtTime(@currentStep, cursor)
+    @
 
   getCursor: -> @cursor.valueAtTime(@currentStep)
 
@@ -45,6 +49,7 @@ class HighlightableMixin
     else
       c = ""
     @highlightClass.valueAtTime(@graph.currentStep, c)
+    @
 
   getHighlightClass: ->
     @highlightClass.valueAtTime(@graph.currentStep)
