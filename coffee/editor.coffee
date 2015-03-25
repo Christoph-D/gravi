@@ -230,9 +230,19 @@ class G.GraphEditor
     @
 
   draw: ->
+    @times ?= []
+
+    start = performance.now()
     @drawEdges()
+    end = performance.now()
     @drawPointer()
     @drawVertices()
+
+    @times.push(end - start)
+    if @times.length > 40
+      @times.shift()
+    median = @times.slice().sort()[Math.floor(@times.length / 2)]
+    d3.select('#performance').text("#{median} ms")
     @
 
 `})`
