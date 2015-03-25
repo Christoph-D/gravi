@@ -12,11 +12,23 @@ G.circleEdgeAnchor = (s, t, distance) ->
     result.y -= dy / D * distance
   return result
 
+# Computes and sets the CSS class of a vertex or an edge.
+setCSSClass = (editor, svgGroup) ->
+  c = @getHighlightClass()
+  if editor.selection == this
+    c += " selected"
+  if c != @_lastCSSClass # .attr() is expensive
+    svgGroup.attr("class", c)
+  @_lastCSSClass = c
+
 class G.VertexDrawableDefault
+  # Delegate everything to the custom properties.
   drawEnter: (editor, svgGroup) ->
     @eachProperty (p) => p.drawEnter?.call this, editor, svgGroup
   drawUpdate: (editor, svgGroup) ->
+    @setCSSClass(editor, svgGroup)
     @eachProperty (p) => p.drawUpdate?.call this, editor, svgGroup
+  @::setCSSClass = setCSSClass
 
 # Mixin to draw a vertex with a circular shape.
 class G.VertexDrawableCircular extends G.VertexDrawableDefault
@@ -27,18 +39,13 @@ class G.VertexDrawableCircular extends G.VertexDrawableDefault
     svgGroup.append("circle").attr("class", "main").attr("r", @radius)
     super
   drawUpdate: (editor, svgGroup) ->
-    svgGroup.attr("class", "vertex " + @getHighlightClass())
+    @setCSSClass(editor, svgGroup)
     svgGroup.selectAll("circle.main")
-      .classed("selected", editor.selection == this)
       .attr("cx", @x)
       .attr("cy", @y)
     super
 
-class G.EdgeDrawableDefault
-  drawEnter: (editor, svgGroup) ->
-    @eachProperty (p) => p.drawEnter?.call this, editor, svgGroup
-  drawUpdate: (editor, svgGroup) ->
-    @eachProperty (p) => p.drawUpdate?.call this, editor, svgGroup
+G.EdgeDrawableDefault = G.VertexDrawableDefault
 
 # Mixin to draw an edge with an arrow at its head.
 class G.EdgeDrawable extends G.EdgeDrawableDefault
@@ -47,12 +54,11 @@ class G.EdgeDrawable extends G.EdgeDrawableDefault
     svgGroup.append("line").attr("class", "click-target")
     super
   drawUpdate: (editor, svgGroup) ->
+    @setCSSClass(editor, svgGroup)
     s = @graph.vertices[@tail]
     t = @graph.vertices[@head]
     anchorS = s.edgeAnchor(t)
     anchorT = t.edgeAnchor(s, 10)
-    svgGroup.attr("class", "edge " + @getHighlightClass())
-    svgGroup.selectAll("line.main").classed("selected", editor.selection == this)
     svgGroup.selectAll("line.main, line.click-target")
       .attr("x1", anchorS.x)
       .attr("y1", anchorS.y)

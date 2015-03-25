@@ -155,7 +155,7 @@ class G.GraphEditor
       @drawEdgeMode = false
       @draw()
   drawVertices: ->
-    vertices = @svg.select("#vertices").selectAll(".vertex").data(@g.getVertices())
+    vertices = @svg.select("#vertices").selectAll("#vertices > g").data(@g.getVertices())
     editor = this
     # For each new vertex, add a <g> element to the svg, call
     # drawEnter() and install the handlers.
@@ -201,17 +201,16 @@ class G.GraphEditor
     d3.event.stopPropagation()
     @select(d)
     @draw()
-  checkRedrawEdge = (e) ->
-    if e.modified
-      e.drawUpdate(editor, d3.select(this))
-      e.modified = false
   drawEdges: ->
-    edges = @svg.select("#edges").selectAll(".edge").data(@g.getEdges())
+    edges = @svg.selectAll("#edges").selectAll("#edges > g").data(@g.getEdges())
     editor = this
     edges.enter().append("g").each((e) -> e.drawEnter(editor, d3.select(this)))
       .on("click", onClickEdge.bind(this))
     edges.exit().remove()
-    edges.each(checkRedrawEdge)
+    edges.each((e) ->
+      if e.modified
+        e.drawUpdate(editor, d3.select(this))
+        e.modified = false)
     @
 
   drawPointer: ->

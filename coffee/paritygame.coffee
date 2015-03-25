@@ -1,11 +1,12 @@
 `define(function(require){`
 
 G = require './graph'
+require './simplegraph'
 CustomProperty = require './customproperty'
 
 # Vertex mixin.  Draws a vertex either as a rectangle (player 1) or as
 # a circle (player 0).  Also draws the priority inside the vertex.
-class VertexDrawableParity
+class VertexDrawableParity extends G.VertexDrawableDefault
   # The radius for circles is a little larger than for rectangles so
   # that the area of the shape is the same.
   _radiusR: 11
@@ -56,13 +57,11 @@ class VertexDrawableParity
       .style("fill", "#FFFFFF")
       .style("stroke", "none")
   drawUpdate: (editor, svgGroup) ->
-    svgGroup.attr("class", "vertex " + @getHighlightClass())
+    @setCSSClass(editor, svgGroup)
     svgGroup.attr("transform", "translate(#{@x},#{@y})")
-    svgGroup.selectAll("path.main")
-      .classed("selected", editor.selection == this)
-      .attr("d", if @player0 then @_circle else @_rectangle)
-    priority = svgGroup.selectAll("text.priority").text(@priority)
-    if (@priority + "").length > 1
+    svgGroup.select('path.main').attr("d", if @player0 then @_circle else @_rectangle)
+    priority = svgGroup.select('text.priority').text(@priority)
+    if @priority >= 10 or @priority < 0
       priority.attr("font-size", "15")
     else
       priority.attr("font-size", "20")
