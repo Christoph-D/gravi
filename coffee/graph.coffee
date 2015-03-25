@@ -124,27 +124,29 @@ class G.Graph extends Extensible
         return @
     @
 
+  idTranslationTable = (what) ->
+    ids = {}
+    j = 0
+    for x, i in what when x != null
+      ids[i] = j++
+    ids
   # Removes null vertices and edges by reassigning all ids.
   compressIds: ->
-    translationTable = (what) ->
-      ids = {}; j = 0
-      for x, i in what when x != null
-        ids[i] = j++
-      ids
-    idsV = translationTable @vertices
-    idsE = translationTable @edges
+    idsV = idTranslationTable @vertices
+    idsE = idTranslationTable @edges
 
-    for v in @getVertices()
+    # Remove all null entries and then fix all the ids.
+    @vertices = @getVertices()
+    for v in @vertices
+      v.id = idsV[v.id]
       v.outE = (idsE[i] for i in v.outE)
       v.inE = (idsE[i] for i in v.inE)
-    for e in @getEdges()
-      e.tail = idsV[e.tail]
-      e.head = idsV[e.head]
 
     @edges = @getEdges()
-    @vertices = @getVertices()
-    e.id = idsE[e.id] for e, i in @edges
-    v.id = idsV[v.id] for v, i in @vertices
+    for e in @edges
+      e.id = idsE[e.id]
+      e.tail = idsV[e.tail]
+      e.head = idsV[e.head]
     @
 
   hasEdge: (tail, head) ->

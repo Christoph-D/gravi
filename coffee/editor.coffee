@@ -128,6 +128,32 @@ class G.GraphEditor
         e.modified = true
     @g.currentStep = step
 
+  onClickVertex = (d) ->
+    d3.event.stopPropagation()
+    @select(d)
+    @draw()
+  onDoubleClickVertex = (d) ->
+    d3.event.stopPropagation()
+    @select(d)
+    @drawEdgeMode = true
+    @draw()
+  onRightClickVertex = (d) ->
+    d3.event.stopPropagation()
+    d3.event.preventDefault()
+    @drawEdgeMode = false
+    @g.removeVertex(d)
+    @g.compressIds()
+    @draw()
+  onMouseOverVertex = (d) ->
+    if @drawEdgeMode and @selection != d
+      e = new @g.EdgeType tail: @selection.id, head: d.id
+      if @g.hasEdge e
+        @g.removeEdge e
+        @g.compressIds()
+      else
+        @g.addEdge e
+      @drawEdgeMode = false
+      @draw()
   drawVertices: ->
     vertices = @svg.select("#vertices").selectAll(".vertex").data(@g.getVertices())
     editor = this
@@ -136,32 +162,10 @@ class G.GraphEditor
     vertices.enter().append("g")
       .each((v) -> v.drawEnter(editor, d3.select(this)))
       .call(@drag)
-      .on("click", (d) =>
-        d3.event.stopPropagation()
-        @select(d)
-        @draw())
-      .on("dblclick", (d) =>
-        d3.event.stopPropagation()
-        @select(d)
-        @drawEdgeMode = true
-        @draw())
-      .on("contextmenu", (d) =>
-        d3.event.stopPropagation()
-        d3.event.preventDefault()
-        @drawEdgeMode = false
-        @g.removeVertex(d)
-        @g.compressIds()
-        @draw())
-      .on("mouseover", (d) =>
-        if @drawEdgeMode and @selection != d
-          e = new @g.EdgeType tail: @selection.id, head: d.id
-          if @g.hasEdge e
-            @g.removeEdge e
-            @g.compressIds()
-          else
-            @g.addEdge e
-          @drawEdgeMode = false
-          @draw())
+      .on("click", onClickVertex.bind(this))
+      .on("dblclick", onDoubleClickVertex.bind(this))
+      .on("contextmenu", onRightClickVertex.bind(this))
+      .on("mouseover", onMouseOverVertex.bind(this))
     vertices.exit().remove()
     vertices.each((v) ->
       if v.modified
@@ -193,19 +197,22 @@ class G.GraphEditor
       .attr("cx", (d) -> d.x)
       .attr("cy", (d) -> d.y)
 
+  onClickEdge = (d) ->
+    d3.event.stopPropagation()
+    @select(d)
+    @draw()
+  checkRedrawEdge = (e) ->
+    if e.modified
+      e.drawUpdate(editor, d3.select(this))
+      e.modified = false
   drawEdges: ->
     edges = @svg.select("#edges").selectAll(".edge").data(@g.getEdges())
     editor = this
     edges.enter().append("g").each((e) -> e.drawEnter(editor, d3.select(this)))
-      .on("click", (d) =>
-        d3.event.stopPropagation()
-        @select(d)
-        @draw())
+      .on("click", onClickEdge.bind(this))
     edges.exit().remove()
-    edges.each((e) ->
-      if e.modified
-        e.drawUpdate(editor, d3.select(this))
-        e.modified = false)
+    edges.each(checkRedrawEdge)
+    @
 
   drawPointer: ->
     # Draw an edge from the selected node to the mouse cursor.
