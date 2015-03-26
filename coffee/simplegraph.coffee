@@ -17,9 +17,8 @@ setCSSClass = (editor, svgGroup) ->
   c = @getHighlightClass()
   if editor.selection == this
     c += " selected"
-  if c != @_lastCSSClass # .attr() is expensive
-    svgGroup.attr("class", c)
-  @_lastCSSClass = c
+  # We cannot cache the CSS class because d3 reuses <g> elements.
+  svgGroup.attr("class", c)
 
 class G.VertexDrawableDefault
   # Delegate everything to the custom properties.
@@ -54,7 +53,6 @@ class G.EdgeDrawable extends G.EdgeDrawableDefault
     svgGroup.append("line").attr("class", "click-target")
     super
   drawUpdate: (editor, svgGroup) ->
-    @setCSSClass(editor, svgGroup)
     s = @graph.vertices[@tail]
     t = @graph.vertices[@head]
     anchorS = s.edgeAnchor(t)
