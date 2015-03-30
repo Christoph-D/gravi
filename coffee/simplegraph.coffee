@@ -36,7 +36,6 @@ class G.VertexDrawableCircular extends G.VertexDrawableDefault
     svgGroup.append("circle").attr("class", "main").attr("r", @radius)
     super
   drawUpdate: (editor, svgGroup) ->
-    @setCSSClass(editor, svgGroup)
     svgGroup.selectAll("circle.main")
       .attr("cx", @x)
       .attr("cy", @y)
