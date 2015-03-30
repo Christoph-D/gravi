@@ -40,6 +40,9 @@ module.exports = (grunt) ->
           name: "viewer"
           out: "js/viewer.min.js"
           optimize: "uglify2"
+          uglify2:
+            output:
+              semicolons: false
     watch:
       gralog:
         files: 'coffee/*.coffee',
