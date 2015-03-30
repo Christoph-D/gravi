@@ -1,5 +1,5 @@
-G = require './graph'
-TimedProperty = require './timed'
+G = require "./graph"
+TimedProperty = require "./timed"
 
 # Adds a global timeline to the graph.  Useful in combination with
 # TimedProperty on the vertices/edges.

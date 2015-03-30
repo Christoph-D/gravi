@@ -1,5 +1,5 @@
-Extensible = require './extensible'
-CustomProperty = require './customproperty'
+Extensible = require "./extensible"
+CustomProperty = require "./customproperty"
 
 G = {}
 class Vertex extends Extensible

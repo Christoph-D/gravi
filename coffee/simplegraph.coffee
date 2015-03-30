@@ -1,4 +1,4 @@
-G = require './graph'
+G = require "./graph"
 
 G.circleEdgeAnchor = (s, t, distance) ->
   result = x: s.x, y: s.y

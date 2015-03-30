@@ -1,4 +1,4 @@
-G = require './graph'
+G = require "./graph"
 
 G.generateRandomGraph = (n, p) ->
   g = new G.ParityGame

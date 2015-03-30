@@ -1,6 +1,6 @@
 # Functions to convert between a graph and its JSON representation.
 
-G = require './graph'
+G = require "./graph"
 
 G.vertexOrEdgeToJSON = (v) ->
   if v == null

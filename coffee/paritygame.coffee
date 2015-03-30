@@ -1,6 +1,6 @@
-G = require './graph'
-require './simplegraph'
-CustomProperty = require './customproperty'
+G = require "./graph"
+require "./simplegraph"
+CustomProperty = require "./customproperty"
 
 # Vertex mixin.  Draws a vertex either as a rectangle (player 1) or as
 # a circle (player 0).  Also draws the priority inside the vertex.
@@ -57,8 +57,8 @@ class VertexDrawableParity extends G.VertexDrawableDefault
   drawUpdate: (editor, svgGroup) ->
     @setCSSClass(editor, svgGroup)
     svgGroup.attr("transform", "translate(#{@x},#{@y})")
-    svgGroup.select('path.main').attr("d", if @player0 then @_circle else @_rectangle)
-    priority = svgGroup.select('text.priority').text(@priority)
+    svgGroup.select("path.main").attr("d", if @player0 then @_circle else @_rectangle)
+    priority = svgGroup.select("text.priority").text(@priority)
     if @priority >= 10 or @priority < 0
       priority.attr("font-size", "15")
     else

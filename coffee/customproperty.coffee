@@ -5,8 +5,8 @@ return add: (Type, descriptor) ->
   Name = name[0].toUpperCase() + name[1..]
   onChange = "onChange#{Name}"
   typeToCheck = descriptor.type
-  if typeToCheck == 'array'
-    typeToCheck = 'object'
+  if typeToCheck == "array"
+    typeToCheck = "object"
 
   if descriptor.editable != false
     switch descriptor.type
@@ -53,7 +53,7 @@ return add: (Type, descriptor) ->
     constructor: (v) ->
       super
       if not @_properties?
-        Object.defineProperty this, '_properties',
+        Object.defineProperty this, "_properties",
           configurable: true
           enumerable: false
           writable: true
@@ -63,7 +63,7 @@ return add: (Type, descriptor) ->
         enumerable: descriptor.enumerable != false
         get: -> @_properties[name]
         set: (value) ->
-          if typeof value != typeToCheck and typeof value != 'undefined'
+          if typeof value != typeToCheck and typeof value != "undefined"
             throw TypeError("Property \"#{name}\" received invalid type \"#{typeof value}\", \
               excepted \"#{descriptor.type}\"")
           @_properties[name] = value

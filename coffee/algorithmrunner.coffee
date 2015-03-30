@@ -1,4 +1,4 @@
-G = require './graph'
+G = require "./graph"
 
 class G.AlgorithmRunner
   constructor: (@algorithm) ->

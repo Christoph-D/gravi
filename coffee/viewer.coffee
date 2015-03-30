@@ -1,5 +1,5 @@
-G = require './gralog'
-examples = require './examples'
+G = require "./gralog"
+examples = require "./examples"
 
 state = {}
 runAlgorithm = ->

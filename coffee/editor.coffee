@@ -1,4 +1,4 @@
-G = require './historygraph'
+G = require "./historygraph"
 
 # A GraphEditor expects vertices and edges to offer the methods
 # drawEnter() and drawUpdate().  It calls drawEnter() once on every
@@ -240,5 +240,5 @@ class G.GraphEditor
     if @times.length > 40
       @times.shift()
     median = @times.slice().sort()[Math.floor(@times.length / 2)]
-    d3.select('#performance').text("#{median} ms")
+    d3.select("#performance").text("#{median} ms")
     @

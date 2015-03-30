@@ -1,6 +1,6 @@
-G = require './graph'
-CustomProperty = require './customproperty'
-require './simplegraph'
+G = require "./graph"
+CustomProperty = require "./customproperty"
+require "./simplegraph"
 
 class G.FiniteAutomaton extends G.SimpleGraph
   accepting =

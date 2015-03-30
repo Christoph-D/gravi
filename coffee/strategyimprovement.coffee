@@ -1,4 +1,4 @@
-G = require './graph'
+G = require "./graph"
 
 # A play profile contains l, B, k.
 class G.PlayProfile
