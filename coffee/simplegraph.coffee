@@ -1,5 +1,3 @@
-`define(function(require){`
-
 G = require './graph'
 
 G.circleEdgeAnchor = (s, t, distance) ->
@@ -76,5 +74,3 @@ class G.SimpleGraph extends G.Graph
     super options
 
 return G
-
-`})`

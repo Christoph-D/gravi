@@ -1,5 +1,3 @@
-`define(function(require){`
-
 G = require './graph'
 
 # A play profile contains l, B, k.
@@ -59,5 +57,3 @@ G.SI = SI =
     graph.setCursor(initialVertex)
 
 G.strategyImprovement = G.SI.run
-
-`})`

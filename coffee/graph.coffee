@@ -1,5 +1,3 @@
-`define(function(require){`
-
 Extensible = require './extensible'
 CustomProperty = require './customproperty'
 
@@ -159,5 +157,3 @@ class G.Graph extends Extensible
   getEdges: -> e for e in @edges when e != null
 
 return G
-
-`})`

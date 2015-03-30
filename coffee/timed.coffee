@@ -1,5 +1,3 @@
-`define(function(require){`
-
 return class TimedProperty
   constructor: (@initialValue = null, @interpolateKeys = []) ->
     @value = 0: @initialValue
@@ -29,5 +27,3 @@ return class TimedProperty
   reset: ->
     @value = 0: @initialValue
     @
-
-`})`

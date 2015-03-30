@@ -1,5 +1,3 @@
-`define(function(require){`
-
 G = require './graph'
 
 G.generateRandomGraph = (n, p) ->
@@ -31,5 +29,3 @@ G.generatePath = (n) ->
   for i in [0..n - 2]
     g.addEdge(new g.EdgeType tail: i, head: i + 1)
   return g
-
-`})`

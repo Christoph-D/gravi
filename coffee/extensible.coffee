@@ -1,5 +1,3 @@
-`define(function(require){`
-
 return class Extensible
   constructor: -> @__mixinConstructor?.apply this, arguments
 
@@ -56,5 +54,3 @@ return class Extensible
     class newType extends this
     newType.mixin i for i in mixin
     newType
-
-`})`

@@ -1,5 +1,3 @@
-`define(function(require){`
-
 G = require './graph'
 
 class G.AlgorithmRunner
@@ -15,5 +13,3 @@ class G.AlgorithmRunner
     graph.currentStep = 0
     result
 return G
-
-`})`

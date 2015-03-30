@@ -1,5 +1,3 @@
-`define(function(require){`
-
 return [ """
 {
 "type": "ParityGame",
@@ -119,5 +117,3 @@ return [ """
 }
 """
 ]
-
-`})`

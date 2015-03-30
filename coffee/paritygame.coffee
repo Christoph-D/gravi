@@ -1,5 +1,3 @@
-`define(function(require){`
-
 G = require './graph'
 require './simplegraph'
 CustomProperty = require './customproperty'
@@ -89,5 +87,3 @@ class G.ParityGame extends G.Graph
     super options
 
 return G
-
-`})`

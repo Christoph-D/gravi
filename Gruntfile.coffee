@@ -7,6 +7,16 @@ module.exports = (grunt) ->
        '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;
       ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */
       """
+    # Add AMD wrapper.
+    wrap:
+      gralog:
+        expand: true,
+        flatten: true,
+        src: ['coffee/*.coffee'],
+        dest: 'js',
+        options:
+          wrapper: ['`define(function (require, exports, module) {`\n', '\n`})`\n']
+    # Compile coffeescript.
     coffee:
       options:
         bare: true
@@ -14,7 +24,7 @@ module.exports = (grunt) ->
       gralog:
         expand: true,
         flatten: true,
-        src: 'coffee/*.coffee'
+        src: 'js/*.coffee'
         dest: 'js'
         ext: '.js'
       tests:
@@ -23,11 +33,8 @@ module.exports = (grunt) ->
         src: 'spec/*.coffee'
         dest: 'jasmine/spec'
         ext: '.js'
-      viewer:
-        src: 'viewer.coffee'
-        dest: 'js/viewer.js'
     requirejs:
-      compile:
+      gralog:
         options:
           baseUrl: "js"
           name: "viewer"
@@ -36,10 +43,7 @@ module.exports = (grunt) ->
     watch:
       gralog:
         files: 'coffee/*.coffee',
-        tasks: ['coffee:gralog']
-      viewer:
-        files: 'viewer.coffee',
-        tasks: ['coffee:viewer']
+        tasks: ['gralog']
       tests:
         files: [ 'coffee/*.coffee', 'spec/*.coffee' ]
         tasks: ['tests']
@@ -57,7 +61,7 @@ module.exports = (grunt) ->
             fs.writeSync(fd, "\n];});")
             done()
     clean:
-      gralog: [ "js/*.js", "js/*.js.map" ]
+      gralog: [ "js/*.{coffee,js,js.map}" ]
       tests: [ "jasmine/spec/*.js", "jasmine/spec/*.js.map" ]
 
   grunt.loadNpmTasks('grunt-contrib-coffee')
@@ -65,7 +69,8 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-requirejs')
   grunt.loadNpmTasks('grunt-file-creator')
   grunt.loadNpmTasks('grunt-contrib-clean')
+  grunt.loadNpmTasks('grunt-wrap')
 
-  grunt.registerTask('gralog', ['coffee:gralog', 'coffee:viewer', 'requirejs'])
+  grunt.registerTask('gralog', ['wrap:gralog', 'coffee:gralog', 'requirejs:gralog'])
   grunt.registerTask('tests', ['coffee:tests', 'file-creator:tests'])
   grunt.registerTask('default', ['gralog', 'tests'])

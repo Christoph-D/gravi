@@ -1,4 +1,3 @@
-`define(function(require){`
 # Functions to convert between a graph and its JSON representation.
 
 G = require './graph'
@@ -58,5 +57,3 @@ G.graphFromJSON = (json, validTypes = ["SimpleGraph", "FiniteAutomaton", "Parity
   return g
 
 return G
-
-`})`

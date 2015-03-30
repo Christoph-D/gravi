@@ -1,5 +1,3 @@
-`define(function(require){`
-
 G = require './graph'
 
 G.dfs = {
@@ -27,5 +25,3 @@ run: (graph) ->
   graph.setCursor(initialVertex)
   dfsStep(initialVertex)
 }
-
-`})`

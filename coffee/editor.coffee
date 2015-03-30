@@ -1,5 +1,3 @@
-`define(function(require){`
-
 G = require './historygraph'
 
 # A GraphEditor expects vertices and edges to offer the methods
@@ -244,5 +242,3 @@ class G.GraphEditor
     median = @times.slice().sort()[Math.floor(@times.length / 2)]
     d3.select('#performance').text("#{median} ms")
     @
-
-`})`

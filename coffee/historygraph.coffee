@@ -1,5 +1,3 @@
-`define(function(require){`
-
 G = require './graph'
 TimedProperty = require './timed'
 
@@ -58,5 +56,3 @@ G.Vertex.mixin HighlightableMixin
 G.Edge.mixin HighlightableMixin
 
 return G
-
-`})`

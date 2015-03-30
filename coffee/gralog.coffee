@@ -1,5 +1,3 @@
-`define(function(require){`
-
 G = require './graph'
 require './graphjson'
 require './historygraph'
@@ -13,5 +11,3 @@ require './generators'
 require './editor'
 window.G = G
 return G
-
-`})`

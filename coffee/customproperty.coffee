@@ -1,5 +1,3 @@
-`define(function(require){`
-
 # Adds a property to the given class and returns the new class.
 # Contrast with TimedProperty.
 return add: (Type, descriptor) ->
@@ -91,5 +89,3 @@ return add: (Type, descriptor) ->
 
     appendPropertiesToDom: (dom) ->
       @eachProperty (p) => p.appendToDom?.call this, dom
-
-`})`

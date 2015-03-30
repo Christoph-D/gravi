@@ -1,5 +1,3 @@
-`define(function(require){`
-
 G = require './graph'
 CustomProperty = require './customproperty'
 require './simplegraph'
@@ -50,5 +48,3 @@ class G.FiniteAutomaton extends G.SimpleGraph
     options.EdgeType::onChangeLetter = -> @onRedrawNeeded?()
     options.VertexType::onChangeAccepting = -> @onRedrawNeeded?()
     super options
-
-`})`
