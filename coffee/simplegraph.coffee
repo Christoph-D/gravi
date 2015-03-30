@@ -12,11 +12,11 @@ G.circleEdgeAnchor = (s, t, distance) ->
 
 # Computes and sets the CSS class of a vertex or an edge.
 setCSSClass = (editor, svgGroup) ->
-  c = @getHighlightClass()
+  c = [ @defaultCSSClass, @getHighlightClass() ]
   if editor.selection == this
-    c += " selected"
+    c.push("selected")
   # We cannot cache the CSS class because d3 reuses <g> elements.
-  svgGroup.attr("class", c)
+  svgGroup.attr("class", c.join(" "))
 
 class G.VertexDrawableDefault
   # Delegate everything to the custom properties.
@@ -26,6 +26,7 @@ class G.VertexDrawableDefault
     @setCSSClass(editor, svgGroup)
     @eachProperty (p) => p.drawUpdate?.call this, editor, svgGroup
   @::setCSSClass = setCSSClass
+  @::defaultCSSClass = "vertex"
 
 # Mixin to draw a vertex with a circular shape.
 class G.VertexDrawableCircular extends G.VertexDrawableDefault
@@ -41,7 +42,12 @@ class G.VertexDrawableCircular extends G.VertexDrawableDefault
       .attr("cy", @y)
     super
 
-G.EdgeDrawableDefault = G.VertexDrawableDefault
+class G.EdgeDrawableDefault
+  # Same behavior as default vertices.
+  @::drawEnter = G.VertexDrawableDefault::drawEnter
+  @::drawUpdate = G.VertexDrawableDefault::drawUpdate
+  @::setCSSClass = setCSSClass
+  @::defaultCSSClass = "edge"
 
 # Mixin to draw an edge with an arrow at its head.
 class G.EdgeDrawable extends G.EdgeDrawableDefault

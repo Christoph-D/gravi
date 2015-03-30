@@ -27,29 +27,29 @@
   height: 1000px;
 }
 
-#vertices {
+.vertex {
   fill: #8888FF;
 }
 
-#vertices .highlight1 {
+.vertex.highlight1 {
   fill: #FF0000;
 }
 
-#vertices .highlight2 {
+.vertex.highlight2 {
   fill: #009900;
 }
-#vertices .accepting1 {
+.vertex.accepting1 {
   fill: none;
   stroke: #000000;
   stroke-width: 2px;
 }
-#vertices .accepting2 {
+.vertex.accepting2 {
   fill: none;
   stroke: #000000;
   stroke-width: 2px;
 }
 
-#vertices .selected .main {
+.vertex.selected .main {
   stroke: #000000;
   stroke-width: 2px;
   stroke-dasharray: 4,3;
@@ -65,11 +65,11 @@
   100% { stroke-dashoffset: 0; }
 }
 
-#edges  {
+.edge {
   stroke: #000000;
   stroke-width: 1.5px;
 }
-#edges .click-target {
+.edge.click-target {
   stroke-opacity: 0;
   stroke-width: 30px;
   stroke-linecap: round;
@@ -77,7 +77,7 @@
   pointer-events: all;
 }
 
-#edges .highlight1 {
+.edge.highlight1 {
   stroke: #FF0000;
   fill: #FF0000;
 }
@@ -85,7 +85,7 @@ marker.highlight1 {
   fill: #FF0000;
 }
 
-#edges .highlight2 {
+.edge.highlight2 {
   stroke: #BBBBBB;
   fill: #BBBBBB;
 }
@@ -93,7 +93,7 @@ marker.highlight2 {
   fill: #BBBBBB;
 }
 
-#edges .selected .main {
+.edge.selected .main {
   stroke-width: 3px;
   stroke-dasharray: 5,3;
   -webkit-animation: edge-selected 1s linear infinite;

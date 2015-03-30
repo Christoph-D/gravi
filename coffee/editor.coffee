@@ -153,7 +153,7 @@ class G.GraphEditor
       @drawEdgeMode = false
       @draw()
   drawVertices: ->
-    vertices = @svg.select("#vertices").selectAll("#vertices > g").data(@g.getVertices())
+    vertices = @svg.select("#vertices").selectAll(".vertex").data(@g.getVertices())
     editor = this
     # For each new vertex, add a <g> element to the svg, call
     # drawEnter() and install the handlers.
@@ -200,7 +200,7 @@ class G.GraphEditor
     @select(d)
     @draw()
   drawEdges: ->
-    edges = @svg.selectAll("#edges").selectAll("#edges > g").data(@g.getEdges())
+    edges = @svg.select("#edges").selectAll(".edge").data(@g.getEdges())
     editor = this
     edges.enter().append("g").each((e) -> e.drawEnter(editor, d3.select(this)))
       .on("click", onClickEdge.bind(this))
@@ -214,8 +214,8 @@ class G.GraphEditor
   drawPointer: ->
     # Draw an edge from the selected node to the mouse cursor.
     if @drawEdgeMode
-      pointer = @svg.selectAll(".edge.pointer").data([null])
-      pointer.enter().append("line").attr("class", "edge pointer")
+      pointer = @svg.selectAll("#pointer").data([null])
+      pointer.enter().append("line").attr("id", "pointer").attr("class", "edge")
       edgeAnchorS = @selection.edgeAnchor @mouse
       edgeAnchorT = G.circleEdgeAnchor @mouse, @selection, 7
       pointer
@@ -224,7 +224,7 @@ class G.GraphEditor
           .attr("x2", edgeAnchorT.x)
           .attr("y2", edgeAnchorT.y)
     else
-      @svg.selectAll(".edge.pointer").remove()
+      @svg.selectAll("#pointer").remove()
     @
 
   draw: ->
