@@ -1,0 +1,117 @@
+@graphWidth: 700px;
+@graphHeight: 400px;
+
+@vertexColor: #8888FF;
+@vertexHighlight1: #FF0000;
+@vertexHighlight2: #009900;
+
+@edgeColor: #000000;
+@edgeHighlight1: #FF0000;
+@edgeHighlight2: #BBBBBB;
+
+#graph {
+  outline: thin solid black;
+  width: @graphWidth;
+  height: @graphHeight;
+}
+
+#infocol {
+  position: absolute;
+  top: 20px;
+  left: @graphWidth + 50px;
+}
+
+#run {
+}
+
+#slider {
+  width: @graphWidth - 20px;
+  margin: 10px;
+  margin-bottom: 30px;
+}
+
+#loading-message {
+  color: #AA0000;
+}
+#dump {
+  width: @graphWidth;
+  height: 1000px;
+}
+
+.vertex {
+  fill: @vertexColor;
+  &.highlight1 {
+    fill: @vertexHighlight1;
+  }
+  &.highlight2 {
+    fill: @vertexHighlight2;
+  }
+  &.accepting1 {
+    fill: none;
+    stroke: #000000;
+    stroke-width: 2px;
+  }
+  &.accepting2 {
+    fill: none;
+    stroke: #000000;
+    stroke-width: 2px;
+  }
+  &.selected .main {
+    stroke: #000000;
+    stroke-width: 2px;
+    stroke-dasharray: 4,3;
+    -webkit-animation: vertex-selected 1s linear infinite;
+    animation: vertex-selected 1s linear infinite;
+  }
+}
+
+@-webkit-keyframes vertex-selected {
+  0% { stroke-dashoffset: 7; }
+  100% { stroke-dashoffset: 0; }
+}
+@keyframes vertex-selected {
+  0% { stroke-dashoffset: 7; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.edge {
+  stroke: @edgeColor;
+  stroke-width: 1.5px;
+
+  .click-target {
+    stroke-opacity: 0;
+    stroke-width: 30px;
+    stroke-linecap: round;
+    marker-end: none !important;
+    pointer-events: all;
+  }
+
+  &.highlight1 {
+    stroke: @edgeHighlight1;
+    fill: @edgeHighlight1;
+  }
+  &.highlight2 {
+    stroke: @edgeHighlight2;
+    fill: @edgeHighlight2;
+  }
+  &.selected .main {
+    stroke-width: 3px;
+    stroke-dasharray: 5,3;
+    -webkit-animation: edge-selected 1s linear infinite;
+    animation: edge-selected 1s linear infinite;
+  }
+}
+
+marker {
+  &.highlight1 { fill: @edgeHighlight1; }
+  &.highlight2 { fill: @edgeHighlight2; }
+}
+
+@-webkit-keyframes edge-selected {
+  0% { stroke-dashoffset: 8; }
+  100% { stroke-dashoffset: 0; }
+}
+@keyframes edge-selected {
+  0% { stroke-dashoffset: 8; }
+  100% { stroke-dashoffset: 0; }
+}

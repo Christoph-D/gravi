@@ -45,7 +45,7 @@ module.exports = (grunt) ->
               semicolons: false
     watch:
       gralog:
-        files: 'coffee/*.coffee',
+        files: [ 'coffee/*.coffee', 'graphs.less' ],
         tasks: ['gralog']
       tests:
         files: [ 'coffee/*.coffee', 'spec/*.coffee' ]
@@ -63,8 +63,12 @@ module.exports = (grunt) ->
             fs.writeSync(fd, files.join(",\n  "))
             fs.writeSync(fd, "\n];});")
             done()
+    less:
+      gralog:
+        src: "graphs.less"
+        dest: "graphs.css"
     clean:
-      gralog: [ "js/*.{coffee,js,js.map}" ]
+      gralog: [ "js/*.{coffee,js,js.map}", "graphs.css" ]
       tests: [ "jasmine/spec/*.js", "jasmine/spec/*.js.map" ]
 
   grunt.loadNpmTasks('grunt-contrib-coffee')
@@ -72,8 +76,9 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-requirejs')
   grunt.loadNpmTasks('grunt-file-creator')
   grunt.loadNpmTasks('grunt-contrib-clean')
+  grunt.loadNpmTasks('grunt-contrib-less')
   grunt.loadNpmTasks('grunt-wrap')
 
-  grunt.registerTask('gralog', ['wrap:gralog', 'coffee:gralog', 'requirejs:gralog'])
+  grunt.registerTask('gralog', ['wrap:gralog', 'coffee:gralog', 'less:gralog', 'requirejs:gralog'])
   grunt.registerTask('tests', ['coffee:tests', 'file-creator:tests'])
   grunt.registerTask('default', ['gralog', 'tests'])
