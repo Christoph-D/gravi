@@ -9,7 +9,8 @@
     "grunt-file-creator": "~0.1.2",
     "grunt-contrib-clean": "~0.6.0",
     "grunt-wrap": "~0.3.0",
-    "grunt-contrib-less": "~1.0.0"
+    "grunt-contrib-less": "~1.0.0",
+    "grunt-autoprefixer": "~2.2.0"
   },
   "author": {
     "name": "Christoph Dittmann"

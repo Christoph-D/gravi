@@ -63,6 +63,10 @@ module.exports = (grunt) ->
             fs.writeSync(fd, files.join(",\n  "))
             fs.writeSync(fd, "\n];});")
             done()
+    autoprefixer:
+      gralog:
+        src: "graphs.css"
+        dest: "graphs.css"
     less:
       gralog:
         src: "graphs.less"
@@ -78,7 +82,8 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-clean')
   grunt.loadNpmTasks('grunt-contrib-less')
   grunt.loadNpmTasks('grunt-wrap')
+  grunt.loadNpmTasks('grunt-autoprefixer')
 
-  grunt.registerTask('gralog', ['wrap:gralog', 'coffee:gralog', 'less:gralog', 'requirejs:gralog'])
+  grunt.registerTask('gralog', ['wrap:gralog', 'coffee:gralog', 'less', 'autoprefixer', 'requirejs:gralog'])
   grunt.registerTask('tests', ['coffee:tests', 'file-creator:tests'])
   grunt.registerTask('default', ['gralog', 'tests'])
