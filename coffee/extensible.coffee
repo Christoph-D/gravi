@@ -54,3 +54,20 @@ return class Extensible
     class newType extends this
     newType.mixin i for i in mixin
     newType
+
+  # Adds a property to the prototype.  This property replaces itself
+  # by a template instance when accessed for the first time.
+  @injectDynamicProperty: (propName, template) ->
+    # Here this refers to the extensible class itself.
+    Object.defineProperty this::, propName,
+      configurable: true
+      enumerable: true
+      get: ->
+        # Here this refers to an instance of the extensible class.
+        Object.defineProperty this, propName,
+          configurable: true
+          enumerable: true
+          writable: true
+          # Here this also refers to the instance.
+          value: new template(this)
+        this[propName]

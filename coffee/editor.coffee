@@ -113,18 +113,18 @@ class G.GraphEditor
     @selection = vertexOrEdge
     @selection?.modified = true
 
-  totalSteps: -> @g.totalSteps
+  totalSteps: -> @g.history.totalSteps
   currentStep: (step) ->
     if arguments.length == 0
-      return @g.currentStep
+      return @g.history.currentStep
     # If the current step changes, every vertex and edge could change
     # their highlight.
-    if step != @g.currentStep
+    if step != @g.history.currentStep
       for v in @g.getVertices()
         v.modified = true
       for e in @g.getEdges()
         e.modified = true
-    @g.currentStep = step
+    @g.history.currentStep = step
 
   onClickVertex = (d) ->
     d3.event.stopPropagation()
@@ -183,10 +183,10 @@ class G.GraphEditor
     @oldSelection = @selection
 
   drawCursor: ->
-    if @g.getCursor() == null
+    if @g.cursor.get() == null
       @svg.selectAll("#cursor").data([]).exit().remove()
       return
-    cursor = @svg.selectAll("#cursor").data([@g.getCursor()])
+    cursor = @svg.selectAll("#cursor").data([@g.cursor.get()])
     cursor.enter().append("circle").attr("id", "cursor")
       .attr("r", "5")
       # Make the cursor transparent to mouse clicks.

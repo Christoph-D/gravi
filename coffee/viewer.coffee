@@ -7,9 +7,9 @@ runAlgorithm = ->
   d3.select("#loading-message").text("")
   try
     state.alg.run(g)
-    state.slider.min(0).max(g.totalSteps - 1)
+    state.slider.min(0).max(state.editor.totalSteps() - 1)
       .value(0)
-      .axis(d3.svg.axis().ticks(g.totalSteps - 1))
+      .axis(d3.svg.axis().ticks(state.editor.totalSteps() - 1))
     d3.select("#slider").call(state.slider)
   catch error
     d3.select("#loading-message").text(error.message)

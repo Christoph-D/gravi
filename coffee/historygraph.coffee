@@ -3,8 +3,8 @@ TimedProperty = require "./timed"
 
 # Adds a global timeline to the graph.  Useful in combination with
 # TimedProperty on the vertices/edges.
-G.Graph.mixin class
-  constructor: ->
+G.Graph.injectDynamicProperty "history", class
+  constructor: (@graph) ->
     @totalSteps = 0
     @currentStep = 0
 
@@ -13,12 +13,12 @@ G.Graph.mixin class
     ++@currentStep
     @
 
-  clearHistory: ->
+  clear: ->
     # Reset all timed properties to their default value.
-    for v in @getVertices()
+    for v in @graph.getVertices()
       for key, value of v when value instanceof TimedProperty
         value.reset()
-    for e in @getEdges()
+    for e in @graph.getEdges()
       for key, value of e when value instanceof TimedProperty
         value.reset()
     @totalSteps = 0
@@ -27,14 +27,13 @@ G.Graph.mixin class
 
 # Marks a vertex in the graph.  Useful to show the state of
 # depth-first search and related algorithms.
-G.Graph.mixin class
-  constructor: -> @cursor = new TimedProperty null, ["x", "y"]
-
-  setCursor: (cursor) ->
-    @cursor.valueAtTime(@currentStep, cursor)
-    @
-
-  getCursor: -> @cursor.valueAtTime(@currentStep)
+G.Graph.injectDynamicProperty "cursor", class
+  constructor: (@graph) ->
+    @cursor = new TimedProperty null, ["x", "y"]
+  set: (cursor) ->
+    @cursor.valueAtTime(@graph.history.currentStep, cursor)
+  get: ->
+    @cursor.valueAtTime(@graph.history.currentStep)
 
 # Mixin to make a vertex or an edge highlightable.
 class HighlightableMixin
@@ -46,11 +45,11 @@ class HighlightableMixin
       c = "highlight#{highlightId}"
     else
       c = ""
-    @highlightClass.valueAtTime(@graph.currentStep, c)
+    @highlightClass.valueAtTime(@graph.history.currentStep, c)
     @
 
   getHighlightClass: ->
-    @highlightClass.valueAtTime(@graph.currentStep)
+    @highlightClass.valueAtTime(@graph.history.currentStep)
 
 G.Vertex.mixin HighlightableMixin
 G.Edge.mixin HighlightableMixin
