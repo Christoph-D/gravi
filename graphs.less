@@ -46,7 +46,7 @@
   &.highlight2 {
     fill: @vertexHighlight2;
   }
-  & .accepting {
+  .accepting {
     fill: none;
     stroke: #000000;
     stroke-width: 2px;
@@ -67,6 +67,12 @@
 .edge {
   stroke: @edgeColor;
   stroke-width: 1.5px;
+
+  text {
+    user-select: none;
+    cursor: default;
+    stroke: none;
+  }
 
   .click-target {
     stroke-opacity: 0;

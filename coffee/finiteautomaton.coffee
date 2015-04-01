@@ -24,24 +24,31 @@ class G.FiniteAutomaton extends G.SimpleGraph
     type: "string"
     defaultValue: ""
     drawEnter: (editor, svgGroup) ->
+      svgGroup.append("rect").attr("class", "letter")
+        .attr("fill", "#FFFFFF")
+        .attr("stroke", "none")
       svgGroup.append("text").attr("class", "letter")
         .attr("font-family", "sans-serif")
         .attr("font-size", "20")
         .attr("text-anchor", "middle")
         .attr("dominant-baseline", "central")
-        .style("stroke", "none")
     drawUpdate: (editor, svgGroup) ->
+      if @letter == ""
+        svgGroup.selectAll(".letter").attr("visibility", "hidden")
+        return
+      svgGroup.selectAll(".letter").attr("visibility", "visible")
       s = @graph.vertices[@tail]
       t = @graph.vertices[@head]
-      dx = t.x - s.x
-      dy = t.y - s.y
-      D = Math.sqrt (dx * dx + dy * dy)
-      dx /= D
-      dy /= D
       svgGroup.selectAll("text.letter")
         .text(@letter)
-        .attr("x", (s.x + t.x) / 2 + dy * 10)
-        .attr("y", (s.y + t.y) / 2 - dx * 10)
+        .attr("x", (s.x + t.x) / 2)
+        .attr("y", (s.y + t.y) / 2)
+      rectSize = 20
+      svgGroup.selectAll("rect.letter")
+        .attr("x", (s.x + t.x - rectSize) / 2)
+        .attr("y", (s.y + t.y - rectSize) / 2)
+        .attr("width", rectSize)
+        .attr("height", rectSize)
   constructor: (options = {}) ->
     options.VertexType = CustomProperty.add(options.VertexType ? G.Vertex, accepting)
     options.EdgeType = CustomProperty.add(options.EdgeType ? G.Edge, letter)
