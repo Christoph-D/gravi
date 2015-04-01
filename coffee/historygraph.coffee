@@ -16,11 +16,15 @@ G.Graph.injectDelayedProperty "history", class
   clear: ->
     # Reset all timed properties to their default value.
     for v in @graph.getVertices()
-      for key, value of v when value instanceof TimedProperty
-        value.reset()
+      for key, value of v
+        try
+          value.reset()
+        catch
     for e in @graph.getEdges()
-      for key, value of e when value instanceof TimedProperty
-        value.reset()
+      for key, value of e
+        try
+          value.reset()
+        catch
     @totalSteps = 0
     @currentStep = 0
     @
@@ -50,6 +54,8 @@ class Highlight
 
   getCSSClass: ->
     @highlightClass.valueAtTime(@parent.graph.history.currentStep)
+
+  reset: -> @highlightClass.reset()
 
 G.Vertex.injectDelayedProperty "highlight", Highlight
 G.Edge.injectDelayedProperty "highlight", Highlight
