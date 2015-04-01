@@ -13,7 +13,7 @@ G.Graph.injectDelayedProperty "history", class
     ++@currentStep
     @
 
-  clear: ->
+  reset: ->
     # Reset all timed properties to their default value.
     for v in @graph.getVertices()
       for key, value of v

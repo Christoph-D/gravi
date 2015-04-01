@@ -7,7 +7,7 @@ class G.AlgorithmRunner
     for p in @algorithm.requiredProperties ? []
       if p not in properties
         throw Error("Property \"#{p}\" required by this algorithm does not exist in this graph.")
-    graph.history.clear()
+    graph.history.reset()
     @algorithm.checkPreConditions?(graph)
     result = @algorithm(graph)
     graph.history.currentStep = 0
