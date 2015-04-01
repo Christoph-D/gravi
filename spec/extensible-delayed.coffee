@@ -47,7 +47,6 @@ define [ "gralog/extensible"
   describe "with derived classes", ->
     beforeEach ->
       class @E extends @D
-        onlyInE: -> "E"
       @E.injectDelayedProperty "delayedE", class
         constructor: (@parent) ->
 
@@ -56,10 +55,17 @@ define [ "gralog/extensible"
       expect(e.delayed.parent).toBe(e)
       expect(e.delayedE.parent).toBe(e)
 
+    it "it does not inadvertantly instantiate the property in the base class", ->
+      desc = Object.getOwnPropertyDescriptor(@D::, "delayed")
+      expect(desc.get).toBeDefined() # still a special property with a getter
+
+    it "it does not inadvertantly instantiate the property in the derived class", ->
+      desc = Object.getOwnPropertyDescriptor(@E::, "delayedE")
+      expect(desc.get).toBeDefined() # still a special property with a getter
+
   describe "with mixins", ->
     beforeEach ->
       class @E extends Extensible
-        onlyInE: -> "E"
       @E.injectDelayedProperty "delayedE", class
       @D.mixin @E
 
