@@ -12,7 +12,7 @@ run: (graph) ->
     v.highlight.set(1)
     graph.history.saveStep()
     v.highlight.set(2)
-    for e in v.outEdges(graph)
+    for e in v.outEdges()
       w = graph.vertices[e.head]
       e.highlight.set(1)
       dfsStep(w)

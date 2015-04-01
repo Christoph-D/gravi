@@ -14,7 +14,7 @@ G.Graph.injectDelayedProperty "history", class
     @
 
   reset: ->
-    # Reset all timed properties to their default value.
+    # Blindly reset all properties.
     for v in @graph.getVertices()
       for key, value of v
         try
