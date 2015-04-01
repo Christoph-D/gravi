@@ -60,11 +60,21 @@ class G.EdgeDrawable extends G.EdgeDrawableDefault
     t = @graph.vertices[@head]
     anchorS = s.edgeAnchor(t)
     anchorT = t.edgeAnchor(s, 10)
-    svgGroup.selectAll("line.main, line.click-target")
-      .attr("x1", anchorS.x)
-      .attr("y1", anchorS.y)
-      .attr("x2", anchorT.x)
-      .attr("y2", anchorT.y)
+    # Don't draw edges pointing in the inverse direction.
+    xSign = if s.x > t.x then -1 else 1
+    ySign = if s.y > t.y then -1 else 1
+    xSign2 = if anchorS.x >= anchorT.x then -1 else 1
+    ySign2 = if anchorS.y >= anchorT.y then -1 else 1
+    if xSign != xSign2 and ySign != ySign2
+      svgGroup.selectAll("line.main, line.click-target")
+        .attr("visibility", "hidden")
+    else
+      svgGroup.selectAll("line.main, line.click-target")
+        .attr("visibility", "visible")
+        .attr("x1", anchorS.x)
+        .attr("y1", anchorS.y)
+        .attr("x2", anchorT.x)
+        .attr("y2", anchorT.y)
     super
 
 class G.SimpleGraph extends G.Graph
