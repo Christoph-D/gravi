@@ -50,29 +50,35 @@ define [ "gralog/extensible"
       @E.injectDelayedProperty "delayedE", class
         constructor: (@parent) ->
 
-    it "it provides the property with the correct parent", ->
+    it "provides the property with the correct parent", ->
       e = new @E
       expect(e.delayed.parent).toBe(e)
       expect(e.delayedE.parent).toBe(e)
 
-    it "it does not inadvertantly instantiate the property in the base class", ->
+    it "does not inadvertantly instantiate the property in the base class", ->
       desc = Object.getOwnPropertyDescriptor(@D::, "delayed")
       expect(desc.get).toBeDefined() # still a special property with a getter
 
-    it "it does not inadvertantly instantiate the property in the derived class", ->
+    it "does not inadvertantly instantiate the property in the derived class", ->
       desc = Object.getOwnPropertyDescriptor(@E::, "delayedE")
       expect(desc.get).toBeDefined() # still a special property with a getter
 
   describe "with mixins", ->
     beforeEach ->
-      class @E extends Extensible
-      @E.injectDelayedProperty "delayedE", class
+      class @E
+      Extensible.injectDelayedProperty.call @E, "delayedE", class
+        constructor: (@parent) ->
       @D.mixin @E
 
-    it "it does not inadvertantly instantiate the property in the extended class", ->
+    it "provides all delayed properties", ->
+      d = new @D
+      expect(d.delayed.parent).toBe(d)
+      expect(d.delayedE.parent).toBe(d)
+
+    it "does not inadvertantly instantiate the property in the extended class", ->
       desc = Object.getOwnPropertyDescriptor(@D::, "delayed")
       expect(desc.get).toBeDefined() # still a special property with a getter
 
-    it "it does not inadvertantly instantiate the property in the mixin", ->
+    it "does not inadvertantly instantiate the property in the mixin", ->
       desc = Object.getOwnPropertyDescriptor(@E::, "delayedE")
       expect(desc.get).toBeDefined() # still a special property with a getter
