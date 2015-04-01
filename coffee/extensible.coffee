@@ -30,7 +30,7 @@ return class Extensible
     # Mix in the new properties.
     for key, value of mixin.prototype
       if key == "super" or key == "__mixinConstructor"
-        throw Error("Cannot mix in a property with the reserved name \"#{key}\".")
+        throw Error("Cannot mix in a property with the reserved name \"#{key}\"")
       this::[key] = value
 
     # Mix in the new static properties.  Exclude private properties.
@@ -56,9 +56,13 @@ return class Extensible
     newType
 
   # Adds a property to the prototype.  This property replaces itself
-  # by a template instance when accessed for the first time.
-  @injectDynamicProperty: (propName, template) ->
+  # by a fresh template instance when accessed for the first time.  In
+  # effect, this is a property whose initialization cost (i.e., "new
+  # template") you only pay if you access it.
+  @injectDelayedProperty: (propName, template) ->
     # Here this refers to the extensible class itself.
+    if propName of this::
+      throw Error("Property \"#{propName}\" already exists")
     Object.defineProperty this::, propName,
       configurable: true
       enumerable: true

@@ -65,10 +65,10 @@ define [ "gralog/extensible"
     it "works with static variables", ->
       expect(@D.newStatic).toEqual(7)
 
-  describe "with a destructive mixin", ->
+  describe "with an in-place mixin", ->
     beforeEach -> @D.mixin @M
 
-    it "allows mixins", ->
+    it "allows it", ->
       d = new @D
       expect(d.onlyInM()).toEqual("onlyInM")
       expect(d.overrideThis()).toEqual(["overrideThis", "overridden"])
@@ -94,7 +94,8 @@ define [ "gralog/extensible"
       it "constructors from multiple mixins with arguments", ->
         expect((new @D("a", "b")).foo).toEqual(["D", "Ma", "M2b"])
       it "methods", ->
-        expect((new @D).overrideThis()).toEqual(["overrideThis", "overridden", "overridden again"])
+        expect((new @D).overrideThis()).toEqual(
+          ["overrideThis", "overridden", "overridden again"])
       it "arguments", ->
         expect((new @D).arguments(1, 3)).toEqual(3)
       it "with clean @super", ->
@@ -112,7 +113,7 @@ define [ "gralog/extensible"
         __mixinConstructor: -> 0
       expect(=> @D.mixin S).toThrow()
 
-  describe "with a non-destructive mixin", ->
+  describe "with a non in-place mixin", ->
     beforeEach ->
       @E = @D.newTypeWithMixin @M
       @F = @E.newTypeWithMixin @M2
@@ -120,14 +121,16 @@ define [ "gralog/extensible"
       @e = new @E
       @f = new @F
 
-    it "allows non-destructive mixins", ->
+    it "allows it", ->
       expect(@e instanceof @D).toBe(true)
       expect(@e.onlyInM()).toEqual("onlyInM")
       expect(@e.overrideThis()).toEqual(["overrideThis", "overridden"])
       expect(@e.foo).toEqual(["D", "M"])
-    it "does not change from non-destructive mixins", ->
-      expect("onlyInM" of @d).toBe(false, "onlyInM should not exist after non-destructive mixin")
-      expect(@d.overrideThis()).toEqual("overrideThis", "The original class should not be changed by a non-destructive mixin")
+    it "does not change the original class", ->
+      expect("onlyInM" of @d).toBe(false,
+        "onlyInM should not exist after non in-place mixin")
+      expect(@d.overrideThis()).toEqual("overrideThis",
+        "The original class should not be changed by a non in-place mixin")
       expect(@d.foo).toEqual(["D"])
     it "chains constructors from multiple mixins", ->
       expect(@f.foo).toEqual(["D", "M", "M2"])

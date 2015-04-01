@@ -3,7 +3,7 @@ TimedProperty = require "./timed"
 
 # Adds a global timeline to the graph.  Useful in combination with
 # TimedProperty on the vertices/edges.
-G.Graph.injectDynamicProperty "history", class
+G.Graph.injectDelayedProperty "history", class
   constructor: (@graph) ->
     @totalSteps = 0
     @currentStep = 0
@@ -27,7 +27,7 @@ G.Graph.injectDynamicProperty "history", class
 
 # Marks a vertex in the graph.  Useful to show the state of
 # depth-first search and related algorithms.
-G.Graph.injectDynamicProperty "cursor", class
+G.Graph.injectDelayedProperty "cursor", class
   constructor: (@graph) ->
     @cursor = new TimedProperty null, ["x", "y"]
   set: (cursor) ->
