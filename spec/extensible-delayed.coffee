@@ -8,12 +8,19 @@ define [ "gralog/extensible"
 
   it "has the property in its prototype", ->
     expect(Object.hasOwnProperty.call(@D::, "delayed")).toBe(true)
+
+  it "does not allow access to the property in its prototype", ->
+    expect(=> @D.prototype.delayed).toThrow(
+      new Error("This property is only accessible from an instance"))
+
   it "has the property with a getter", ->
     desc = Object.getOwnPropertyDescriptor(@D::, "delayed")
     expect(desc.get).toBeDefined()
+
   it "does not allow overriding of existing properties", ->
     expect(=> @D.injectDelayedProperty "onlyInD", ->).toThrow(
       new Error("Property \"onlyInD\" already exists"))
+
   it "does not have the property on fresh instances", ->
     expect(Object.hasOwnProperty.call(new @D, "delayed")).toBe(false)
 
@@ -24,12 +31,42 @@ define [ "gralog/extensible"
 
     it "gains the property", ->
       expect(Object.hasOwnProperty.call(@d, "delayed")).toBe(true)
+
     it "gains a plain property without getter/setter", ->
       desc = Object.getOwnPropertyDescriptor(@d, "delayed")
       expect(desc.get).not.toBeDefined()
       expect(desc.set).not.toBeDefined()
+
     it "initializes the property", ->
       expect(@d.delayed.parent).toBe(@d)
       expect(@d.delayed.p).toEqual("P")
+
     it "recreates the property on new instances", ->
       expect((new @D).delayed).not.toBe(@d.delayed)
+
+  describe "with derived classes", ->
+    beforeEach ->
+      class @E extends @D
+        onlyInE: -> "E"
+      @E.injectDelayedProperty "delayedE", class
+        constructor: (@parent) ->
+
+    it "it provides the property with the correct parent", ->
+      e = new @E
+      expect(e.delayed.parent).toBe(e)
+      expect(e.delayedE.parent).toBe(e)
+
+  describe "with mixins", ->
+    beforeEach ->
+      class @E extends Extensible
+        onlyInE: -> "E"
+      @E.injectDelayedProperty "delayedE", class
+      @D.mixin @E
+
+    it "it does not inadvertantly instantiate the property in the extended class", ->
+      desc = Object.getOwnPropertyDescriptor(@D::, "delayed")
+      expect(desc.get).toBeDefined() # still a special property with a getter
+
+    it "it does not inadvertantly instantiate the property in the mixin", ->
+      desc = Object.getOwnPropertyDescriptor(@E::, "delayedE")
+      expect(desc.get).toBeDefined() # still a special property with a getter
