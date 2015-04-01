@@ -9,19 +9,19 @@ run: (graph) ->
       graph.history.saveStep()
       return
     visited[v.id] = true
-    v.highlight(1)
+    v.highlight.set(1)
     graph.history.saveStep()
-    v.highlight(2)
+    v.highlight.set(2)
     for e in v.outEdges(graph)
       w = graph.vertices[e.head]
-      e.highlight(1)
+      e.highlight.set(1)
       dfsStep(w)
       graph.cursor.set(v)
-      e.highlight(2)
+      e.highlight.set(2)
       graph.history.saveStep()
 
   initialVertex = graph.vertices[0]
-  initialVertex.highlight(1)
+  initialVertex.highlight.set(1)
   graph.cursor.set(initialVertex)
   dfsStep(initialVertex)
 }

@@ -35,23 +35,22 @@ G.Graph.injectDelayedProperty "cursor", class
   get: ->
     @cursor.valueAtTime(@graph.history.currentStep)
 
-# Mixin to make a vertex or an edge highlightable.
-class HighlightableMixin
-  constructor: ->
+# Makes a vertex or an edge highlightable.
+class Highlight
+  constructor: (@parent) ->
     @highlightClass = new TimedProperty ""
 
-  highlight: (highlightId) ->
+  set: (highlightId) ->
     if highlightId?
       c = "highlight#{highlightId}"
     else
       c = ""
-    @highlightClass.valueAtTime(@graph.history.currentStep, c)
+    @highlightClass.valueAtTime(@parent.graph.history.currentStep, c)
     @
 
-  getHighlightClass: ->
-    @highlightClass.valueAtTime(@graph.history.currentStep)
+  getCSSClass: ->
+    @highlightClass.valueAtTime(@parent.graph.history.currentStep)
 
-G.Vertex.mixin HighlightableMixin
-G.Edge.mixin HighlightableMixin
-
+G.Vertex.injectDelayedProperty "highlight", Highlight
+G.Edge.injectDelayedProperty "highlight", Highlight
 return G

@@ -12,7 +12,7 @@ G.circleEdgeAnchor = (s, t, distance) ->
 
 # Computes and sets the CSS class of a vertex or an edge.
 setCSSClass = (editor, svgGroup) ->
-  c = [ @defaultCSSClass, @getHighlightClass() ]
+  c = [ @defaultCSSClass, @highlight.getCSSClass() ]
   if editor.selection == this
     c.push("selected")
   # We cannot cache the CSS class because d3 reuses <g> elements.
