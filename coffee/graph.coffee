@@ -21,8 +21,8 @@ class Vertex extends Extensible
   inEdges: -> @graph.edges[e] for e in @inE
 
   # Returns a list of Vertex objects.
-  outNeighbors: -> @graph.vertices[e.head] for e in @outE
-  inNeighbors: -> @graph.vertices[e.tail] for e in @inE
+  outNeighbors: -> @graph.vertices[e.head] for e in @outEdges()
+  inNeighbors: -> @graph.vertices[e.tail] for e in @inEdges()
 
   # Marks all incident edges as modified.  Useful if the vertex shape
   # changes and the edges need to be redrawn.

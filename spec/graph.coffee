@@ -44,6 +44,18 @@ define [ "gralog/graph"
           result.pass = true
           return result
 
+  describe "basic functions", ->
+    g = {}
+    beforeEach ->
+      g = new G.Graph numVertices: 4, edgeList: [[0,1], [1,2]]
+
+    it "can access vertices", -> expect(g.vertices.length).toBe(4)
+    it "can access edges", -> expect(g.edges.length).toBe(2)
+    it "can access out-edges", -> expect(g.vertices[1].outEdges()).toEqual([g.edges[1]])
+    it "can access in-edges", -> expect(g.vertices[1].inEdges()).toEqual([g.edges[0]])
+    it "can access out-neighbors", -> expect(g.vertices[1].outNeighbors()).toEqual([g.vertices[2]])
+    it "can access in-neighbors", -> expect(g.vertices[1].inNeighbors()).toEqual([g.vertices[0]])
+
   describe "with the JSON converter", ->
     g = {}
     beforeEach ->
