@@ -49,12 +49,47 @@ define [ "gralog/graph"
     beforeEach ->
       g = new G.Graph numVertices: 4, edgeList: [[0,1], [1,2]]
 
-    it "can access vertices", -> expect(g.vertices.length).toBe(4)
-    it "can access edges", -> expect(g.edges.length).toBe(2)
+    edgeFilter = (e) -> e.activeE
+    vertexFilter = (v) -> v.activeV
+
+    it "can access vertices", ->
+      expect(g.vertices.length).toBe(4)
+      expect(g.getVertices().length).toBe(4)
+    it "can access edges", ->
+      expect(g.edges.length).toBe(2)
+      expect(g.getEdges().length).toBe(2)
+    it "can filter vertices", ->
+      expect(g.getVertices(vertexFilter).length).toBe(0)
+      g.vertices[1].activeV = true
+      expect(g.getVertices(vertexFilter).length).toBe(1)
+    it "can filter edges", ->
+      expect(g.getEdges(edgeFilter).length).toBe(0)
+      g.edges[1].activeE = true
+      expect(g.getEdges(edgeFilter).length).toBe(1)
     it "can access out-edges", -> expect(g.vertices[1].outEdges()).toEqual([g.edges[1]])
     it "can access in-edges", -> expect(g.vertices[1].inEdges()).toEqual([g.edges[0]])
+    it "can filter out-edges", ->
+      expect(g.vertices[1].outEdges(edgeFilter)).toEqual([])
+      g.edges[1].activeE = true
+      expect(g.vertices[1].outEdges(edgeFilter)).toEqual([g.edges[1]])
+    it "can filter in-edges", ->
+      expect(g.vertices[1].inEdges(edgeFilter)).toEqual([])
+      g.edges[0].activeE = true
+      expect(g.vertices[1].inEdges(edgeFilter)).toEqual([g.edges[0]])
     it "can access out-neighbors", -> expect(g.vertices[1].outNeighbors()).toEqual([g.vertices[2]])
     it "can access in-neighbors", -> expect(g.vertices[1].inNeighbors()).toEqual([g.vertices[0]])
+    it "can filter out-neighbors", ->
+      expect(g.vertices[1].outNeighbors(vertexFilter, edgeFilter)).toEqual([])
+      g.edges[1].activeE = true
+      expect(g.vertices[1].outNeighbors(vertexFilter, edgeFilter)).toEqual([])
+      g.vertices[2].activeV = true
+      expect(g.vertices[1].outNeighbors(vertexFilter, edgeFilter)).toEqual([g.vertices[2]])
+    it "can filter in-neighbors", ->
+      expect(g.vertices[1].inNeighbors(vertexFilter, edgeFilter)).toEqual([])
+      g.edges[0].activeE = true
+      expect(g.vertices[1].inNeighbors(vertexFilter, edgeFilter)).toEqual([])
+      g.vertices[0].activeV = true
+      expect(g.vertices[1].inNeighbors(vertexFilter, edgeFilter)).toEqual([g.vertices[0]])
 
   describe "with the JSON converter", ->
     g = {}

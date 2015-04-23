@@ -17,12 +17,28 @@ class Vertex extends Extensible
 
   # @outE contains only the ids of outgoing edges.  @outEdges()
   # returns the corresponding list of Edge objects.
-  outEdges: -> @graph.edges[e] for e in @outE
-  inEdges: -> @graph.edges[e] for e in @inE
+  outEdges: (edgeFilter) ->
+    edges = (@graph.edges[e] for e in @outE)
+    if edgeFilter?
+      edges = (e for e in edges when edgeFilter(e))
+    edges
+  inEdges: (edgeFilter) ->
+    edges = (@graph.edges[e] for e in @inE)
+    if edgeFilter?
+      edges = (e for e in edges when edgeFilter(e))
+    edges
 
   # Returns a list of Vertex objects.
-  outNeighbors: -> @graph.vertices[e.head] for e in @outEdges()
-  inNeighbors: -> @graph.vertices[e.tail] for e in @inEdges()
+  outNeighbors: (vertexFilter, edgeFilter) ->
+    vertices = (@graph.vertices[e.head] for e in @outEdges(edgeFilter))
+    if vertexFilter?
+      vertices = (v for v in vertices when vertexFilter(v))
+    vertices
+  inNeighbors: (vertexFilter, edgeFilter) ->
+    vertices = (@graph.vertices[e.tail] for e in @inEdges(edgeFilter))
+    if vertexFilter?
+      vertices = (v for v in vertices when vertexFilter(v))
+    vertices
 
   # Marks all incident edges as modified.  Useful if the vertex shape
   # changes and the edges need to be redrawn.
@@ -153,7 +169,15 @@ class G.Graph extends Extensible
       return true if e.head == f.head and e.tail == f.tail
     return false
 
-  getVertices: -> v for v in @vertices when v != null
-  getEdges: -> e for e in @edges when e != null
+  getVertices: (vertexFilter) ->
+    if vertexFilter?
+      v for v in @vertices when v != null and vertexFilter(v)
+    else
+      v for v in @vertices when v != null
+  getEdges: (edgeFilter) ->
+    if edgeFilter?
+      e for e in @edges when e != null and edgeFilter(e)
+    else
+      e for e in @edges when e != null
 
 return G
