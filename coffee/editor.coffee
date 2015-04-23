@@ -240,5 +240,5 @@ class G.GraphEditor
     if @times.length > 40
       @times.shift()
     median = @times.slice().sort()[Math.floor(@times.length / 2)]
-    d3.select("#performance").text("#{median} ms")
+    #d3.select("#performance").text("#{median} ms")
     @
