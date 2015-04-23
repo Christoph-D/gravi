@@ -1,32 +1,45 @@
 G = require "./graph"
 require "./paritygame"
 
-minPriority = (graph) ->
+# Based on Jurdziński, 2006:
+# "A deterministic subexponential algorithm for solving parity games"
+#
+# This is an implementation of the naive recursive algorithm described
+# in this paper.
+#
+# It only works if there is no node with out-degree 0.
+
+notRemoved = (v) -> v.removed != true
+
+module.exports.minPriority = minPriority = (graph) ->
   min = null
-  for v in graph.getVertices() when v.removed != true
-    min ?= Math.min(min, v.priority)
+  for v in graph.getVertices(notRemoved)
+    if min?
+      min = Math.min(min, v.priority)
+    else
+      min = v.priority
   min
 
 verticesOfPriority = (graph, priority) ->
-  v for v in graph.getVertices() when v.priority == priority and v.removed != true
+  v for v in graph.getVertices(notRemoved) when v.priority == priority
 
 allNeighborsVisited = (graph, v, visited) ->
-  for w in v.outNeighbors() when w.removed != true
+  for w in v.outNeighbors(notRemoved)
     if not visited[w.id]
       return false
   return true
 
-module.exports.attractor = (graph, player0, subset) ->
+module.exports.attractor = attractor = (graph, player0, subset) ->
   visited = {}
   for u in subset
     visited[u.id] = true
   for u in subset
     addition = []
-    for v in u.inNeighbors() when v.removed != true
+    for v in u.inNeighbors(notRemoved)
       if visited[v.id]
         continue
       visited[v.id] = true
-      if v.player0 == player0 or allNeighborsVisited graph, v, visited
+      if v.player0 == player0 or allNeighborsVisited(graph, v, visited)
         addition.push(v)
     subset = subset.concat(addition)
   return subset
@@ -43,34 +56,36 @@ unmarkRemoved = (graph, vertices) ->
     delete v.removed
   totalRemoved -= vertices.length
 
-# TODO: test this, fix this
+# Assumes no dead-ends.
 parityWinRecursive = (graph) ->
   if totalRemoved == graph.vertices.length
     return [[],[]]
-  d = minPriority graph
+  d = minPriority(graph)
   A = verticesOfPriority(graph, d)
   i = d % 2
   j = (d + 1) % 2
 
-  B = attractor(i == 0, A)
-  markRemoved graph, B
-  winningRegions = parityWin graph
-  unmarkRemoved graph, B
+  B = attractor(graph, (i == 0), A)
+  markRemoved(graph, B)
+  winningRegions = parityWinRecursive(graph)
+  unmarkRemoved(graph, B)
 
   if winningRegions[j].length == 0
-    winningRegions[i] = (v for v in graph.vertices when v.removed != true)
+    winningRegions[i] = (v for v in graph.getVertices(notRemoved))
   else
-    B = attractor(i == 1, winningRegions[j])
-    markRemoved graph, B
-    winningRegions = parityWin graph
-    unmarkRemoved graph, B
+    B = attractor(graph, (i == 1), winningRegions[j])
+    console.log("-> " + B.length)
+    markRemoved(graph, B)
+    winningRegions = parityWinRecursive(graph)
+    unmarkRemoved(graph, B)
 
     winningRegions[j] = []
-    for v in graph.vertices when v.removed != true
+    for v in graph.getVertices(notRemoved)
       if winningRegions[i].indexOf(v) == -1
         winningRegions[j].push(v)
   return winningRegions
 
 module.exports.parityWin = parityWin = (graph) ->
+  graph.compressIds() # needed for totalRemoved to make sense
   totalRemoved = 0
-  parityWinRecursive graph
+  parityWinRecursive(graph)
