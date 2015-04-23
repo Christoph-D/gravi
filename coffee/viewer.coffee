@@ -1,5 +1,15 @@
 G = require "./gralog"
 examples = require "./examples"
+solver = require "./parityrecursive"
+
+prepareGraph = (g) ->
+  g.event.listen('postAddEdge', runAlgorithm)
+  g.event.listen('postAddVertex', runAlgorithm)
+  g.event.listen('postRemoveEdge', runAlgorithm)
+  g.event.listen('postRemoveVertex', runAlgorithm)
+  g.VertexType::onChangePriority = runAlgorithm
+  g.VertexType::onChangePlayer0 = runAlgorithm
+  g
 
 state = {}
 runAlgorithm = ->
@@ -28,7 +38,7 @@ runAlgorithm = ->
 generateGraph = ->
   stopAnimation()
   #state.g = graphFromJSON(s)
-  state.g = G.generateRandomGraph(10, 0.2)
+  state.g = prepareGraph(G.generateRandomGraph(10, 0.2))
   #state.g = generatePath(10)
   if state.editor?
     state.editor.setGraph(state.g)
@@ -48,7 +58,7 @@ loadGraph = (json) ->
     json = document.getElementById("dump").value
   d3.select("#loading-message").text("")
   try
-    state.g = G.graphFromJSON(json)
+    state.g = prepareGraph(G.graphFromJSON(json))
     state.g.compressIds()
     state.editor.setGraph(state.g)
     runAlgorithm()
@@ -76,7 +86,8 @@ animateAlgorithm = ->
         state.editor.draw()
         return ""
 
-state.alg = new G.AlgorithmRunner(G.dfs.run)
+#state.alg = new G.AlgorithmRunner(G.dfs.run)
+state.alg = new G.AlgorithmRunner(solver.parityWin)
 
 d3.select("#run").on("click", animateAlgorithm)
 d3.select("#generate").on("click", generateGraph)

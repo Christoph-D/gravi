@@ -1,5 +1,6 @@
 Extensible = require "./extensible"
 CustomProperty = require "./customproperty"
+Event = require "./event"
 
 G = {}
 class Vertex extends Extensible
@@ -72,6 +73,7 @@ class G.Graph extends Extensible
   constructor: (options = {}) ->
     @VertexType = options.VertexType ? Vertex
     @EdgeType = options.EdgeType ? Edge
+    @event = new Event(this)
     @vertices = []
     if options.numVertices? and options.numVertices > 0
       @addVertex new @VertexType for i in [1..options.numVertices]
@@ -80,20 +82,24 @@ class G.Graph extends Extensible
     super
 
   addVertex: (v) ->
+    @event.fire('preAddVertex')
     v.id = @vertices.length
     v.graph = this
     @vertices.push(v)
+    @event.fire('postAddVertex')
     @
 
   removeVertex: (v) ->
     for w, i in @vertices
       continue unless w?
       if v == w
+        @event.fire('preRemoveVertex')
         for e in v.inEdges()
           @removeEdge(e)
         for e in v.outEdges()
           @removeEdge(e)
         @vertices[i] = null
+        @event.fire('postRemoveVertex')
         return @
     @
 
@@ -116,11 +122,13 @@ class G.Graph extends Extensible
     e = @parseEdge(tail, head)
     if @hasEdge e
       return @ # no duplicate edges
+    @event.fire('preAddEdge')
     e.id = @edges.length
     e.graph = this
     @vertices[e.tail].addOutEdge e.id
     @vertices[e.head].addInEdge e.id
     @edges.push e
+    @event.fire('postAddEdge')
     @
 
   # Accepts a single Edge object or tail, head.  Ignores the edge id.
@@ -129,12 +137,14 @@ class G.Graph extends Extensible
     for f, i in @edges
       continue unless f?
       if e.head == f.head and e.tail == f.tail
+        @event.fire('preRemoveEdge')
         @vertices[e.tail].removeEdgeId i
         @vertices[e.head].removeEdgeId i
         # We set the entry to null in order to preserve the indices in
         # @edges.  Removing/adding lots of edges will thus clutter
         # @edges with null entries.  See @compressIds().
         @edges[i] = null
+        @event.fire('postRemoveEdge')
         return @
     @
 
