@@ -11,6 +11,8 @@ require "./paritygame"
 
 notRemoved = (v) -> v.removed != true
 
+module.exports.even = even = (priority) -> priority % 2 == 0
+
 module.exports.minPriority = minPriority = (graph) ->
   min = null
   for v in graph.getVertices(notRemoved)
@@ -65,8 +67,8 @@ parityWinRecursive = (graph) ->
     return [[],[]]
   d = minPriority(graph)
   A = verticesOfPriority(graph, d)
-  i = d % 2
-  j = (d + 1) % 2
+  i = if even(d) then 0 else 1
+  j = if even(d) then 1 else 0
 
   B = attractor(graph, (i == 0), A)
   markRemoved(graph, B)
@@ -87,13 +89,36 @@ parityWinRecursive = (graph) ->
         winningRegions[j].push(v)
   return winningRegions
 
+# Removes dead-ends and their attractors.
+simplifyDeadEnds = (graph) ->
+  player0DeadEnds = (v for v in graph.getVertices() when v.player0 == true and v.outNeighbors().length == 0)
+  W1 = attractor(graph, false, player0DeadEnds)
+  player1DeadEnds = (v for v in graph.getVertices() when v.player0 == false and v.outNeighbors().length == 0)
+  W0 = attractor(graph, true, player1DeadEnds)
+  markRemoved(graph, W0)
+  markRemoved(graph, W1)
+  return [W0, W1]
+
 module.exports.parityWin = parityWin = (graph) ->
-  graph.compressIds() # needed for totalRemoved to make sense
+  # We want totalRemoved == graph.vertices.length to mean "all
+  # vertices are removed".  For this, we cannot have null entries in
+  # the vertex list.
+  graph.compressIds()
+  # Make sure no vertices are marked "removed" yet.
+  delete v.removed for v in graph.getVertices()
   totalRemoved = 0
+
+  # Compute and remove the obvious winning regions caused by
+  # dead-ends.
+  simpleW = simplifyDeadEnds(graph)
+  # Compute the winning regions of the remaining graph.
   W = parityWinRecursive(graph)
-  for v in W[0]
-    v.highlight.set(2)
-  for v in W[1]
-    v.highlight.set(1)
+  W[0] = W[0].concat(simpleW[0])
+  W[1] = W[1].concat(simpleW[1])
+
+  # Highlight the winning regions.
+  v.highlight.set(2) for v in W[0]
+  v.highlight.set(1) for v in W[1]
   graph.history.saveStep()
+
   W

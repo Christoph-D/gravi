@@ -9,7 +9,14 @@ define [ "gralog/gralog", "gralog/parityrecursive"
   # Convert from a vertex objects to vertex ids.
   ids = (vertices) -> v.id for v in vertices
 
-  it "computes min priority", ->
+  it "computes even", ->
+    expect(solver.even(0)).toBe(true)
+    expect(solver.even(1)).toBe(false)
+    expect(solver.even(2)).toBe(true)
+    expect(solver.even(-1)).toBe(false)
+    expect(solver.even(-2)).toBe(true)
+
+  it "computes the minimum priority", ->
     v.priority = v.id for v in g.vertices
     expect(solver.minPriority(g)).toEqual(0)
     v.priority = v.id + 1 for v in g.vertices
