@@ -90,4 +90,10 @@ parityWinRecursive = (graph) ->
 module.exports.parityWin = parityWin = (graph) ->
   graph.compressIds() # needed for totalRemoved to make sense
   totalRemoved = 0
-  parityWinRecursive(graph)
+  W = parityWinRecursive(graph)
+  for v in W[0]
+    v.highlight.set(2)
+  for v in W[1]
+    v.highlight.set(1)
+  graph.history.saveStep()
+  W
