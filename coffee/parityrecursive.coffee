@@ -33,14 +33,17 @@ module.exports.attractor = attractor = (graph, player0, subset) ->
   visited = {}
   for u in subset
     visited[u.id] = true
-  for u in subset
+  loop
     addition = []
-    for v in u.inNeighbors(notRemoved)
-      if visited[v.id]
-        continue
-      visited[v.id] = true
-      if v.player0 == player0 or allNeighborsVisited(graph, v, visited)
-        addition.push(v)
+    for u in subset
+      for v in u.inNeighbors(notRemoved)
+        if visited[v.id]
+          continue
+        if v.player0 == player0 or allNeighborsVisited(graph, v, visited)
+          visited[v.id] = true
+          addition.push(v)
+    if addition.length == 0
+      break
     subset = subset.concat(addition)
   return subset
 
@@ -74,7 +77,6 @@ parityWinRecursive = (graph) ->
     winningRegions[i] = (v for v in graph.getVertices(notRemoved))
   else
     B = attractor(graph, (i == 1), winningRegions[j])
-    console.log("-> " + B.length)
     markRemoved(graph, B)
     winningRegions = parityWinRecursive(graph)
     unmarkRemoved(graph, B)

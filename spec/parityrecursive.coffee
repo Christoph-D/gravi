@@ -20,6 +20,9 @@ define [ "gralog/gralog", "gralog/parityrecursive"
   it "computes attractors", ->
     g.vertices[3].player0 = true
     expect(ids solver.attractor(g, false, (V [0]))).toEqual([0])
+  it "computes longer attractors", ->
+    g = new G.ParityGame numVertices: 5, edgeList: [[0,1], [1,2], [2,3], [3,4]]
+    expect(ids solver.attractor(g, false, (V [4]))).toEqual([4,3,2,1,0])
 
   it "solves parity games", ->
     g = new G.ParityGame numVertices: 4, edgeList: [[0,1], [1,0], [0,2], [2,3], [3,2]]
