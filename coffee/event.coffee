@@ -2,36 +2,36 @@ return makeListenable: (Type) ->
   if Type::eventFire?
     return Type
   class ListenableType extends Type
-    constructor: (@parent) ->
-      @listeners = {}
-      @listenersPerm = {}
+    constructor: ->
+      @_listeners = {}
+      @_listenersPerm = {}
       super
 
-    eventStaticListenOnce: (event, listener) ->
-      if @listeners[event]?
-        @listeners[event].push(listener)
+    eventListenOnce: (event, listener) ->
+      if @_listeners[event]?
+        @_listeners[event].push(listener)
       else
-        @listeners[event] = [listener]
+        @_listeners[event] = [listener]
       @
 
     eventListen: (event, listener) ->
-      if @listenersPerm[event]?
-        @listenersPerm[event].push(listener)
+      if @_listenersPerm[event]?
+        @_listenersPerm[event].push(listener)
       else
-        @listenersPerm[event] = [listener]
+        @_listenersPerm[event] = [listener]
       @
 
     eventRemovePermanentListeners: (event) ->
-      delete @listeners[event]
+      delete @_listeners[event]
       @
 
     eventFire: (event) ->
       args = Array.prototype.slice.call(arguments, 1)
-      if @listeners[event]?
-        for f in @listeners[event]
-          f.apply(@parent, args)
-        delete @listeners[event]
-      if @listenersPerm[event]?
-        for f in @listenersPerm[event]
-          f.apply(@parent, args)
+      if @_listeners[event]?
+        for f in @_listeners[event]
+          f.apply(this, args)
+        delete @_listeners[event]
+      if @_listenersPerm[event]?
+        for f in @_listenersPerm[event]
+          f.apply(this, args)
       @
