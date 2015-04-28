@@ -68,7 +68,7 @@ return add: (Type, descriptor) ->
               excepted \"#{descriptor.type}\"")
           @_properties[name] = value
           @modified = true
-          @[onChange]?()
+          @eventFire?(onChange)
           value
       if v?[name]?
         if descriptor.type == "array"

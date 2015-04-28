@@ -65,6 +65,8 @@ class VertexDrawableParity extends G.VertexDrawableDefault
       priority.attr("font-size", "20")
 
 class G.ParityGame extends G.Graph
+  name: "ParityGame"
+
   player0 =
     name: "player0"
     type: "boolean"

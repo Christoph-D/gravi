@@ -2,13 +2,17 @@ G = require "./gralog"
 examples = require "./examples"
 solver = require "./parityrecursive"
 
+addVertexListener = (v) ->
+  v.eventListen("onChangePlayer0", runAlgorithm)
+  v.eventListen("onChangePriority", runAlgorithm)
+
 prepareGraph = (g) ->
-  g.event.listen('postAddEdge', runAlgorithm)
-  g.event.listen('postAddVertex', runAlgorithm)
-  g.event.listen('postRemoveEdge', runAlgorithm)
-  g.event.listen('postRemoveVertex', runAlgorithm)
-  g.VertexType::onChangePriority = runAlgorithm
-  g.VertexType::onChangePlayer0 = runAlgorithm
+  g.eventListen("postAddEdge", runAlgorithm)
+  g.eventListen("postAddVertex", runAlgorithm)
+  g.eventListen("postAddVertex", addVertexListener)
+  addVertexListener v for v in g.vertices
+  g.eventListen("postRemoveEdge", runAlgorithm)
+  g.eventListen("postRemoveVertex", runAlgorithm)
   g
 
 state = {}

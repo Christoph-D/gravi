@@ -13,7 +13,7 @@ G.vertexOrEdgeToJSON = (v) ->
   return w
 
 G.Graph::toJSON = ->
-  g = type: @constructor.name, version: @version, vertices: [], edges: []
+  g = type: @name, version: @version, vertices: [], edges: []
   for v in @vertices
     g.vertices.push(G.vertexOrEdgeToJSON v)
   for e in @edges

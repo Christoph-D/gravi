@@ -3,6 +3,8 @@ CustomProperty = require "./customproperty"
 require "./simplegraph"
 
 class G.FiniteAutomaton extends G.SimpleGraph
+  name: "FiniteAutomaton"
+
   accepting =
     name: "accepting"
     type: "boolean"

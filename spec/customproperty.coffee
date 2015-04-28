@@ -28,10 +28,10 @@ define [ "gralog/graph", "gralog/customproperty"
         expect(p for own p of @v).toContain("foo")
       it "internal property list is not enumerable", ->
         expect(p for own p of @v).not.toContain("_properties")
-      it "calls the onChange function exactly once per change", ->
+      it "fires the onChange event exactly once per change", ->
         a = f: ->
         spyOn(a, 'f')
-        @v.onChangeFoo = a.f
+        @v.eventListen("onChangeFoo", a.f)
         @v.foo = "bar"
         expect(a.f.calls.count()).toEqual(1)
 

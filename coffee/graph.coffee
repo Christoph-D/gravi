@@ -3,7 +3,7 @@ CustomProperty = require "./customproperty"
 Event = require "./event"
 
 G = {}
-class Vertex extends Extensible
+Vertex = Event.makeListenable class extends Extensible
   addOutEdge: (e) ->
     @outE.push(e)
     @
@@ -60,8 +60,9 @@ Vertex = CustomProperty.add(Vertex, name: "y", type: "number", defaultValue: 0, 
 Vertex::onChangeLabel = -> @onRedrawNeeded?()
 G.Vertex = Vertex
 
-class Edge extends Extensible
+Edge = Event.makeListenable class extends Extensible
   # No methods here.  Everything is in custom properties.
+  @
 
 Edge = CustomProperty.add(Edge, name: "graph", type: "object", editable: false, shouldBeSaved: false)
 Edge = CustomProperty.add(Edge, name: "id", type: "number", editable: false, shouldBeSaved: false)
@@ -69,11 +70,12 @@ Edge = CustomProperty.add(Edge, name: "head", type: "number", editable: false)
 Edge = CustomProperty.add(Edge, name: "tail", type: "number", editable: false)
 G.Edge = Edge
 
-class G.Graph extends Extensible
+G.Graph = Event.makeListenable class extends Extensible
+  name: "Graph"
+
   constructor: (options = {}) ->
     @VertexType = options.VertexType ? Vertex
     @EdgeType = options.EdgeType ? Edge
-    @event = new Event(this)
     @vertices = []
     if options.numVertices? and options.numVertices > 0
       @addVertex new @VertexType for i in [1..options.numVertices]
@@ -82,24 +84,22 @@ class G.Graph extends Extensible
     super
 
   addVertex: (v) ->
-    @event.fire('preAddVertex')
     v.id = @vertices.length
     v.graph = this
     @vertices.push(v)
-    @event.fire('postAddVertex')
+    @eventFire('postAddVertex', v)
     @
 
   removeVertex: (v) ->
     for w, i in @vertices
       continue unless w?
       if v == w
-        @event.fire('preRemoveVertex')
         for e in v.inEdges()
           @removeEdge(e)
         for e in v.outEdges()
           @removeEdge(e)
         @vertices[i] = null
-        @event.fire('postRemoveVertex')
+        @eventFire('postRemoveVertex')
         return @
     @
 
@@ -122,13 +122,12 @@ class G.Graph extends Extensible
     e = @parseEdge(tail, head)
     if @hasEdge e
       return @ # no duplicate edges
-    @event.fire('preAddEdge')
     e.id = @edges.length
     e.graph = this
     @vertices[e.tail].addOutEdge e.id
     @vertices[e.head].addInEdge e.id
     @edges.push e
-    @event.fire('postAddEdge')
+    @eventFire('postAddEdge', e)
     @
 
   # Accepts a single Edge object or tail, head.  Ignores the edge id.
@@ -137,14 +136,13 @@ class G.Graph extends Extensible
     for f, i in @edges
       continue unless f?
       if e.head == f.head and e.tail == f.tail
-        @event.fire('preRemoveEdge')
         @vertices[e.tail].removeEdgeId i
         @vertices[e.head].removeEdgeId i
         # We set the entry to null in order to preserve the indices in
         # @edges.  Removing/adding lots of edges will thus clutter
         # @edges with null entries.  See @compressIds().
         @edges[i] = null
-        @event.fire('postRemoveEdge')
+        @eventFire('postRemoveEdge', f)
         return @
     @
 

@@ -1,32 +1,37 @@
-return class Event
-  constructor: (@parent) ->
-    @listeners = {}
-    @listenersPerm = {}
+return makeListenable: (Type) ->
+  if Type::eventFire?
+    return Type
+  class ListenableType extends Type
+    constructor: (@parent) ->
+      @listeners = {}
+      @listenersPerm = {}
+      super
 
-  listenOnce: (event, listener) ->
-    if @listeners[event]?
-      @listeners[event].push(listener)
-    else
-      @listeners[event] = [listener]
-    @
+    eventStaticListenOnce: (event, listener) ->
+      if @listeners[event]?
+        @listeners[event].push(listener)
+      else
+        @listeners[event] = [listener]
+      @
 
-  listen: (event, listener) ->
-    if @listenersPerm[event]?
-      @listenersPerm[event].push(listener)
-    else
-      @listenersPerm[event] = [listener]
-    @
+    eventListen: (event, listener) ->
+      if @listenersPerm[event]?
+        @listenersPerm[event].push(listener)
+      else
+        @listenersPerm[event] = [listener]
+      @
 
-  removePermanentListeners: (event) ->
-    delete @listeners[event]
-    @
-
-  fire: (event) ->
-    if @listeners[event]?
-      for f in @listeners[event]
-        f.call(@parent)
+    eventRemovePermanentListeners: (event) ->
       delete @listeners[event]
-    if @listenersPerm[event]?
-      for f in @listenersPerm[event]
-        f.call(@parent)
-    @
+      @
+
+    eventFire: (event) ->
+      args = Array.prototype.slice.call(arguments, 1)
+      if @listeners[event]?
+        for f in @listeners[event]
+          f.apply(@parent, args)
+        delete @listeners[event]
+      if @listenersPerm[event]?
+        for f in @listenersPerm[event]
+          f.apply(@parent, args)
+      @
