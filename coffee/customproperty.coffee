@@ -2,43 +2,12 @@
 # Contrast with TimedProperty.
 return add: (Type, descriptor) ->
   name = descriptor.name
-  Name = name[0].toUpperCase() + name[1..]
-  onChange = "onChange#{Name}"
+  # name with a capitalized first letter.
+  descriptor.Name = name[0].toUpperCase() + name[1..]
+  onChange = "onChange#{descriptor.Name}"
   typeToCheck = descriptor.type
   if typeToCheck == "array"
     typeToCheck = "object"
-
-  if descriptor.editable != false
-    switch descriptor.type
-      when "string"
-        descriptor.appendToDom = (dom) ->
-          self = this
-          dom = dom.append("p")
-          dom.append("span").text("#{Name}:").style("margin-right", "1em")
-          dom.append("input").attr("type", "text").attr("name", name)
-            .property("value", @[name])
-            .on("input", -> self[name] = this.value)
-      when "number"
-        descriptor.appendToDom = (dom) ->
-          self = this
-          dom = dom.append("p")
-          dom.append("span").text("#{Name}:").style("margin-right", "1em")
-          dom.append("input").attr("type", "text").attr("name", name)
-            .property("value", @[name])
-            .on("input", ->
-              i = parseInt this.value
-              if not isNaN(i)
-                self[name] = i
-              else
-                self[name] = descriptor.defaultValue)
-      when "boolean"
-        descriptor.appendToDom = (dom) ->
-          self = this
-          dom = dom.append("p")
-          dom.append("label").text("#{Name}:").attr("for", name)
-          dom.append("input").attr("type", "checkbox").attr("id", name)
-            .property("checked", @[name])
-            .on("change", -> self[name] = this.checked)
 
   class TypeWithProperty extends Type
     if @propertyDescriptors?
@@ -87,5 +56,4 @@ return add: (Type, descriptor) ->
       @
     propertyDescriptors: -> TypeWithProperty.propertyDescriptors
 
-    appendPropertiesToDom: (dom) ->
-      @eachProperty (p) => p.appendToDom?.call this, dom
+    appendPropertiesToDom: require "./appendpropertiestodom"
