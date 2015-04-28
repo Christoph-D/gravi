@@ -50,13 +50,15 @@ Vertex = Event.makeListenable class extends Extensible
       e.modified = true
     @
 
-Vertex = CustomProperty.add(Vertex, name: "graph", type: "object", editable: false, shouldBeSaved: false)
-Vertex = CustomProperty.add(Vertex, name: "id", type: "number", editable: false, shouldBeSaved: false)
-Vertex = CustomProperty.add(Vertex, name: "outE", type: "array", editable: false, shouldBeSaved: false)
-Vertex = CustomProperty.add(Vertex, name: "inE", type: "array", editable: false, shouldBeSaved: false)
-Vertex = CustomProperty.add(Vertex, name: "label", type: "string", defaultValue: "")
-Vertex = CustomProperty.add(Vertex, name: "x", type: "number", defaultValue: 0, editable: false)
-Vertex = CustomProperty.add(Vertex, name: "y", type: "number", defaultValue: 0, editable: false)
+Vertex = CustomProperty.addMany Vertex, [
+  { name: "graph", type: "object", editable: false, shouldBeSaved: false }
+  { name: "id", type: "number", editable: false, shouldBeSaved: false }
+  { name: "outE", type: "array", editable: false, shouldBeSaved: false }
+  { name: "inE", type: "array", editable: false, shouldBeSaved: false }
+  { name: "label", type: "string", defaultValue: "" }
+  { name: "x", type: "number", defaultValue: 0, editable: false }
+  { name: "y", type: "number", defaultValue: 0, editable: false }
+  ]
 Vertex::onChangeLabel = -> @onRedrawNeeded?()
 G.Vertex = Vertex
 
@@ -64,10 +66,12 @@ Edge = Event.makeListenable class extends Extensible
   # No methods here.  Everything is in custom properties.
   @
 
-Edge = CustomProperty.add(Edge, name: "graph", type: "object", editable: false, shouldBeSaved: false)
-Edge = CustomProperty.add(Edge, name: "id", type: "number", editable: false, shouldBeSaved: false)
-Edge = CustomProperty.add(Edge, name: "head", type: "number", editable: false)
-Edge = CustomProperty.add(Edge, name: "tail", type: "number", editable: false)
+Edge = CustomProperty.addMany Edge, [
+  { name: "graph", type: "object", editable: false, shouldBeSaved: false }
+  { name: "id", type: "number", editable: false, shouldBeSaved: false }
+  { name: "head", type: "number", editable: false }
+  { name: "tail", type: "number", editable: false }
+  ]
 G.Edge = Edge
 
 G.Graph = Event.makeListenable class extends Extensible

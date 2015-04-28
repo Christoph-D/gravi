@@ -1,6 +1,6 @@
 # Adds a property to the given class and returns the new class.
 # Contrast with TimedProperty.
-return add: (Type, descriptor) ->
+add = (Type, descriptor) ->
   name = descriptor.name
   # name with a capitalized first letter.
   descriptor.Name = name[0].toUpperCase() + name[1..]
@@ -57,3 +57,10 @@ return add: (Type, descriptor) ->
     propertyDescriptors: -> TypeWithProperty.propertyDescriptors
 
     appendPropertiesToDom: require "./appendpropertiestodom"
+
+addMany = (Type, descriptors) ->
+  for d in descriptors
+    Type = add(Type, d)
+  Type
+
+return add: add, addMany: addMany
