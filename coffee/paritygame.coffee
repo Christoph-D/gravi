@@ -80,10 +80,10 @@ class G.ParityGame extends G.Graph
     options.VertexType = CustomProperty.add(options.VertexType, player0)
     options.VertexType = CustomProperty.add(options.VertexType, priority)
     options.VertexType = options.VertexType.newTypeWithMixin(VertexDrawableParity)
-    options.VertexType.eventStaticListen "onChangePlayer0", ->
+    options.VertexType.onStatic "onChangePlayer0", ->
       @edgesModified()
-      @eventFire("onRedrawNeeded")
-    options.VertexType.eventStaticListen("onChangePriority", -> @eventFire("onRedrawNeeded"))
+      @dispatch("onRedrawNeeded")
+    options.VertexType.onStatic("onChangePriority", -> @dispatch("onRedrawNeeded"))
     options.EdgeType ?= G.Edge
     options.EdgeType = options.EdgeType.newTypeWithMixin(G.EdgeDrawable)
     super options

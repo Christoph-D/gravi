@@ -1,5 +1,5 @@
 return makeListenable: (Type) ->
-  if Type::eventFire?
+  if Type::on?
     return Type
   class ListenableType extends Type
     constructor: ->
@@ -7,38 +7,34 @@ return makeListenable: (Type) ->
       @_listenersPerm = {}
       super
 
-    eventListenOnce: (event, listener) ->
-      if @_listeners[event]?
-        @_listeners[event].push(listener)
+    addListener = (where, event, listener) ->
+      if where[event]?
+        where[event].push(listener)
       else
-        @_listeners[event] = [listener]
+        where[event] = [listener]
+
+    on: (event, listener, options = {}) ->
+      if options.once
+        addListener(@_listeners, event, listener)
+      else
+        addListener(@_listenersPerm, event, listener)
       @
 
     _listenersStaticPerm = {}
 
-    @eventStaticListen: (event, listener) ->
-      if _listenersStaticPerm[event]?
-        _listenersStaticPerm[event].push(listener)
-      else
-        _listenersStaticPerm[event] = [listener]
+    @onStatic: (event, listener) ->
+      addListener(_listenersStaticPerm, event, listener)
       @
 
     @eventStaticRemoveListeners: (event) ->
       delete _listenersStaticPerm[event]
       @
 
-    eventListen: (event, listener) ->
-      if @_listenersPerm[event]?
-        @_listenersPerm[event].push(listener)
-      else
-        @_listenersPerm[event] = [listener]
-      @
-
     eventRemovePermanentListeners: (event) ->
       delete @_listeners[event]
       @
 
-    eventFire: (event, args...) ->
+    dispatch: (event, args...) ->
       if @_listeners[event]?
         for f in @_listeners[event]
           f.apply(this, args)

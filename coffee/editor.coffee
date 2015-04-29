@@ -96,9 +96,9 @@ class G.GraphEditor
     @drawEdgeMode = false
     @select(null)
     @g.VertexType.eventStaticRemoveListeners("onRedrawNeeded")
-    @g.VertexType.eventStaticListen("onRedrawNeeded", @queueRedraw.bind(this))
+    @g.VertexType.onStatic("onRedrawNeeded", @queueRedraw.bind(this))
     @g.EdgeType.eventStaticRemoveListeners("onRedrawNeeded")
-    @g.EdgeType.eventStaticListen("onRedrawNeeded", @queueRedraw.bind(this))
+    @g.EdgeType.onStatic("onRedrawNeeded", @queueRedraw.bind(this))
 
     # Rid the svg of previous clutter (keep the <defs>).
     @svg.selectAll("#vertices > *").remove()

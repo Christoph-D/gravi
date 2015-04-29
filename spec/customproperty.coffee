@@ -31,7 +31,7 @@ define [ "gralog/graph", "gralog/customproperty"
       it "fires the onChange event exactly once per change", ->
         a = f: ->
         spyOn(a, 'f')
-        @v.eventListen("onChangeFoo", a.f)
+        @v.on("onChangeFoo", a.f)
         @v.foo = "bar"
         expect(a.f.calls.count()).toEqual(1)
 

@@ -39,7 +39,7 @@ add = (Type, descriptor) ->
           @_properties[name] = value
           if descriptor.notify != false and oldValue != value
             @modified = true
-            @eventFire?(onChange)
+            @dispatch?(onChange)
           value
       if v?[name]?
         if descriptor.type == "array"

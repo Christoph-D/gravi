@@ -3,16 +3,16 @@ examples = require "./examples"
 solver = require "./parityrecursive"
 
 addVertexListener = (v) ->
-  v.eventListen("onChangePlayer0", runAlgorithm)
-  v.eventListen("onChangePriority", runAlgorithm)
+  v.on("onChangePlayer0", runAlgorithm)
+  v.on("onChangePriority", runAlgorithm)
 
 prepareGraph = (g) ->
-  g.eventListen("postAddEdge", runAlgorithm)
-  g.eventListen("postAddVertex", runAlgorithm)
-  g.eventListen("postAddVertex", addVertexListener)
+  g.on("postAddEdge", runAlgorithm)
+  g.on("postAddVertex", runAlgorithm)
+  g.on("postAddVertex", addVertexListener)
   addVertexListener v for v in g.vertices
-  g.eventListen("postRemoveEdge", runAlgorithm)
-  g.eventListen("postRemoveVertex", runAlgorithm)
+  g.on("postRemoveEdge", runAlgorithm)
+  g.on("postRemoveVertex", runAlgorithm)
   g
 
 state = {}

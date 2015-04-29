@@ -91,7 +91,7 @@ G.Graph = Event.makeListenable class extends Extensible
     v.id = @vertices.length
     v.graph = this
     @vertices.push(v)
-    @eventFire('postAddVertex', v)
+    @dispatch('postAddVertex', v)
     @
 
   removeVertex: (v) ->
@@ -103,7 +103,7 @@ G.Graph = Event.makeListenable class extends Extensible
         for e in v.outEdges()
           @removeEdge(e)
         @vertices[i] = null
-        @eventFire('postRemoveVertex')
+        @dispatch('postRemoveVertex')
         return @
     @
 
@@ -131,7 +131,7 @@ G.Graph = Event.makeListenable class extends Extensible
     @vertices[e.tail].addOutEdge e.id
     @vertices[e.head].addInEdge e.id
     @edges.push e
-    @eventFire('postAddEdge', e)
+    @dispatch('postAddEdge', e)
     @
 
   # Accepts a single Edge object or tail, head.  Ignores the edge id.
@@ -146,7 +146,7 @@ G.Graph = Event.makeListenable class extends Extensible
         # @edges.  Removing/adding lots of edges will thus clutter
         # @edges with null entries.  See @compressIds().
         @edges[i] = null
-        @eventFire('postRemoveEdge', f)
+        @dispatch('postRemoveEdge', f)
         return @
     @
 
