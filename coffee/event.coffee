@@ -14,6 +14,19 @@ return makeListenable: (Type) ->
         @_listeners[event] = [listener]
       @
 
+    _listenersStaticPerm = {}
+
+    @eventStaticListen: (event, listener) ->
+      if _listenersStaticPerm[event]?
+        _listenersStaticPerm[event].push(listener)
+      else
+        _listenersStaticPerm[event] = [listener]
+      @
+
+    @eventStaticRemoveListeners: (event) ->
+      delete _listenersStaticPerm[event]
+      @
+
     eventListen: (event, listener) ->
       if @_listenersPerm[event]?
         @_listenersPerm[event].push(listener)
@@ -32,5 +45,8 @@ return makeListenable: (Type) ->
         delete @_listeners[event]
       if @_listenersPerm[event]?
         for f in @_listenersPerm[event]
+          f.apply(this, args)
+      if _listenersStaticPerm[event]?
+        for f in _listenersStaticPerm[event]
           f.apply(this, args)
       @

@@ -36,8 +36,8 @@ runAlgorithm = ->
       when 39 then ++newStep if newStep <= state.editor.totalSteps() - 2
     state.editor.currentStep(newStep)
     state.slider.value(newStep)
-    state.editor.draw())
-  state.editor.draw()
+    state.editor.queueRedraw())
+  state.editor.queueRedraw()
 
 generateGraph = ->
   stopAnimation()
@@ -52,7 +52,7 @@ generateGraph = ->
     state.slider = d3.slider().on("slide", (event, value) ->
       stopAnimation()
       state.editor.currentStep(value)
-      state.editor.draw()
+      state.editor.queueRedraw()
     )
   runAlgorithm()
 
@@ -87,7 +87,7 @@ animateAlgorithm = ->
         return "" unless state.animating
         state.slider.value(state.slider.max() * t)
         state.editor.currentStep(state.slider.value())
-        state.editor.draw()
+        state.editor.queueRedraw()
         return ""
 
 #state.alg = new G.AlgorithmRunner(G.dfs.run)

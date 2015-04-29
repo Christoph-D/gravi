@@ -54,6 +54,6 @@ class G.FiniteAutomaton extends G.SimpleGraph
   constructor: (options = {}) ->
     options.VertexType = CustomProperty.add(options.VertexType ? G.Vertex, accepting)
     options.EdgeType = CustomProperty.add(options.EdgeType ? G.Edge, letter)
-    options.EdgeType::onChangeLetter = -> @onRedrawNeeded?()
-    options.VertexType::onChangeAccepting = -> @onRedrawNeeded?()
+    options.EdgeType.eventStaticListen("onChangeLetter", -> @eventFire("onRedrawNeeded"))
+    options.VertexType.eventStaticListen("onChangeAccepting", -> @eventFire("onRedrawNeeded"))
     super options

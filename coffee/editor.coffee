@@ -53,7 +53,7 @@ class G.GraphEditor
         isLeftClickDrag = d3.event.sourceEvent.which == 1
         return unless isLeftClickDrag
         @select(d)
-        @draw())
+        @queueRedraw())
       .on("drag", (d) =>
         # No dragging except on left clicks.
         return unless isLeftClickDrag
@@ -62,12 +62,12 @@ class G.GraphEditor
         d.y = d3.event.y
         # Invalidate the incident edges because the vertex moved.
         d.edgesModified()
-        @draw())
+        @queueRedraw())
     # Global click handler to deselect everything.
     @svg.on("click", =>
       @select(null)
       @drawEdgeMode = false
-      @draw())
+      @queueRedraw())
     @svg.on("contextmenu", =>
     # Global click handler to create new vertices on right click.
       d3.event.stopPropagation()
@@ -78,7 +78,7 @@ class G.GraphEditor
         e = new @g.EdgeType tail: @selection.id, head: v.id
         @g.addEdge e
         @drawEdgeMode = false
-      @draw())
+      @queueRedraw())
     # Global mousemove handler to keep track of the mouse.
     editor = this
     @svg.on("mousemove", ->
@@ -95,12 +95,10 @@ class G.GraphEditor
     # This is true when the user is drawing a new edge.
     @drawEdgeMode = false
     @select(null)
-    if @g.VertexType::onRedrawNeeded?
-      throw TypeError("VertexType already has onRedrawNeeded. Cowardly refusing to override it.")
-    if @g.EdgeType::onRedrawNeeded?
-      throw TypeError("EdgeType already has onRedrawNeeded. Cowardly refusing to override it.")
-    @g.VertexType::onRedrawNeeded = @draw.bind(this)
-    @g.EdgeType::onRedrawNeeded = @draw.bind(this)
+    @g.VertexType.eventStaticRemoveListeners("queueRedraw")
+    @g.VertexType.eventStaticListen("queueRedraw", @queueRedraw.bind(this))
+    @g.EdgeType.eventStaticRemoveListeners("queueRedraw")
+    @g.EdgeType.eventStaticListen("queueRedraw", @queueRedraw.bind(this))
 
     # Rid the svg of previous clutter (keep the <defs>).
     @svg.selectAll("#vertices > *").remove()
@@ -127,21 +125,23 @@ class G.GraphEditor
     @g.history.currentStep = step
 
   onClickVertex = (d) ->
+    # Stop the propagation or the click would propagate to the root
+    # svg, deselecting everything.
     d3.event.stopPropagation()
-    @select(d)
-    @draw()
+    # No need to select this vertex because the "dragstart" event does
+    # it, saving one redraw.
   onDoubleClickVertex = (d) ->
     d3.event.stopPropagation()
     @select(d)
     @drawEdgeMode = true
-    @draw()
+    @queueRedraw()
   onRightClickVertex = (d) ->
     d3.event.stopPropagation()
     d3.event.preventDefault()
     @drawEdgeMode = false
     @g.removeVertex(d)
     @g.compressIds()
-    @draw()
+    @queueRedraw()
   onMouseOverVertex = (d) ->
     if @drawEdgeMode and @selection != d
       e = new @g.EdgeType tail: @selection.id, head: d.id
@@ -151,7 +151,7 @@ class G.GraphEditor
       else
         @g.addEdge e
       @drawEdgeMode = false
-      @draw()
+      @queueRedraw()
   drawVertices: ->
     vertices = @svg.select("#vertices").selectAll(".vertex").data(@g.getVertices())
     editor = this
@@ -198,7 +198,7 @@ class G.GraphEditor
   onClickEdge = (d) ->
     d3.event.stopPropagation()
     @select(d)
-    @draw()
+    @queueRedraw()
   drawEdges: ->
     edges = @svg.select("#edges").selectAll(".edge").data(@g.getEdges())
     editor = this
@@ -228,6 +228,7 @@ class G.GraphEditor
     @
 
   draw: ->
+    @redrawQueued = false
     @times ?= []
 
     start = performance.now()
@@ -242,3 +243,9 @@ class G.GraphEditor
     median = @times.slice().sort()[Math.floor(@times.length / 2)]
     #d3.select("#performance").text("#{median} ms")
     @
+
+  queueRedraw: ->
+    if @redrawQueued
+      return
+    @redrawQueued = true
+    window.requestAnimationFrame(@draw.bind(this))
