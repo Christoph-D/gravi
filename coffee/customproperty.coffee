@@ -35,9 +35,11 @@ add = (Type, descriptor) ->
           if typeof value != typeToCheck and typeof value != "undefined"
             throw TypeError("Property \"#{name}\" received invalid type \"#{typeof value}\", \
               excepted \"#{descriptor.type}\"")
+          oldValue = @_properties[name]
           @_properties[name] = value
-          @modified = true
-          @eventFire?(onChange)
+          if descriptor.notify != false and oldValue != value
+            @modified = true
+            @eventFire?(onChange)
           value
       if v?[name]?
         if descriptor.type == "array"
