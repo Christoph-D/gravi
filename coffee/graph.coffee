@@ -59,7 +59,6 @@ Vertex = CustomProperty.addMany Vertex, [
   { name: "x", type: "number", defaultValue: 0, editable: false }
   { name: "y", type: "number", defaultValue: 0, editable: false }
   ]
-Vertex::onChangeLabel = -> @onRedrawNeeded?()
 G.Vertex = Vertex
 
 Edge = Event.makeListenable class extends Extensible
