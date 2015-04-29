@@ -75,7 +75,7 @@ module.exports = (grunt) ->
         dest: "graphs.css"
     clean:
       gralog: [ "js/*.{coffee,js,js.map}", "graphs.css" ]
-      tests: [ "jasmine/spec/*.js", "jasmine/spec/*.js.map" ]
+      tests: [ "specjs/*.js", "specjs/*.js.map" ]
     shell:
       tests:
         command: './node_modules/jasmine-node/bin/jasmine-node --color --matchall --coffee --captureExceptions --runWithRequireJs --requireJsSetup spec/config.coffee spec'
