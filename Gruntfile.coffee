@@ -51,7 +51,7 @@ module.exports = (grunt) ->
         tasks: ['gralog']
       tests:
         files: [ 'coffee/*.coffee', 'spec/*.coffee' ]
-        tasks: ['shell:tests']
+        tasks: ['tests']
     "file-creator":
       options:
         openFlags: 'w'
@@ -91,5 +91,5 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-shell')
 
   grunt.registerTask('gralog', ['wrap:gralog', 'coffee:gralog', 'less', 'autoprefixer', 'requirejs:gralog'])
-  grunt.registerTask('tests', ['coffee:tests', 'file-creator:tests'])
-  grunt.registerTask('default', ['gralog', 'shell:tests'])
+  grunt.registerTask('tests', ['coffee:tests', 'file-creator:tests', 'shell:tests'])
+  grunt.registerTask('default', ['gralog', 'tests'])
