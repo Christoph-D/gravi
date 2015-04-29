@@ -1,5 +1,7 @@
-define [ "gralog/graph", "gralog/customproperty"
-], (G, CustomProperty) -> describe "A custom property", ->
+G = require "gralog/graph"
+CustomProperty = require "gralog/customproperty"
+
+describe "A custom property", ->
   tests = (description, T, v) ->
     describe description, ->
       beforeEach ->
@@ -33,7 +35,9 @@ define [ "gralog/graph", "gralog/customproperty"
         spyOn(a, 'f')
         @v.on("changeFoo", a.f)
         @v.foo = "bar"
-        expect(a.f.calls.count()).toEqual(1)
+        # Jasmine v2
+        #expect(a.f.calls.count()).toEqual(1)
+        expect(a.f).toHaveBeenCalled()
 
       describe "when copied", ->
         beforeEach ->

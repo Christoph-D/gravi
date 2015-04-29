@@ -31,7 +31,7 @@ module.exports = (grunt) ->
         expand: true,
         flatten: true,
         src: 'spec/*.coffee'
-        dest: 'jasmine/spec'
+        dest: 'specjs'
         ext: '.js'
     requirejs:
       gralog:
@@ -44,12 +44,14 @@ module.exports = (grunt) ->
             output:
               semicolons: false
     watch:
+      options:
+        atBegin: true
       gralog:
         files: [ 'coffee/*.coffee', 'graphs.less' ],
         tasks: ['gralog']
       tests:
         files: [ 'coffee/*.coffee', 'spec/*.coffee' ]
-        tasks: ['tests']
+        tasks: ['shell:tests']
     "file-creator":
       options:
         openFlags: 'w'
@@ -74,6 +76,9 @@ module.exports = (grunt) ->
     clean:
       gralog: [ "js/*.{coffee,js,js.map}", "graphs.css" ]
       tests: [ "jasmine/spec/*.js", "jasmine/spec/*.js.map" ]
+    shell:
+      tests:
+        command: './node_modules/jasmine-node/bin/jasmine-node --color --matchall --coffee --captureExceptions --runWithRequireJs --requireJsSetup spec/config.coffee spec'
 
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-watch')
@@ -83,7 +88,8 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-less')
   grunt.loadNpmTasks('grunt-wrap')
   grunt.loadNpmTasks('grunt-autoprefixer')
+  grunt.loadNpmTasks('grunt-shell')
 
   grunt.registerTask('gralog', ['wrap:gralog', 'coffee:gralog', 'less', 'autoprefixer', 'requirejs:gralog'])
   grunt.registerTask('tests', ['coffee:tests', 'file-creator:tests'])
-  grunt.registerTask('default', ['gralog', 'tests'])
+  grunt.registerTask('default', ['gralog', 'shell:tests'])

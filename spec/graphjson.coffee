@@ -1,8 +1,10 @@
-define [ "gralog/graph", "./graphmatcher"
-], (G, graphMatcher) -> describe "The graph JSON converter", ->
+G = require "gralog/graph"
+graphMatcher = require "./graphmatcher"
+
+describe "The graph JSON converter", ->
   g = {}
   beforeEach ->
-    jasmine.addMatchers graphMatcher
+    @addMatchers graphMatcher
     g = new G.Graph numVertices: 4, edgeList: [[0,1], [0,2], [3,2], [3,0]]
     g.vertices[0].label = "first label"
     g.vertices[1].label = "second label"

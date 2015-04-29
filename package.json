@@ -10,7 +10,10 @@
     "grunt-contrib-clean": "~0.6.0",
     "grunt-wrap": "~0.3.0",
     "grunt-contrib-less": "~1.0.0",
-    "grunt-autoprefixer": "~2.2.0"
+    "grunt-autoprefixer": "~2.2.0",
+    "jasmine-node": "~1.14.5",
+    "requirejs": "~2.1.17",
+    "grunt-shell": "~1.1.2"
   },
   "author": {
     "name": "Christoph Dittmann"

@@ -1,5 +1,6 @@
-define [ "gralog/extensible"
-], (Extensible) -> describe "An Extensible derived class", ->
+Extensible = require "gralog/extensible"
+
+describe "An Extensible derived class", ->
   beforeEach ->
     class @D extends Extensible
       constructor: ->

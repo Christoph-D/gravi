@@ -1,5 +1,6 @@
-define [ "gralog/extensible"
-], (Extensible) -> describe "An Extensible derived class with a delayed property", ->
+Extensible = require "gralog/extensible"
+
+describe "An Extensible derived class with a delayed property", ->
   beforeEach ->
     class @D extends Extensible
       onlyInD: -> "D"

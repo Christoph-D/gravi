@@ -1,5 +1,6 @@
-define [ "gralog/timed"
-], (TimedProperty) -> describe "A TimedProperty", ->
+TimedProperty = require "gralog/timed"
+
+describe "A TimedProperty", ->
   t = {}
   describe "non-interpolating on a string", ->
     beforeEach -> t = new TimedProperty "initial"

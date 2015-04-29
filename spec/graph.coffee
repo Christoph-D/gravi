@@ -1,6 +1,8 @@
-define [ "gralog/graph", "./graphmatcher"
-], (G, graphMatcher) -> describe "A graph", ->
-  beforeEach -> jasmine.addMatchers graphMatcher
+G = require "gralog/graph"
+graphMatcher = require "./graphmatcher"
+
+describe "A graph", ->
+  beforeEach -> @addMatchers graphMatcher
 
   describe "basic functions", ->
     g = {}

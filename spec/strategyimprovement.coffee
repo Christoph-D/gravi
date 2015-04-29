@@ -1,5 +1,6 @@
-define [ "gralog/gralog"
-], (G) -> describe "The strategy improvement algorithm", ->
+G = require "gralog/gralog"
+
+describe "The strategy improvement algorithm", ->
   p = (priority) ->
     if Array.isArray(priority)
       p(v) for v in priority

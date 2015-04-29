@@ -1,5 +1,7 @@
-define [ "gralog/gralog", "gralog/parityrecursive"
-], (G, solver) -> describe "The recursive parity game solver", ->
+G = require "gralog/gralog"
+solver = require "gralog/parityrecursive"
+
+describe "The recursive parity game solver", ->
   g = {}
   beforeEach ->
     g = new G.ParityGame numVertices: 4, edgeList: [[0,1], [0,2], [3,2], [3,0]]
