@@ -57,7 +57,7 @@ class G.GraphEditor
         d.x = d3.event.x
         d.y = d3.event.y
         # Invalidate the incident edges because the vertex moved.
-        d.edgesModified()
+        d.markIncidentEdgesModified()
         @queueRedraw())
     # Global click handler to deselect everything.
     @svg.on("click", =>

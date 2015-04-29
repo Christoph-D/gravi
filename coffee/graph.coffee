@@ -43,7 +43,7 @@ Vertex = Event.makeListenable class extends Extensible
 
   # Marks all incident edges as modified.  Useful if the vertex shape
   # changes and the edges need to be redrawn.
-  edgesModified: ->
+  markIncidentEdgesModified: ->
     for e in @outEdges()
       e.modified = true
     for e in @inEdges()
