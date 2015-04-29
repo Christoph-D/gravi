@@ -4,7 +4,7 @@ add = (Type, descriptor) ->
   name = descriptor.name
   # name with a capitalized first letter.
   descriptor.Name = name[0].toUpperCase() + name[1..]
-  onChange = "onChange#{descriptor.Name}"
+  onChange = "change#{descriptor.Name}"
   typeToCheck = descriptor.type
   if typeToCheck == "array"
     typeToCheck = "object"

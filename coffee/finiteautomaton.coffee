@@ -62,9 +62,9 @@ class G.FiniteAutomaton extends G.Graph
   constructor: (options = {}) ->
     options.VertexType = CustomProperty.add(options.VertexType ? G.Vertex, accepting)
     options.VertexType = options.VertexType.newTypeWithMixin(VertexDrawableFiniteAutomaton)
-    options.VertexType.onStatic("onChangeAccepting", -> @dispatch("onRedrawNeeded"))
+    options.VertexType.onStatic("changeAccepting", -> @dispatch("redrawNeeded"))
 
     options.EdgeType = CustomProperty.add(options.EdgeType ? G.Edge, letter)
     options.EdgeType = options.EdgeType.newTypeWithMixin(EdgeDrawableFiniteAutomaton)
-    options.EdgeType.onStatic("onChangeLetter", -> @dispatch("onRedrawNeeded"))
+    options.EdgeType.onStatic("changeLetter", -> @dispatch("redrawNeeded"))
     super options

@@ -3,10 +3,6 @@ G = require "./historygraph"
 # A GraphEditor expects vertices and edges to offer the methods
 # drawEnter() and drawUpdate().  It calls drawEnter() once on every
 # new vertex/edge and drawUpdate() every time a redraw is needed.
-#
-# It also excepts vertices and edges to *not* have a method
-# onRedrawNeeded because GraphEditor will add this method under the
-# expectation that it will be called whenever something changes.
 
 class G.GraphEditor
   # Changing stroke-color etc. on edges does not affect the marker
@@ -95,10 +91,10 @@ class G.GraphEditor
     # This is true when the user is drawing a new edge.
     @drawEdgeMode = false
     @select(null)
-    @g.VertexType.eventStaticRemoveListeners("onRedrawNeeded")
-    @g.VertexType.onStatic("onRedrawNeeded", @queueRedraw.bind(this))
-    @g.EdgeType.eventStaticRemoveListeners("onRedrawNeeded")
-    @g.EdgeType.onStatic("onRedrawNeeded", @queueRedraw.bind(this))
+    @g.VertexType.eventStaticRemoveListeners("redrawNeeded")
+    @g.VertexType.onStatic("redrawNeeded", @queueRedraw.bind(this))
+    @g.EdgeType.eventStaticRemoveListeners("redrawNeeded")
+    @g.EdgeType.onStatic("redrawNeeded", @queueRedraw.bind(this))
 
     # Rid the svg of previous clutter (keep the <defs>).
     @svg.selectAll("#vertices > *").remove()

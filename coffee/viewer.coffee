@@ -3,8 +3,8 @@ examples = require "./examples"
 solver = require "./parityrecursive"
 
 addVertexListener = (v) ->
-  v.on("onChangePlayer0", runAlgorithm)
-  v.on("onChangePriority", runAlgorithm)
+  v.on("changePlayer0", runAlgorithm)
+  v.on("changePriority", runAlgorithm)
 
 prepareGraph = (g) ->
   g.on("postAddEdge", runAlgorithm)

@@ -79,7 +79,7 @@ class G.SimpleGraph extends G.Graph
   constructor: (options = {}) ->
     options.VertexType ?= G.Vertex
     options.VertexType = options.VertexType.newTypeWithMixin(G.VertexDrawableCircular)
-    options.VertexType.onStatic("onChangeLabel", -> @dispatch("onRedrawNeeded"))
+    options.VertexType.onStatic("changeLabel", -> @dispatch("redrawNeeded"))
     options.EdgeType ?= G.Edge
     options.EdgeType = options.EdgeType.newTypeWithMixin(G.EdgeDrawable)
     super options
