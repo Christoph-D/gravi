@@ -19,12 +19,8 @@ setCSSClass = (editor, svgGroup) ->
   svgGroup.attr("class", c.join(" "))
 
 class G.VertexDrawableDefault
-  # Delegate everything to the custom properties.
   drawEnter: (editor, svgGroup) ->
-    @eachProperty (p) => p.drawEnter?.call this, editor, svgGroup
-  drawUpdate: (editor, svgGroup) ->
-    @setCSSClass(editor, svgGroup)
-    @eachProperty (p) => p.drawUpdate?.call this, editor, svgGroup
+  drawUpdate: (editor, svgGroup) -> @setCSSClass(editor, svgGroup)
   @::setCSSClass = setCSSClass
   @::defaultCSSClass = "vertex"
 
