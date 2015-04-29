@@ -25,8 +25,7 @@ return makeListenable: (Type) ->
       delete @_listeners[event]
       @
 
-    eventFire: (event) ->
-      args = Array.prototype.slice.call(arguments, 1)
+    eventFire: (event, args...) ->
       if @_listeners[event]?
         for f in @_listeners[event]
           f.apply(this, args)
