@@ -12,6 +12,14 @@ describe "The graph JSON converter", ->
   it "leaves the graph intact", ->
     expect(G.graphFromJSON(JSON.stringify(g), ["Graph"])).toBeGraphEquivalent(g)
 
+  it "leaves the graph intact after removing a vertex", ->
+    g.removeVertex(g.vertices[1])
+    expect(G.graphFromJSON(JSON.stringify(g), ["Graph"])).toBeGraphEquivalent(g)
+
+  it "leaves the graph intact after adding a vertex", ->
+    g.addVertex(new G.Vertex)
+    expect(G.graphFromJSON(JSON.stringify(g), ["Graph"])).toBeGraphEquivalent(g)
+
   it "leaves the graph intact after removing an edge", ->
     g.removeEdge(0, 2)
     expect(G.graphFromJSON(JSON.stringify(g), ["Graph"])).toBeGraphEquivalent(g)
@@ -25,3 +33,12 @@ describe "The graph JSON converter", ->
     j.type = "InvalidType"
     expect(-> G.graphFromJSON(JSON.stringify(j), ["Dummy"]))
       .toThrow(TypeError("Don't know how to make a graph of type \"InvalidType\". Known types: Dummy"))
+
+  it "refuses to load a graph with no type", ->
+    j = JSON.parse(JSON.stringify(g))
+    delete j.type
+    expect(-> G.graphFromJSON(JSON.stringify(j)))
+      .toThrow(TypeError("Missing property: \"type\""))
+
+  it "sucessfully loads a trivial graph", ->
+    expect(G.graphFromJSON('{"type":"Graph"}', ["Graph"])).toBeGraphEquivalent(new G.Graph)
