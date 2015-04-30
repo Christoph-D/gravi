@@ -1,5 +1,5 @@
-G = require "gralog/graph"
-CustomProperty = require "gralog/customproperty"
+G = require "gravi/graph"
+CustomProperty = require "gravi/customproperty"
 
 describe "A custom property", ->
   tests = (description, T, v) ->

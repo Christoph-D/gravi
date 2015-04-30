@@ -1,4 +1,4 @@
-TimedProperty = require "gralog/timed"
+TimedProperty = require "gravi/timed"
 
 describe "A TimedProperty", ->
   t = {}

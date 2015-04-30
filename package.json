@@ -1,5 +1,5 @@
 {
-  "name": "gralog-web",
+  "name": "gravi",
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-contrib-watch": "~0.6.1",

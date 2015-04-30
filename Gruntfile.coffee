@@ -8,7 +8,7 @@ module.exports = (grunt) ->
 
     # Add AMD wrapper.
     wrap:
-      gralog:
+      gravi:
         expand: true,
         flatten: true,
         src: '<%= srcDir %>/*.coffee',
@@ -20,7 +20,7 @@ module.exports = (grunt) ->
       options:
         bare: true
         sourceMap: true
-      gralog:
+      gravi:
         expand: true,
         flatten: true,
         src: '<%= buildDir %>/js/*.coffee'
@@ -33,7 +33,7 @@ module.exports = (grunt) ->
         dest: '<%= buildDir %>/specjs'
         ext: '.js'
     requirejs:
-      gralog:
+      gravi:
         options:
           baseUrl: "<%= buildDir %>/js"
           name: "viewer"
@@ -45,7 +45,7 @@ module.exports = (grunt) ->
     watch:
       options:
         atBegin: true
-      gralog:
+      gravi:
         files: [ '<%= srcDir %>/*.coffee', '<%= siteDir %>/*' ],
         tasks: [ 'compile', 'shell:test' ]
       test:
@@ -55,11 +55,11 @@ module.exports = (grunt) ->
         files: 'doc/*.txt'
         tasks: [ 'doc' ]
     autoprefixer:
-      gralog:
+      gravi:
         src: "<%= buildDir %>/graphs.css"
         dest: "<%= buildDir %>/graphs.css"
     less:
-      gralog:
+      gravi:
         src: "<%= siteDir %>/graphs.less"
         dest: "<%= buildDir %>/graphs.css"
     copy:
@@ -94,9 +94,9 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-autoprefixer')
   grunt.loadNpmTasks('grunt-shell')
 
-  grunt.registerTask('compile', [ 'wrap:gralog', 'coffee:gralog' ])
+  grunt.registerTask('compile', [ 'wrap:gravi', 'coffee:gravi' ])
   grunt.registerTask('build', [ 'compile', 'less', 'autoprefixer', 'copy' ])
-  grunt.registerTask('minify', [ 'compile', 'requirejs:gralog' ])
+  grunt.registerTask('minify', [ 'compile', 'requirejs:gravi' ])
 
   grunt.registerTask('doc', [ 'shell:doc'])
 

@@ -1,5 +1,5 @@
-G = require "gralog/gralog"
-solver = require "gralog/parityrecursive"
+G = require "gravi/gravi"
+solver = require "gravi/parityrecursive"
 
 describe "The recursive parity game solver", ->
   g = {}

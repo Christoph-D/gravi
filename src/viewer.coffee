@@ -1,4 +1,4 @@
-G = require "./gralog"
+G = require "./gravi"
 examples = require "./examples"
 solver = require "./parityrecursive"
 

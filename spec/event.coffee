@@ -1,4 +1,4 @@
-Event = require "gralog/event"
+Event = require "gravi/event"
 
 describe "A listenable object", ->
   A = {}

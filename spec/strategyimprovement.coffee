@@ -1,4 +1,4 @@
-G = require "gralog/gralog"
+G = require "gravi/gravi"
 
 describe "The strategy improvement algorithm", ->
   p = (priority) ->

@@ -1,4 +1,4 @@
-Extensible = require "gralog/extensible"
+Extensible = require "gravi/extensible"
 
 describe "An Extensible derived class", ->
   beforeEach ->

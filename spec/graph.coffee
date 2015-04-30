@@ -1,4 +1,4 @@
-G = require "gralog/graph"
+G = require "gravi/graph"
 graphMatcher = require "./graphmatcher"
 
 describe "A graph", ->
