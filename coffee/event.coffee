@@ -31,7 +31,7 @@ return makeListenable: (Type) ->
       @
 
     eventRemovePermanentListeners: (event) ->
-      delete @_listeners[event]
+      delete @_listenersPerm[event]
       @
 
     dispatch: (event, args...) ->
