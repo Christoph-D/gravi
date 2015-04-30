@@ -65,7 +65,7 @@ module.exports = (grunt) ->
       tests: [ "specjs/*.js", "specjs/*.js.map" ]
     shell:
       tests:
-        command: './node_modules/jasmine-node/bin/jasmine-node --color --matchall --coffee --captureExceptions --runWithRequireJs --requireJsSetup spec/config.coffee spec'
+        command: './node_modules/jasmine-node/bin/jasmine-node --color --matchall --captureExceptions --runWithRequireJs --requireJsSetup specjs/config.js specjs'
 
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-watch')
