@@ -1,0 +1,88 @@
+= Graph
+:toc:
+:icons:
+:data-uri:
+:author: Christoph Dittmann
+:email: github@christoph-d.de
+:source-highlighter: pygments
+:language: coffeescript
+
+== Build
+
+.Build/test the main application
+[source,bash]
+npm install
+grunt
+
+The last line also runs the tests.
+
+.Build the documentation
+[source,bash]
+asciidoctor doc/graph.txt
+
+== Graph
+
+.Create a simple graph
+[source]
+g = new G.Graph numVertices: 4, edgeList: [[0,1], [1,2]]
+
+If you need more than a plain graph, then instead of `G.Graph` you may
+want to use `G.graphFromJSON()` or specific subclasses such as
+`G.ParityGame`.
+
+=== Graph Methods
+
+Graph::addVertex(v):: Adds the `Vertex` object `v`.  Precondition: `v`
+must not be an element of `Graph::getVertices()`.  Overwrites `v.id`.
+
+Graph::removeVertex(v):: Removes the vertex `v`.  Precondition: `v`
+must be an element of `Graph::getVertices()`.  You may want to call
+`Graph::compressIds()` afterwards to remove `null` entries from the
+vertex list.
+
+Graph::addEdge(tail, head)::
+Graph::addEdge(e):: Adds an edge.
+
+Graph::removeEdge(tail, head)::
+Graph::removeEdge(e):: Removes an edge.  If called with `e`, only uses
+`e.head` and `e.tail` to find the edge to be removed.
+
+Graph::compressIds():: Reassigns all vertex and edge ids in order to
+remove `null` entries.
+
+Graph::hasEdge(tail, head)::
+Graph::hasEdge(e):: Return `true` if the given edge exists.  If called
+with `e`, only uses `e.head` and `e.tail` to find the edge.
+
+Graph::getVertices():: Returns the list of vertices without `null`
+entries.
+Graph::getVertices(vertexFilter):: Like `Graph::getVertices()`, but
+only returns vertices `v` where `vertexFilter(v)` returns `true`.
+
+Graph::getEdge()::
+Graph::getEdge(edgeFilter):: Like `Graph::getVertices()`, but for edges.
+
+Graph::vertices:: The internal list of vertices.  May contain `null`
+entries.  `tail`/`head` of the edges refer to indices in this array.
+Graph::edges:: The internal list of edges.  May contain `null`
+entries.
+
+=== Helper Methods
+
+G.graphFromJSON(json):: Creates a graph from the specified string,
+parsing it as JSON.  Can create `G.ParityGame` or other (whitelisted)
+graphs, depending on the JSON content.
+
+== Events
+
+.Example
+[source]
+g = new G.Graph numVertices: 4, edgeList: [[0,1], [1,2]]
+g.on("postAddVertex", (v) -> console.log "Added vertex #{v.id}!")
+g.addVertex(new G.Vertex) # Prints "Added vertex 4!"
+
+Known events include `postAddVertex`, `postAddEdge`,
+`postRemoveVertex`, `postRemoveEdge` and `redrawNeeded`.
+
+The `this` context of the event handler is the object on which it was
+registered.
