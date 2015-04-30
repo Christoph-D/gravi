@@ -2,7 +2,7 @@ requirejs = require("requirejs")
 
 requirejs.config({
   paths: { gralog: "../js" },
-  baseUrl: "specjs",
+  baseUrl: ".",
   nodeRequire: require})
 
 global.require = requirejs
