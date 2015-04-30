@@ -22,9 +22,8 @@ G.Graph::toJSON = ->
 
 G.graphFromJSON = (json, validTypes = ["SimpleGraph", "FiniteAutomaton", "ParityGame"]) ->
   raw = JSON.parse(json)
-  # If the input has no type, assume it has the first valid type.
-  raw.type ?= validTypes[0]
-
+  if not raw.type?
+    throw TypeError("Missing property: \"type\"")
   if raw.type not in validTypes
     throw TypeError("Don't know how to make a graph of type \"#{raw.type}\". Known types: #{validTypes}")
 
