@@ -6,18 +6,12 @@ module.exports = (grunt) ->
     siteDir: 'site'
     srcDir: 'src'
 
-    banner: """/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - 
-      '<%= grunt.template.today("yyyy-mm-dd") %>
-      '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>\
-       '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;
-      ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */
-      """
     # Add AMD wrapper.
     wrap:
       gralog:
         expand: true,
         flatten: true,
-        src: ['<%= srcDir %>/*.coffee'],
+        src: '<%= srcDir %>/*.coffee',
         dest: '<%= buildDir %>/js',
         options:
           wrapper: ['`define(function (require, exports, module) {`\n', '\n`})`\n']
@@ -32,7 +26,7 @@ module.exports = (grunt) ->
         src: '<%= buildDir %>/js/*.coffee'
         dest: '<%= buildDir %>/js'
         ext: '.js'
-      tests:
+      test:
         expand: true,
         flatten: true,
         src: 'spec/*.coffee'
@@ -53,13 +47,13 @@ module.exports = (grunt) ->
         atBegin: true
       gralog:
         files: [ '<%= srcDir %>/*.coffee', '<%= siteDir %>/*' ],
-        tasks: ['gralog']
-      tests:
-        files: [ '<%= srcDir %>/*.coffee', 'spec/*.coffee' ]
-        tasks: ['tests']
+        tasks: [ 'compile', 'shell:test' ]
+      test:
+        files: [ 'spec/*.coffee' ]
+        tasks: [ 'test' ]
       doc:
         files: 'doc/*.txt'
-        tasks: ['doc']
+        tasks: [ 'doc' ]
     autoprefixer:
       gralog:
         src: "<%= buildDir %>/graphs.css"
@@ -82,7 +76,7 @@ module.exports = (grunt) ->
     clean:
       all: [ "<%= buildDir %>/**/*" ]
     shell:
-      tests:
+      test:
         command: '../../node_modules/jasmine-node/bin/jasmine-node --color --matchall --captureExceptions --runWithRequireJs --requireJsSetup config.js .'
         options:
           execOptions:
@@ -100,8 +94,12 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-autoprefixer')
   grunt.loadNpmTasks('grunt-shell')
 
-  grunt.registerTask('gralog', ['wrap:gralog', 'coffee:gralog', 'less', 'autoprefixer', 'copy'])
-  grunt.registerTask('tests', ['coffee:tests', 'shell:tests'])
-  grunt.registerTask('default', ['gralog', 'doc', 'tests'])
-  grunt.registerTask('doc', ['shell:doc'])
-  grunt.registerTask('minify', ['gralog', 'requirejs:gralog'])
+  grunt.registerTask('compile', [ 'wrap:gralog', 'coffee:gralog' ])
+  grunt.registerTask('build', [ 'compile', 'less', 'autoprefixer', 'copy' ])
+  grunt.registerTask('minify', [ 'compile', 'requirejs:gralog' ])
+
+  grunt.registerTask('doc', [ 'shell:doc'])
+
+  grunt.registerTask('test', [ 'coffee:test', 'shell:test' ])
+
+  grunt.registerTask('default', [ 'build', 'doc', 'test' ])
