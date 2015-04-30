@@ -4,11 +4,11 @@ Event = require "./event"
 
 G = {}
 Vertex = Event.makeListenable class extends Extensible
-  addOutEdge: (e) ->
-    @outE.push(e)
+  addOutEdge: (edgeId) ->
+    @outE.push(edgeId)
     @
-  addInEdge: (e) ->
-    @inE.push(e)
+  addInEdge: (edgeId) ->
+    @inE.push(edgeId)
     @
 
   removeEdgeId: (edgeId) ->
@@ -19,12 +19,12 @@ Vertex = Event.makeListenable class extends Extensible
   # @outE contains only the ids of outgoing edges.  @outEdges()
   # returns the corresponding list of Edge objects.
   outEdges: (edgeFilter) ->
-    edges = (@graph.edges[e] for e in @outE)
+    edges = (@graph.edges[edgeId] for edgeId in @outE)
     if edgeFilter?
       edges = (e for e in edges when edgeFilter(e))
     edges
   inEdges: (edgeFilter) ->
-    edges = (@graph.edges[e] for e in @inE)
+    edges = (@graph.edges[edgeId] for edgeId in @inE)
     if edgeFilter?
       edges = (e for e in edges when edgeFilter(e))
     edges
