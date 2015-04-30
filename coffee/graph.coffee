@@ -79,6 +79,9 @@ G.Graph = Event.makeListenable class extends Extensible
   constructor: (options = {}) ->
     @VertexType = options.VertexType ? Vertex
     @EdgeType = options.EdgeType ? Edge
+
+    @init?(options)
+
     @vertices = []
     if options.numVertices? and options.numVertices > 0
       @addVertex new @VertexType for i in [1..options.numVertices]

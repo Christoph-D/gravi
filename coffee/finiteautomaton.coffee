@@ -1,6 +1,8 @@
 G = require "./graph"
-CustomProperty = require "./customproperty"
+# For G.VertexDrawableCircular and G.EdgeDrawable
 require "./simplegraph"
+
+CustomProperty = require "./customproperty"
 
 class VertexDrawableFiniteAutomaton extends G.VertexDrawableCircular
   drawEnter: (editor, svgGroup) ->
@@ -55,16 +57,17 @@ class G.FiniteAutomaton extends G.Graph
     name: "accepting"
     type: "boolean"
     defaultValue: false
+
   letter =
     name: "letter"
     type: "string"
     defaultValue: ""
-  constructor: (options = {}) ->
-    options.VertexType = CustomProperty.add(options.VertexType ? G.Vertex, accepting)
-    options.VertexType = options.VertexType.newTypeWithMixin(VertexDrawableFiniteAutomaton)
-    options.VertexType.onStatic("changeAccepting", -> @dispatch("redrawNeeded"))
 
-    options.EdgeType = CustomProperty.add(options.EdgeType ? G.Edge, letter)
-    options.EdgeType = options.EdgeType.newTypeWithMixin(EdgeDrawableFiniteAutomaton)
-    options.EdgeType.onStatic("changeLetter", -> @dispatch("redrawNeeded"))
-    super options
+  init: ->
+    @VertexType = CustomProperty.add(@VertexType, accepting)
+    @VertexType = @VertexType.newTypeWithMixin(VertexDrawableFiniteAutomaton)
+    @VertexType.onStatic("changeAccepting", -> @dispatch("redrawNeeded"))
+
+    @EdgeType = CustomProperty.add(@EdgeType, letter)
+    @EdgeType = @EdgeType.newTypeWithMixin(EdgeDrawableFiniteAutomaton)
+    @EdgeType.onStatic("changeLetter", -> @dispatch("redrawNeeded"))

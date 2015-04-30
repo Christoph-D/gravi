@@ -71,21 +71,20 @@ class G.ParityGame extends G.Graph
     name: "player0"
     type: "boolean"
     defaultValue: false
+
   priority =
     name: "priority"
     type: "number"
     defaultValue: 0
-  constructor: (options = {}) ->
-    options.VertexType ?= G.Vertex
-    options.VertexType = CustomProperty.add(options.VertexType, player0)
-    options.VertexType = CustomProperty.add(options.VertexType, priority)
-    options.VertexType = options.VertexType.newTypeWithMixin(VertexDrawableParity)
-    options.VertexType.onStatic "changePlayer0", ->
+
+  init: ->
+    @VertexType = CustomProperty.add(@VertexType, player0)
+    @VertexType = CustomProperty.add(@VertexType, priority)
+    @VertexType = @VertexType.newTypeWithMixin(VertexDrawableParity)
+    @VertexType.onStatic "changePlayer0", ->
       @markIncidentEdgesModified()
       @dispatch("redrawNeeded")
-    options.VertexType.onStatic("changePriority", -> @dispatch("redrawNeeded"))
-    options.EdgeType ?= G.Edge
-    options.EdgeType = options.EdgeType.newTypeWithMixin(G.EdgeDrawable)
-    super options
+    @VertexType.onStatic("changePriority", -> @dispatch("redrawNeeded"))
+    @EdgeType = @EdgeType.newTypeWithMixin(G.EdgeDrawable)
 
 return G

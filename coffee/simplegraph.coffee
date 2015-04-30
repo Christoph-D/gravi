@@ -76,12 +76,10 @@ class G.EdgeDrawable extends G.EdgeDrawableDefault
 class G.SimpleGraph extends G.Graph
   @version = "0.1"
 
-  constructor: (options = {}) ->
-    options.VertexType ?= G.Vertex
-    options.VertexType = options.VertexType.newTypeWithMixin(G.VertexDrawableCircular)
-    options.VertexType.onStatic("changeLabel", -> @dispatch("redrawNeeded"))
-    options.EdgeType ?= G.Edge
-    options.EdgeType = options.EdgeType.newTypeWithMixin(G.EdgeDrawable)
-    super options
+  init: ->
+    @VertexType = @VertexType.newTypeWithMixin(G.VertexDrawableCircular)
+    @VertexType.onStatic("changeLabel", -> @dispatch("redrawNeeded"))
+
+    @EdgeType = options.EdgeType.newTypeWithMixin(G.EdgeDrawable)
 
 return G
