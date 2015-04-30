@@ -7,19 +7,6 @@
 :source-highlighter: pygments
 :language: coffeescript
 
-== Build
-
-.Build/test the main application
-[source,bash]
-npm install
-grunt
-
-The last line also runs the tests.
-
-.Build the documentation
-[source,bash]
-asciidoctor doc/graph.txt
-
 == Graph
 
 .Create a simple graph
