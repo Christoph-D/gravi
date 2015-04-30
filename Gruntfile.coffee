@@ -52,7 +52,7 @@ module.exports = (grunt) ->
         files: [ 'spec/*.coffee' ]
         tasks: [ 'test' ]
       doc:
-        files: 'doc/*.txt'
+        files: 'doc/*.adoc'
         tasks: [ 'doc' ]
     autoprefixer:
       gravi:
@@ -82,7 +82,7 @@ module.exports = (grunt) ->
           execOptions:
             cwd: '<%= buildDir %>/specjs'
       doc:
-        command: 'asciidoctor --destination-dir=\'<%= buildDir %>/doc\' doc/\*.txt'
+        command: 'asciidoctor --destination-dir=\'<%= buildDir %>/doc\' doc/\*.adoc'
 
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-watch')
