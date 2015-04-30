@@ -52,19 +52,6 @@ module.exports = (grunt) ->
       tests:
         files: [ 'coffee/*.coffee', 'spec/*.coffee' ]
         tasks: ['tests']
-    "file-creator":
-      options:
-        openFlags: 'w'
-      tests:
-        "jasmine/speclist.js": (fs, fd, done) ->
-          glob = grunt.file.glob;
-          _ = grunt.util._;
-          glob 'jasmine/spec/*.js', (err, files) ->
-            files = ("\"#{f.replace(/^jasmine\/(.*)\.js/, '$1')}\"" for f in files)
-            fs.writeSync(fd, "define(function(){return [\n  ")
-            fs.writeSync(fd, files.join(",\n  "))
-            fs.writeSync(fd, "\n];});")
-            done()
     autoprefixer:
       gralog:
         src: "graphs.css"
@@ -83,7 +70,6 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-watch')
   grunt.loadNpmTasks('grunt-contrib-requirejs')
-  grunt.loadNpmTasks('grunt-file-creator')
   grunt.loadNpmTasks('grunt-contrib-clean')
   grunt.loadNpmTasks('grunt-contrib-less')
   grunt.loadNpmTasks('grunt-wrap')
@@ -91,5 +77,5 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-shell')
 
   grunt.registerTask('gralog', ['wrap:gralog', 'coffee:gralog', 'less', 'autoprefixer', 'requirejs:gralog'])
-  grunt.registerTask('tests', ['coffee:tests', 'file-creator:tests', 'shell:tests'])
+  grunt.registerTask('tests', ['coffee:tests', 'shell:tests'])
   grunt.registerTask('default', ['gralog', 'tests'])
