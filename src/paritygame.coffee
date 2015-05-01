@@ -2,6 +2,10 @@ G = require "./graph"
 require "./simplegraph"
 CustomProperty = require "./customproperty"
 
+# Enum values
+G.PLAYER0 = 0
+G.PLAYER1 = 1
+
 # Vertex mixin.  Draws a vertex either as a rectangle (player 1) or as
 # a circle (player 0).  Also draws the priority inside the vertex.
 class VertexDrawableParity extends G.VertexDrawableDefault
@@ -16,7 +20,7 @@ class VertexDrawableParity extends G.VertexDrawableDefault
   edgeAnchor: (otherNode, distanceOffset = 0) ->
     if @x == otherNode.x and @y == otherNode.y
       return x: @x, y: @y
-    if @player0
+    if @player == G.PLAYER0
       G.circleEdgeAnchor this, otherNode, distanceOffset + @_radiusC
     else
       # Calculate the intersection between the line this -> otherNode
@@ -57,7 +61,7 @@ class VertexDrawableParity extends G.VertexDrawableDefault
   drawUpdate: (editor, svgGroup) ->
     @setCSSClass(editor, svgGroup)
     svgGroup.attr("transform", "translate(#{@x},#{@y})")
-    svgGroup.select("path.main").attr("d", if @player0 then @_circle else @_rectangle)
+    svgGroup.select("path.main").attr("d", if @player == G.PLAYER0 then @_circle else @_rectangle)
     priority = svgGroup.select("text.priority").text(@priority)
     if @priority >= 10 or @priority < 0
       priority.attr("font-size", "15")
@@ -67,10 +71,11 @@ class VertexDrawableParity extends G.VertexDrawableDefault
 class G.ParityGame extends G.Graph
   name: "ParityGame"
 
-  player0 =
-    name: "player0"
-    type: "boolean"
-    defaultValue: false
+  player =
+    name: "player"
+    type: "enum"
+    values: [G.PLAYER0, G.PLAYER1]
+    defaultValue: G.PLAYER0
 
   priority =
     name: "priority"
@@ -78,10 +83,10 @@ class G.ParityGame extends G.Graph
     defaultValue: 0
 
   init: ->
-    @VertexType = CustomProperty.addMany(@VertexType, [player0, priority])
+    @VertexType = CustomProperty.addMany(@VertexType, [player, priority])
     @VertexType = @VertexType.newTypeWithMixin(VertexDrawableParity)
 
-    @VertexType.onStatic "changePlayer0", ->
+    @VertexType.onStatic "changePlayer", ->
       @markIncidentEdgesModified()
       @dispatch("redrawNeeded")
     @VertexType.onStatic("changePriority", -> @dispatch("redrawNeeded"))

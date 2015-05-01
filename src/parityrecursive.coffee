@@ -30,7 +30,7 @@ allNeighborsVisited = (graph, v, visited) ->
       return false
   return true
 
-module.exports.attractor = attractor = (graph, player0, subset) ->
+module.exports.attractor = attractor = (graph, player, subset) ->
   visited = {}
   for u in subset
     visited[u.id] = true
@@ -40,7 +40,7 @@ module.exports.attractor = attractor = (graph, player0, subset) ->
       for v in u.inNeighbors(notRemoved)
         if visited[v.id]
           continue
-        if v.player0 == player0 or allNeighborsVisited(graph, v, visited)
+        if v.player == player or allNeighborsVisited(graph, v, visited)
           visited[v.id] = true
           addition.push(v)
     if addition.length == 0
@@ -66,10 +66,10 @@ parityWinRecursive = (graph) ->
     return [[],[]]
   d = minPriority(graph)
   A = verticesOfPriority(graph, d)
-  i = if even(d) then 0 else 1
-  j = if even(d) then 1 else 0
+  i = if even(d) then G.PLAYER0 else G.PLAYER1
+  j = if even(d) then G.PLAYER1 else G.PLAYER0
 
-  B = attractor(graph, (i == 0), A)
+  B = attractor(graph, i, A)
   markRemoved(graph, B)
   winningRegions = parityWinRecursive(graph)
   unmarkRemoved(graph, B)
@@ -77,7 +77,7 @@ parityWinRecursive = (graph) ->
   if winningRegions[j].length == 0
     winningRegions[i] = (v for v in graph.getVertices(notRemoved))
   else
-    B = attractor(graph, (i == 1), winningRegions[j])
+    B = attractor(graph, j, winningRegions[j])
     markRemoved(graph, B)
     winningRegions = parityWinRecursive(graph)
     unmarkRemoved(graph, B)
@@ -89,14 +89,14 @@ parityWinRecursive = (graph) ->
   return winningRegions
 
 
-findDeadEnds = (graph, player0) ->
-  v for v in graph.getVertices() when v.player0 == true and v.outNeighbors().length == 0
+findDeadEnds = (graph, player) ->
+  v for v in graph.getVertices() when v.player == player and v.outNeighbors().length == 0
 # Removes dead-ends and their attractors.
 simplifyDeadEnds = (graph) ->
-  player0DeadEnds = findDeadEnds(graph, true)
-  W1 = attractor(graph, false, player0DeadEnds)
-  player1DeadEnds = findDeadEnds(graph, true)
-  W0 = attractor(graph, true, player1DeadEnds)
+  player0DeadEnds = findDeadEnds(graph, G.PLAYER0)
+  W1 = attractor(graph, G.PLAYER1, player0DeadEnds)
+  player1DeadEnds = findDeadEnds(graph, G.PLAYER1)
+  W0 = attractor(graph, G.PLAYER0, player1DeadEnds)
   markRemoved(graph, W0)
   markRemoved(graph, W1)
   return [W0, W1]

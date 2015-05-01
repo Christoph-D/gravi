@@ -6,7 +6,7 @@ G.generateRandomGraph = (n, p) ->
     v = new g.VertexType
       x: -150 * Math.cos(2 * Math.PI / n * i) + 350
       y: 150 * Math.sin(2 * Math.PI / n * i) + 200
-    v.player0 = Math.random() < 0.5
+    v.player = if Math.random() < 0.5 then G.PLAYER0 else G.PLAYER1
     v.priority = Math.round(Math.random() * 6)
     g.addVertex(v)
   for i in [0..n - 1]

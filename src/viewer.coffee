@@ -3,7 +3,7 @@ examples = require "./examples"
 solver = require "./parityrecursive"
 
 addVertexListener = (v) ->
-  v.on("changePlayer0", runAlgorithm)
+  v.on("changePlayer", runAlgorithm)
   v.on("changePriority", runAlgorithm)
 
 prepareGraph = (g) ->
