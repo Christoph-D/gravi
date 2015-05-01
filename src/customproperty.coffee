@@ -8,6 +8,9 @@ add = (Type, descriptor) ->
   typeToCheck = descriptor.type
   if typeToCheck == "array"
     typeToCheck = "object"
+  if typeToCheck == "enum"
+    typeToCheck = "number"
+    isEnum = true
 
   class TypeWithProperty extends Type
     if @propertyDescriptors?
@@ -35,6 +38,8 @@ add = (Type, descriptor) ->
           if typeof value != typeToCheck and typeof value != "undefined"
             throw TypeError("Property \"#{name}\" received invalid type \"#{typeof value}\", \
               excepted \"#{descriptor.type}\"")
+          if isEnum == true and value not in descriptor.values
+            throw TypeError("Enum property \"#{name}\" received invalid value \"#{value}\"")
           oldValue = @_properties[name]
           @_properties[name] = value
           if descriptor.notify != false and oldValue != value

@@ -31,6 +31,21 @@ appendToDom = (dom, propertyDescriptor) ->
       dom.append("input").attr("type", "checkbox").attr("id", name)
         .property("checked", @[name])
         .on("change", -> self[name] = this.checked)
+    when "enum"
+      self = this
+      values = propertyDescriptor.values
+      if values.length != 2
+        throw Error("Don't know how to display non-boolean enums")
+      dom = dom.append("p")
+      dom.append("span").text("#{Name}:").style("margin-right", "1em")
+      dom.append("input").attr("type", "text").attr("name", name)
+        .property("value", @[name])
+        .on("input", ->
+          i = parseInt this.value
+          try
+            self[name] = i
+          catch
+            self[name] = propertyDescriptor.defaultValue)
   return
 
 return (dom) ->
