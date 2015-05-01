@@ -5,6 +5,7 @@ return [ """
     {
       "x": 140,
       "y": 190,
+      "player": 1,
       "priority": 1
     },
     {
@@ -14,7 +15,6 @@ return [ """
     {
       "x": 221,
       "y": 325,
-      "player": 0,
       "priority": 1
     },
     {
@@ -25,7 +25,6 @@ return [ """
     {
       "x": 451,
       "y": 170,
-      "player": 0,
       "priority": 1
     },
     {
@@ -44,6 +43,7 @@ return [ """
     {
       "x": 252,
       "y": 209,
+      "player": 1,
       "priority": 1
     },
     {
