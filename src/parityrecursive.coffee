@@ -88,11 +88,14 @@ parityWinRecursive = (graph) ->
         winningRegions[j].push(v)
   return winningRegions
 
+
+findDeadEnds = (graph, player0) ->
+  v for v in graph.getVertices() when v.player0 == true and v.outNeighbors().length == 0
 # Removes dead-ends and their attractors.
 simplifyDeadEnds = (graph) ->
-  player0DeadEnds = (v for v in graph.getVertices() when v.player0 == true and v.outNeighbors().length == 0)
+  player0DeadEnds = findDeadEnds(graph, true)
   W1 = attractor(graph, false, player0DeadEnds)
-  player1DeadEnds = (v for v in graph.getVertices() when v.player0 == false and v.outNeighbors().length == 0)
+  player1DeadEnds = findDeadEnds(graph, true)
   W0 = attractor(graph, true, player1DeadEnds)
   markRemoved(graph, W0)
   markRemoved(graph, W1)
