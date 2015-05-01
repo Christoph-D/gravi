@@ -5,9 +5,8 @@ require "./paritygame"
 # "A deterministic subexponential algorithm for solving parity games"
 #
 # This is an implementation of the naive recursive algorithm described
-# in this paper.
-#
-# It only works if there is no node with out-degree 0.
+# in this paper, not an implementation of the subexponential
+# algorithm.
 
 notRemoved = (v) -> v.removed != true
 
