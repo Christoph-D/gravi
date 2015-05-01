@@ -82,7 +82,7 @@ module.exports = (grunt) ->
           execOptions:
             cwd: '<%= buildDir %>/specjs'
       doc:
-        command: 'asciidoctor --destination-dir=\'<%= buildDir %>/doc\' doc/\*.adoc'
+        command: 'asciidoctor --destination-dir=\'<%= buildDir %>/doc\' doc/\*.adoc || true'
 
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-watch')
