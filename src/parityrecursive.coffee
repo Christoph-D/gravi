@@ -66,10 +66,10 @@ parityWinRecursive = (graph) ->
     return [[],[]]
   d = minPriority(graph)
   A = verticesOfPriority(graph, d)
-  i = if even(d) then G.PLAYER0 else G.PLAYER1
-  j = if even(d) then G.PLAYER1 else G.PLAYER0
+  i = if even(d) then 0 else 1
+  j = if even(d) then 1 else 0
 
-  B = attractor(graph, i, A)
+  B = attractor(graph, (if i == 0 then G.PLAYER0 else G.PLAYER1), A)
   markRemoved(graph, B)
   winningRegions = parityWinRecursive(graph)
   unmarkRemoved(graph, B)
@@ -77,7 +77,7 @@ parityWinRecursive = (graph) ->
   if winningRegions[j].length == 0
     winningRegions[i] = (v for v in graph.getVertices(notRemoved))
   else
-    B = attractor(graph, j, winningRegions[j])
+    B = attractor(graph, (if j == 0 then G.PLAYER0 else G.PLAYER1), winningRegions[j])
     markRemoved(graph, B)
     winningRegions = parityWinRecursive(graph)
     unmarkRemoved(graph, B)
