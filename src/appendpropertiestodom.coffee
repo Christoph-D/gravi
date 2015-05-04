@@ -28,6 +28,7 @@ appendToDom = (dom, propertyDescriptor) ->
       elem = div.append("input")
         .attr("type", "text")
         .attr("name", name)
+        .attr("maxlength", "6")
         .property("value", @[name])
         .on("change", onChange)
       $(elem).spinner(stop: onChange)
