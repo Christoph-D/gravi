@@ -3,50 +3,42 @@ appendToDom = (dom, propertyDescriptor) ->
     return
 
   name = propertyDescriptor.name
-  Name = propertyDescriptor.Name
   self = this
+  div = dom.append("form").attr("class", "property-input #{propertyDescriptor.type}-input").append("div")
+  div.append("span")
+    .attr("class", "label")
+    .text("#{propertyDescriptor.Name}:")
   switch propertyDescriptor.type
     when "string"
-      dom = dom.append("p").attr("class", "property-input string-input")
-      dom.append("span")
-        .attr("class", "label")
-        .text("#{Name}:")
-      span = dom.append("span").classed("ui-spinner ui-widget ui-widget-content ui-corner-all", true)
-      span.append("input").attr("type", "text").attr("name", name)
+      div.append("span")
+        .attr("class", "ui-spinner ui-widget ui-widget-content ui-corner-all")
+        .append("input")
+        .attr("class", "ui-spinner-input")
+        .attr("type", "text")
+        .attr("name", name)
         .property("value", @[name])
         .on("input", -> self[name] = this.value)
-        .classed("ui-spinner-input", true)
     when "number"
-      dom = dom.append("p").attr("class", "property-input number-input")
-      dom.append("span")
-        .attr("class", "label")
-        .text("#{Name}:")
       onChange = ->
         i = parseInt this.value
         if not isNaN(i)
           self[name] = i
         else
           self[name] = propertyDescriptor.defaultValue
-      elem = dom.append("input").attr("type", "text").attr("name", name)
+      elem = div.append("input")
+        .attr("type", "text")
+        .attr("name", name)
         .property("value", @[name])
         .on("change", onChange)
       $(elem).spinner(stop: onChange)
     when "boolean"
-      dom = dom.append("p").attr("class", "property-input boolean-input")
-      div.append("label")
-        .attr("class", "label")
-        .text("#{Name}:")
-        .attr("for", name)
-      dom.append("input").attr("type", "checkbox").attr("id", name)
+      div.append("input")
+        .attr("type", "checkbox")
+        .attr("id", name)
         .property("checked", @[name])
         .on("change", -> self[name] = this.checked)
     when "enum"
-      values = propertyDescriptor.values
-      div = dom.append("form").attr("class", "property-input enum-input").append("div")
-      div.append("span")
-        .attr("class", "label")
-        .text("#{Name}:")
-      appendChoice = (n) ->
+      for n in propertyDescriptor.values
         div.append("input")
           .attr("type", "radio")
           .attr("name", "#{name}")
@@ -57,8 +49,6 @@ appendToDom = (dom, propertyDescriptor) ->
         div.append("label")
           .attr("for", "#{name}-#{n}")
           .text(n)
-      for v in values
-        appendChoice(v)
       $(div).buttonset()
   return
 
