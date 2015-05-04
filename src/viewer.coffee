@@ -97,8 +97,25 @@ animateAlgorithm = ->
         state.editor.queueRedraw()
         return ""
 
-#state.alg = new G.AlgorithmRunner(G.dfs.run)
-state.alg = new G.AlgorithmRunner(solver.parityWin)
+dfs = new G.AlgorithmRunner(G.dfs.run)
+parity = new G.AlgorithmRunner(solver.parityWin)
+state.alg = parity
+
+chooseAlgorithm = ->
+  if this.value == "dfs"
+    state.alg = dfs
+    $("#run").button("enable")
+  else
+    state.alg = parity
+    $("#run").button("disable")
+
+    # Hack to remove the cursor.
+    # TODO: find the proper place for this.
+    state.g.cursor.cursor.reset()
+  runAlgorithm()
+
+d3.select("#dfs").on("change", chooseAlgorithm)
+d3.select("#parity").on("change", chooseAlgorithm)
 
 d3.select("#run").on("click", animateAlgorithm)
 d3.select("#generate").on("click", generateGraph)

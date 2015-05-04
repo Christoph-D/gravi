@@ -20,11 +20,13 @@ G.Graph.injectDelayedProperty "history", class
         try
           value.reset()
         catch
+      v.modified = true
     for e in @graph.getEdges()
       for key, value of e
         try
           value.reset()
         catch
+      e.modified = true
     @totalSteps = 0
     @currentStep = 0
     @
