@@ -78,6 +78,25 @@ describe "A custom property", ->
     checkType("object", undefined)
     checkType("string", "")
 
+  describe "of array type", ->
+    defaultValue = [0,1]
+    beforeEach ->
+      D =
+        name: "foo"
+        type: "array"
+        defaultValue: defaultValue
+      T = CustomProperty.add(A, D)
+      v = new T
+    it "copies the default value", ->
+      expect(v.foo).toEqual(defaultValue)
+      expect(v.foo).not.toBe(defaultValue)
+    it "copies the default value between instances", ->
+      expect(v.foo).toEqual((new T).foo)
+      expect(v.foo).not.toBe((new T).foo)
+    it "copies parameters", ->
+      a = [1,2]
+      expect((new T(foo: a)).foo).not.toBe(a)
+
   describe "of enum type", ->
     beforeEach ->
       D =
