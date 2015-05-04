@@ -28,12 +28,19 @@ runAlgorithm = ->
   catch error
     d3.select("#loading-message").text(error.message)
   d3.select("body").on("keydown", () ->
-    return unless document.activeElement.id != "dump"
+    return if document.activeElement.id == "dump"
     stopAnimation()
     newStep = state.editor.currentStep()
     switch d3.event.keyCode
-      when 37 then --newStep if newStep >= 1
-      when 39 then ++newStep if newStep <= state.editor.totalSteps() - 2
+      when 37 # left arrow
+        --newStep if newStep >= 1
+      when 39 # right arrow
+        ++newStep if newStep <= state.editor.totalSteps() - 2
+      when 46 # delete
+        if state.editor.selection in g.getVertices()
+          g.removeVertex(state.editor.selection)
+        else if state.editor.selection in g.getEdges()
+          g.removeEdge(state.editor.selection)
     state.editor.currentStep(newStep)
     state.slider.value(newStep)
     state.editor.queueRedraw())
