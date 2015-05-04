@@ -49,7 +49,7 @@ runAlgorithm = ->
 generateGraph = ->
   stopAnimation()
   #state.g = graphFromJSON(s)
-  state.g = prepareGraph(G.generateRandomGraph(10, 0.2))
+  state.g = prepareGraph(G.generateRandomGraph(15, 0.2))
   #state.g = generatePath(10)
   if state.editor?
     state.editor.setGraph(state.g)
