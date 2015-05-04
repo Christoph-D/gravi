@@ -46,8 +46,11 @@ module.exports = (grunt) ->
       options:
         atBegin: true
       gravi:
-        files: [ '<%= srcDir %>/*.coffee', '<%= siteDir %>/*' ],
+        files: [ '<%= srcDir %>/*.coffee' ],
         tasks: [ 'compile', 'shell:test' ]
+      site:
+        files: [ '<%= siteDir %>/*' ],
+        tasks: [ 'build-site' ]
       test:
         files: [ 'spec/*.coffee' ]
         tasks: [ 'test' ]
@@ -71,7 +74,7 @@ module.exports = (grunt) ->
       lib:
         expand: true
         dest: '<%= buildDir %>/'
-        src: [ 'require.js', 'd3/d3.min.js', 'd3.slider/*.{js,css}' ]
+        src: [ 'require.js', 'd3/d3.min.js', 'd3.slider/*.{js,css}', 'jquery-2.*.min.js', 'jquery-ui/**/*' ]
         cwd: 'lib'
     clean:
       all: [ "<%= buildDir %>/**/*" ]
@@ -95,7 +98,8 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-shell')
 
   grunt.registerTask('compile', [ 'wrap:gravi', 'coffee:gravi' ])
-  grunt.registerTask('build', [ 'compile', 'less', 'autoprefixer', 'copy' ])
+  grunt.registerTask('build-site', [ 'less', 'autoprefixer', 'copy' ])
+  grunt.registerTask('build', [ 'compile', 'build-site' ])
   grunt.registerTask('minify', [ 'compile', 'requirejs:gravi' ])
 
   grunt.registerTask('doc', [ 'shell:doc'])

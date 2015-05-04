@@ -7,10 +7,13 @@
 </style>
 <link rel="stylesheet" type="text/css" href="graphs.css">
 <link rel="stylesheet" type="text/css" href="d3.slider/d3.slider.css">
+<link rel="stylesheet" type="text/css" href="jquery-ui/jquery-ui.min.css">
 <title></title>
 <body>
 <script src="d3/d3.min.js" charset="utf-8"></script>
 <script src="d3.slider/d3.slider.js" charset="utf-8"></script>
+<script src="jquery-2.1.3.min.js" charset="utf-8"></script>
+<script src="jquery-ui/jquery-ui.min.js" charset="utf-8"></script>
 <svg id="graph" />
 <div id="infocol">
   <div id="info"></div>
@@ -30,5 +33,8 @@
   <span id="loading-message"></span></br>
   <textarea id="dump"></textarea>
 </p>
+<script>
+  $("*[type=button]").button()
+</script>
 <script data-main="js/viewer.js" src="require.js"></script>
 </body>
