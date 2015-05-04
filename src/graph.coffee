@@ -55,9 +55,9 @@ Vertex = CustomProperty.addMany Vertex, [
   { name: "id", type: "number", editable: false, shouldBeSaved: false }
   { name: "outE", type: "array", editable: false, shouldBeSaved: false }
   { name: "inE", type: "array", editable: false, shouldBeSaved: false }
-  { name: "label", type: "string", defaultValue: "" }
-  { name: "x", type: "number", defaultValue: 0, editable: false }
-  { name: "y", type: "number", defaultValue: 0, editable: false }
+  { name: "label", type: "string" }
+  { name: "x", type: "number", editable: false }
+  { name: "y", type: "number", editable: false }
   ]
 G.Vertex = Vertex
 

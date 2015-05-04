@@ -67,6 +67,17 @@ describe "A custom property", ->
         # Modifying w should not modify v.
         expect(v.foo).toEqual("v")
 
+  describe "with default values", ->
+    checkType = (type, defaultValue) ->
+      it "of #{type} type has the correct default value", ->
+        D = name: "foo", type: type
+        T = CustomProperty.add(A, D)
+        expect((new T).foo).toEqual(defaultValue)
+    checkType("array", [])
+    checkType("number", 0)
+    checkType("object", undefined)
+    checkType("string", "")
+
   describe "of enum type", ->
     beforeEach ->
       D =

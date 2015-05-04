@@ -12,6 +12,13 @@ add = (Type, descriptor) ->
     typeToCheck = "number"
     isEnum = true
 
+  descriptor.defaultValue ?=
+    switch descriptor.type
+      when "array" then []
+      when "number" then 0
+      when "string" then ""
+      else undefined
+
   class TypeWithProperty extends Type
     if @propertyDescriptors?
       @propertyDescriptors = @propertyDescriptors.slice()
@@ -38,7 +45,7 @@ add = (Type, descriptor) ->
           @[name] = v[name]
       else
         if descriptor.type == "array"
-          @[name] = []
+          @[name] = descriptor.defaultValue.slice()
         else
           @[name] = descriptor.defaultValue
 
