@@ -53,7 +53,7 @@ add = (Type, descriptor) ->
 
     Object.defineProperty this::, name,
       configurable: true
-      enumerable: true
+      enumerable: descriptor.enumerable != false
       get: -> @_properties[name]
       set: (value) ->
         if typeof value != typeToCheck and typeof value != "undefined"

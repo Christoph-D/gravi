@@ -32,6 +32,13 @@ describe "A custom property", ->
       new TypeError("Custom property \"foo\" already exists."))
   it "is enumerable", ->
     expect(p for p of v).toContain("foo")
+  it "is not enumerable if so configured", ->
+    D =
+      name: "notenumerable"
+      type: "string"
+      enumerable: false
+    T = CustomProperty.add(A, D)
+    expect(p for p of new T).not.toContain("notenumerable")
   it "is not enumerable as an own property", ->
     expect(p for own p of v).not.toContain("foo")
   it "internal property list is not enumerable", ->
