@@ -31,9 +31,11 @@ describe "A custom property", ->
     expect(-> CustomProperty.add(T, D)).toThrow(
       new TypeError("Custom property \"foo\" already exists."))
   it "is enumerable", ->
-    expect(p for own p of v).toContain("foo")
+    expect(p for p of v).toContain("foo")
+  it "is not enumerable as an own property", ->
+    expect(p for own p of v).not.toContain("foo")
   it "internal property list is not enumerable", ->
-    expect(p for own p of v).not.toContain("_properties")
+    expect(p for p of v).not.toContain("_properties")
   it "fires the change event exactly once per change", ->
     a = f: ->
     spyOn(a, 'f')

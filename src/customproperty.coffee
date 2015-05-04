@@ -25,27 +25,12 @@ add = (Type, descriptor) ->
     constructor: (v) ->
       super
       if not @_properties?
+        # We want @_properties to be not enumerable.
         Object.defineProperty this, "_properties",
           configurable: true
           enumerable: false
           writable: true
           value: {}
-      Object.defineProperty this, name,
-        configurable: true
-        enumerable: descriptor.enumerable != false
-        get: -> @_properties[name]
-        set: (value) ->
-          if typeof value != typeToCheck and typeof value != "undefined"
-            throw TypeError("Property \"#{name}\" received invalid type \"#{typeof value}\", \
-              excepted \"#{descriptor.type}\"")
-          if isEnum == true and value not in descriptor.values
-            throw TypeError("Enum property \"#{name}\" received invalid value \"#{value}\"")
-          oldValue = @_properties[name]
-          @_properties[name] = value
-          if descriptor.notify != false and oldValue != value
-            @modified = true
-            @dispatch?(onChange)
-          value
       if v?[name]?
         if descriptor.type == "array"
           @[name] = v[name].slice()
@@ -61,9 +46,27 @@ add = (Type, descriptor) ->
       for p in @propertyDescriptors()
         f p
       @
+
     propertyDescriptors: -> TypeWithProperty.propertyDescriptors
 
     appendPropertiesToDom: require "./appendpropertiestodom"
+
+    Object.defineProperty this::, name,
+      configurable: true
+      enumerable: true
+      get: -> @_properties[name]
+      set: (value) ->
+        if typeof value != typeToCheck and typeof value != "undefined"
+          throw TypeError("Property \"#{name}\" received invalid type \"#{typeof value}\", \
+            excepted \"#{descriptor.type}\"")
+        if isEnum == true and value not in descriptor.values
+          throw TypeError("Enum property \"#{name}\" received invalid value \"#{value}\"")
+        oldValue = @_properties[name]
+        @_properties[name] = value
+        if descriptor.notify != false and oldValue != value
+          @modified = true
+          @dispatch?(onChange)
+        value
 
 addMany = (Type, descriptors) ->
   for d in descriptors
