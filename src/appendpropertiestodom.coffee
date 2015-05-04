@@ -4,9 +4,9 @@ appendToDom = (dom, propertyDescriptor) ->
 
   name = propertyDescriptor.name
   Name = propertyDescriptor.Name
+  self = this
   switch propertyDescriptor.type
     when "string"
-      self = this
       dom = dom.append("p").attr("class", "property-input string-input")
       dom.append("span")
         .attr("class", "label")
@@ -17,7 +17,6 @@ appendToDom = (dom, propertyDescriptor) ->
         .on("input", -> self[name] = this.value)
         .classed("ui-spinner-input", true)
     when "number"
-      self = this
       dom = dom.append("p").attr("class", "property-input number-input")
       dom.append("span")
         .attr("class", "label")
@@ -33,7 +32,6 @@ appendToDom = (dom, propertyDescriptor) ->
         .on("change", onChange)
       $(elem).spinner(stop: onChange)
     when "boolean"
-      self = this
       dom = dom.append("p").attr("class", "property-input boolean-input")
       div.append("label")
         .attr("class", "label")
@@ -43,7 +41,6 @@ appendToDom = (dom, propertyDescriptor) ->
         .property("checked", @[name])
         .on("change", -> self[name] = this.checked)
     when "enum"
-      self = this
       values = propertyDescriptor.values
       div = dom.append("form").attr("class", "property-input enum-input").append("div")
       div.append("span")
