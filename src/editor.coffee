@@ -195,11 +195,19 @@ class G.GraphEditor
     d3.event.stopPropagation()
     @select(d)
     @queueRedraw()
+  onRightClickEdge = (d) ->
+    d3.event.stopPropagation()
+    d3.event.preventDefault()
+    @drawEdgeMode = false
+    @g.removeEdge(d)
+    @g.compressIds()
+    @queueRedraw()
   drawEdges: ->
     edges = @svg.select("#edges").selectAll(".edge").data(@g.getEdges())
     editor = this
     edges.enter().append("g").each((e) -> e.drawEnter(editor, d3.select(this)))
       .on("click", onClickEdge.bind(this))
+      .on("contextmenu", onRightClickEdge.bind(this))
     edges.exit().remove()
     edges.each((e) ->
       if e.modified
