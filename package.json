@@ -10,10 +10,16 @@
     "grunt-wrap": "~0.3.0",
     "grunt-contrib-less": "~1.0.0",
     "grunt-autoprefixer": "~2.2.0",
-    "jasmine-node": "~1.14.5",
     "requirejs": "~2.1.17",
     "grunt-shell": "~1.1.2",
-    "grunt-contrib-copy": "~0.8.0"
+    "grunt-contrib-copy": "~0.8.0",
+    "karma": "~0.12.31",
+    "jasmine-core": "~2.3.0",
+    "karma-jasmine": "~0.3.5",
+    "karma-requirejs": "~0.2.2",
+    "karma-phantomjs-launcher": "~0.1.4",
+    "coffee-script": "~1.9.2",
+    "grunt-karma": "~0.10.1"
   },
   "author": {
     "name": "Christoph Dittmann"

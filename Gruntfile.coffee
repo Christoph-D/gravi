@@ -15,6 +15,13 @@ module.exports = (grunt) ->
         dest: '<%= buildDir %>/js',
         options:
           wrapper: ['`define(function (require, exports, module) {`\n', '\n`})`\n']
+      test:
+        expand: true,
+        flatten: true,
+        src: 'spec/*.coffee',
+        dest: '<%= buildDir %>/specjs',
+        options:
+          wrapper: ['`define(function (require, exports, module) {`\n', '\n`})`\n']
     # Compile coffeescript.
     coffee:
       options:
@@ -29,7 +36,7 @@ module.exports = (grunt) ->
       test:
         expand: true,
         flatten: true,
-        src: 'spec/*.coffee'
+        src: '<%= buildDir %>/specjs/*.coffee'
         dest: '<%= buildDir %>/specjs'
         ext: '.js'
     requirejs:
@@ -47,7 +54,7 @@ module.exports = (grunt) ->
         atBegin: true
       gravi:
         files: [ '<%= srcDir %>/*.coffee' ],
-        tasks: [ 'compile', 'shell:test' ]
+        tasks: [ 'compile', 'karma:single-test' ]
       site:
         files: [ '<%= siteDir %>/*' ],
         tasks: [ 'build-site' ]
@@ -79,13 +86,12 @@ module.exports = (grunt) ->
     clean:
       all: [ "<%= buildDir %>/**/*" ]
     shell:
-      test:
-        command: '../../node_modules/jasmine-node/bin/jasmine-node --color --matchall --captureExceptions --runWithRequireJs --requireJsSetup config.js .'
-        options:
-          execOptions:
-            cwd: '<%= buildDir %>/specjs'
       doc:
         command: 'asciidoctor --destination-dir=\'<%= buildDir %>/doc\' doc/\*.adoc || true'
+    karma:
+      'single-test':
+        configFile: 'karma.conf.js'
+        singleRun: true
 
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-watch')
@@ -96,6 +102,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-wrap')
   grunt.loadNpmTasks('grunt-autoprefixer')
   grunt.loadNpmTasks('grunt-shell')
+  grunt.loadNpmTasks('grunt-karma')
 
   grunt.registerTask('compile', [ 'wrap:gravi', 'coffee:gravi' ])
   grunt.registerTask('build-site', [ 'less', 'autoprefixer', 'copy' ])
@@ -104,6 +111,6 @@ module.exports = (grunt) ->
 
   grunt.registerTask('doc', [ 'shell:doc'])
 
-  grunt.registerTask('test', [ 'coffee:test', 'shell:test' ])
+  grunt.registerTask('test', [ 'wrap:test', 'coffee:test', 'karma:single-test' ])
 
   grunt.registerTask('default', [ 'build', 'doc', 'test' ])

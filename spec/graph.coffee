@@ -2,7 +2,7 @@ G = require "gravi/graph"
 graphMatcher = require "./graphmatcher"
 
 describe "A graph", ->
-  beforeEach -> @addMatchers graphMatcher
+  beforeEach -> jasmine.addMatchers graphMatcher
 
   describe "basic functions", ->
     g = {}
