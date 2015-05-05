@@ -124,3 +124,6 @@ d3.select("#load").on("click", loadGraph)
 d3.select("#example1").on("click", -> loadGraph examples[0])
 generateGraph()
 loadGraph examples[0]
+
+if d3.select("#dfs").property("checked")
+  chooseAlgorithm.call({value: "dfs"})
