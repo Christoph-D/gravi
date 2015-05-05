@@ -92,6 +92,8 @@ module.exports = (grunt) ->
       'single-test':
         configFile: 'karma.conf.js'
         singleRun: true
+      watch:
+        configFile: 'karma.conf.js'
 
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-watch')
