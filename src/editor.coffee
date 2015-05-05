@@ -59,21 +59,23 @@ class G.GraphEditor
         # Invalidate the incident edges because the vertex moved.
         d.markIncidentEdgesModified()
         @queueRedraw())
-    # Global click handler to deselect everything.
-    @svg.on("click", =>
-      @select(null)
-      @drawEdgeMode = false
-      @queueRedraw())
-    @svg.on("contextmenu", =>
-    # Global click handler to create new vertices on right click.
-      d3.event.stopPropagation()
-      d3.event.preventDefault()
-      v = new @g.VertexType x: @mouse.x, y: @mouse.y
-      @g.addVertex(v)
-      if @drawEdgeMode
-        e = new @g.EdgeType tail: @selection.id, head: v.id
-        @g.addEdge e
-        @drawEdgeMode = false
+    @svg.on("contextmenu", -> d3.event.preventDefault())
+    @svg.on("mousedown", =>
+      switch d3.event.button
+        when 0 # left click
+          # Deselect everything.
+          @select(null)
+          @drawEdgeMode = false
+        when 2 # right click
+          # Create new vertices on right click.
+          d3.event.stopPropagation()
+          d3.event.preventDefault()
+          v = new @g.VertexType x: @mouse.x, y: @mouse.y
+          @g.addVertex(v)
+          if @drawEdgeMode
+            e = new @g.EdgeType tail: @selection.id, head: v.id
+            @g.addEdge e
+            @drawEdgeMode = false
       @queueRedraw())
     # Global mousemove handler to keep track of the mouse.
     editor = this
@@ -120,24 +122,26 @@ class G.GraphEditor
         e.modified = true
     @g.history.currentStep = step
 
-  onClickVertex = (d) ->
-    # Stop the propagation or the click would propagate to the root
-    # svg, deselecting everything.
-    d3.event.stopPropagation()
-    # No need to select this vertex because the "dragstart" event does
-    # it, saving one redraw.
   onDoubleClickVertex = (d) ->
     d3.event.stopPropagation()
     @select(d)
     @drawEdgeMode = true
     @queueRedraw()
-  onRightClickVertex = (d) ->
-    d3.event.stopPropagation()
-    d3.event.preventDefault()
-    @drawEdgeMode = false
-    @g.removeVertex(d)
-    @g.compressIds()
-    @queueRedraw()
+  onMouseDownVertex = (d) ->
+    switch d3.event.button
+      when 0 # left click
+        # Stop the propagation or the click would propagate to the root
+        # svg, deselecting everything.
+        d3.event.stopPropagation()
+        # No need to select this vertex because the "dragstart" event does
+        # it, saving one redraw.
+      when 2 # right click
+        d3.event.stopPropagation()
+        d3.event.preventDefault()
+        @drawEdgeMode = false
+        @g.removeVertex(d)
+        @g.compressIds()
+        @queueRedraw()
   onMouseOverVertex = (d) ->
     if @drawEdgeMode and @selection != d
       e = new @g.EdgeType tail: @selection.id, head: d.id
@@ -156,9 +160,9 @@ class G.GraphEditor
     vertices.enter().append("g")
       .each((v) -> v.drawEnter(editor, d3.select(this)))
       .call(@drag)
-      .on("click", onClickVertex.bind(this))
       .on("dblclick", onDoubleClickVertex.bind(this))
-      .on("contextmenu", onRightClickVertex.bind(this))
+      .on("mousedown", onMouseDownVertex.bind(this))
+      .on("contextmenu", -> d3.event.preventDefault())
       .on("mouseover", onMouseOverVertex.bind(this))
     vertices.exit().remove()
     vertices.each((v) ->
@@ -191,23 +195,24 @@ class G.GraphEditor
       .attr("cx", (d) -> d.x)
       .attr("cy", (d) -> d.y)
 
-  onClickEdge = (d) ->
-    d3.event.stopPropagation()
-    @select(d)
-    @queueRedraw()
-  onRightClickEdge = (d) ->
-    d3.event.stopPropagation()
-    d3.event.preventDefault()
-    @drawEdgeMode = false
-    @g.removeEdge(d)
-    @g.compressIds()
+  onMouseDownEdge = (d) ->
+    switch d3.event.button
+      when 0 # left click
+        d3.event.stopPropagation()
+        @select(d)
+      when 2 # right click
+        d3.event.stopPropagation()
+        d3.event.preventDefault()
+        @drawEdgeMode = false
+        @g.removeEdge(d)
+        @g.compressIds()
     @queueRedraw()
   drawEdges: ->
     edges = @svg.select("#edges").selectAll(".edge").data(@g.getEdges())
     editor = this
     edges.enter().append("g").each((e) -> e.drawEnter(editor, d3.select(this)))
-      .on("click", onClickEdge.bind(this))
-      .on("contextmenu", onRightClickEdge.bind(this))
+      .on("contextmenu", -> d3.event.preventDefault())
+      .on("mousedown", onMouseDownEdge.bind(this))
     edges.exit().remove()
     edges.each((e) ->
       if e.modified
