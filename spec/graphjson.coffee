@@ -9,6 +9,13 @@ describe "The graph JSON converter", ->
     g.vertices[0].label = "first label"
     g.vertices[1].label = "second label"
 
+  it "sucessfully loads the empty graph", ->
+    expect(G.graphFromJSON('{"type":"Graph"}', ["Graph"])).toBeGraphEquivalent(new G.Graph)
+
+  it "sucessfully loads a trivial graph", ->
+    expect(G.graphFromJSON('{"type":"Graph","vertices":[{}],"edges":[{"head":0,"tail":0}]}', ["Graph"]))
+      .toBeGraphEquivalent(new G.Graph numVertices: 1, edgeList: [[0,0]])
+
   it "leaves the graph intact", ->
     expect(G.graphFromJSON(JSON.stringify(g), ["Graph"])).toBeGraphEquivalent(g)
 
@@ -40,5 +47,14 @@ describe "The graph JSON converter", ->
     expect(-> G.graphFromJSON(JSON.stringify(j)))
       .toThrow(TypeError("Missing property: \"type\""))
 
-  it "sucessfully loads a trivial graph", ->
-    expect(G.graphFromJSON('{"type":"Graph"}', ["Graph"])).toBeGraphEquivalent(new G.Graph)
+  it "refuses to load graphs with an empty edge", ->
+    expect(-> G.graphFromJSON('{"type":"Graph","edges":[{}]}', ["Graph"]))
+      .toThrow(Error('Missing property "tail" on edge #0: {}'))
+
+  it "refuses to load graphs with an edge missing a head", ->
+    expect(-> G.graphFromJSON('{"type":"Graph","vertices":[{}],"edges":[{"tail":0}]}', ["Graph"]))
+      .toThrow(Error('Missing property "head" on edge #0: {"tail":0}'))
+
+  it "refuses to load graphs with an edge missing a tail", ->
+    expect(-> G.graphFromJSON('{"type":"Graph","vertices":[{}],"edges":[{"head":0}]}', ["Graph"]))
+      .toThrow(Error('Missing property "tail" on edge #0: {"head":0}'))
