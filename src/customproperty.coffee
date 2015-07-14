@@ -12,8 +12,8 @@ add = (Type, descriptor) ->
     typeToCheck = "number"
     isEnum = true
 
-  descriptor.defaultValue ?=
-    switch descriptor.type
+  if not ("defaultValue" of descriptor)
+    descriptor.defaultValue = switch descriptor.type
       when "array" then []
       when "number" then 0
       when "string" then ""

@@ -52,7 +52,7 @@ Vertex = Event.makeListenable class extends Extensible
 
 Vertex = CustomProperty.addMany Vertex, [
   { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false }
-  { name: "id", type: "number", editable: false, shouldBeSaved: false }
+  { name: "id", type: "number", editable: false, shouldBeSaved: false, defaultValue: undefined }
   { name: "outE", type: "array", editable: false, shouldBeSaved: false }
   { name: "inE", type: "array", editable: false, shouldBeSaved: false }
   { name: "label", type: "string" }
@@ -67,9 +67,9 @@ Edge = Event.makeListenable class extends Extensible
 
 Edge = CustomProperty.addMany Edge, [
   { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false }
-  { name: "id", type: "number", editable: false, shouldBeSaved: false }
-  { name: "head", type: "number", editable: false }
-  { name: "tail", type: "number", editable: false }
+  { name: "id", type: "number", editable: false, shouldBeSaved: false, defaultValue: undefined }
+  { name: "head", type: "number", editable: false, defaultValue: undefined }
+  { name: "tail", type: "number", editable: false, defaultValue: undefined }
   ]
 G.Edge = Edge
 
