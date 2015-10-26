@@ -30,7 +30,7 @@ return makeListenable: (Type) ->
       delete _listenersStaticPerm[event]
       @
 
-    eventRemovePermanentListeners: (event) ->
+    removePermanentListeners: (event) ->
       delete @_listenersPerm[event]
       @
 

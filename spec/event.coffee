@@ -23,7 +23,7 @@ describe "A listenable object", ->
       expect(seen).toEqual(1)
 
     it "does not allow removing the handler", ->
-      a.eventRemovePermanentListeners("foo")
+      a.removePermanentListeners("foo")
       a.foo()
       expect(seen).toEqual(1)
 
@@ -45,7 +45,7 @@ describe "A listenable object", ->
       expect(seen).toEqual(2)
 
     it "allows removing the handler", ->
-      a.eventRemovePermanentListeners("foo")
+      a.removePermanentListeners("foo")
       a.foo()
       expect(seen).toEqual(0)
 
