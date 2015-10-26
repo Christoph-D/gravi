@@ -67,7 +67,7 @@ describe "A listenable object", ->
       expect(seen).toEqual(2)
 
     it "allows removing the handler", ->
-      A.eventStaticRemoveListeners("foo")
+      A.removeStaticListeners("foo")
       a.foo()
       expect(seen).toEqual(0)
 

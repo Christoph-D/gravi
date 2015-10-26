@@ -26,7 +26,7 @@ return makeListenable: (Type) ->
       addListener(_listenersStaticPerm, event, listener)
       @
 
-    @eventStaticRemoveListeners: (event) ->
+    @removeStaticListeners: (event) ->
       delete _listenersStaticPerm[event]
       @
 

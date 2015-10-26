@@ -93,9 +93,9 @@ class G.GraphEditor
     # This is true when the user is drawing a new edge.
     @drawEdgeMode = false
     @select(null)
-    @g.VertexType.eventStaticRemoveListeners("redrawNeeded")
+    @g.VertexType.removeStaticListeners("redrawNeeded")
     @g.VertexType.onStatic("redrawNeeded", @queueRedraw.bind(this))
-    @g.EdgeType.eventStaticRemoveListeners("redrawNeeded")
+    @g.EdgeType.removeStaticListeners("redrawNeeded")
     @g.EdgeType.onStatic("redrawNeeded", @queueRedraw.bind(this))
 
     # Rid the svg of previous clutter (keep the <defs>).
