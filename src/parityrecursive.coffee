@@ -119,8 +119,8 @@ module.exports.parityWin = parityWin = (graph) ->
   W[1] = W[1].concat(simpleW[1])
 
   # Highlight the winning regions.
-  v.highlight.set(2) for v in W[0]
-  v.highlight.set(1) for v in W[1]
+  v.highlight.set("player0") for v in W[0]
+  v.highlight.set("player1") for v in W[1]
   graph.history.saveStep()
 
   W

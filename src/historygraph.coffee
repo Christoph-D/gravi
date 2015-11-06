@@ -41,6 +41,13 @@ G.Graph.injectDelayedProperty "cursor", class
   get: ->
     @cursor.valueAtTime(@graph.history.currentStep)
 
+# Translate highlight ids from readable names to the internal names
+# used in the css file.
+translateHighlightIds = (id) ->
+  return 1 if id == "active" or id == "player0"
+  return 2 if id == "done" or id == "player1"
+  throw TypeError("Not a valid highlight id: #{id}")
+
 # Makes a vertex or an edge highlightable.
 class Highlight
   constructor: (@parent) ->
@@ -48,7 +55,7 @@ class Highlight
 
   set: (highlightId) ->
     if highlightId?
-      c = "highlight#{highlightId}"
+      c = "highlight#{translateHighlightIds(highlightId)}"
     else
       c = ""
     @highlightClass.valueAtTime(@parent.graph.history.currentStep, c)
