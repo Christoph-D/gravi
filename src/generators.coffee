@@ -29,3 +29,5 @@ G.generatePath = (n) ->
   for i in [0..n - 2]
     g.addEdge(new g.EdgeType tail: i, head: i + 1)
   return g
+
+return G

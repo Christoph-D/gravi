@@ -94,6 +94,14 @@ module.exports = (grunt) ->
         singleRun: true
       watch:
         configFile: 'karma.conf.js'
+    babel:
+      gravi:
+        expand: true
+        flatten: true
+        src: "<%= srcDir %>/*.js"
+        dest: "<%= buildDir %>/js"
+      options:
+        sourceMap: true
 
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-watch')
@@ -105,8 +113,9 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-autoprefixer')
   grunt.loadNpmTasks('grunt-shell')
   grunt.loadNpmTasks('grunt-karma')
+  grunt.loadNpmTasks('grunt-babel')
 
-  grunt.registerTask('compile', [ 'wrap:gravi', 'coffee:gravi' ])
+  grunt.registerTask('compile', [ 'wrap:gravi', 'coffee:gravi', 'babel:gravi' ])
   grunt.registerTask('build-site', [ 'less', 'autoprefixer', 'copy' ])
   grunt.registerTask('build', [ 'compile', 'build-site' ])
   grunt.registerTask('minify', [ 'compile', 'requirejs:gravi' ])

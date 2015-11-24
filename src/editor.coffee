@@ -258,3 +258,5 @@ class G.GraphEditor
       return
     @redrawQueued = true
     window.requestAnimationFrame(@draw.bind(this))
+
+return G

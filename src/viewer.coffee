@@ -1,4 +1,5 @@
 G = require "./gravi"
+dfs = require("./dfs").default
 examples = require "./examples"
 solver = require "./parityrecursive"
 
@@ -97,7 +98,7 @@ animateAlgorithm = ->
         state.editor.queueRedraw()
         return ""
 
-dfs = new G.AlgorithmRunner(G.dfs.run)
+dfs = new G.AlgorithmRunner(dfs)
 parity = new G.AlgorithmRunner(solver.parityWin)
 state.alg = parity
 

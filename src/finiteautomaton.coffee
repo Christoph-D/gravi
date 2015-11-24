@@ -71,3 +71,5 @@ class G.FiniteAutomaton extends G.Graph
     @EdgeType = CustomProperty.add(@EdgeType, letter)
     @EdgeType = @EdgeType.newTypeWithMixin(EdgeDrawableFiniteAutomaton)
     @EdgeType.onStatic("changeLetter", -> @dispatch("redrawNeeded"))
+
+return G

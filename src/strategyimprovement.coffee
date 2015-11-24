@@ -57,3 +57,5 @@ G.SI = SI =
     graph.setCursor(initialVertex)
 
 G.strategyImprovement = G.SI.run
+
+return G
