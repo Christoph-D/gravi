@@ -1,4 +1,4 @@
-import appendToDom from "appendpropertiestodom";
+import appendToDom from "./appendpropertiestodom";
 
 // Adds a property to the given class and returns the new class.
 // Contrast with TimedProperty.
@@ -64,7 +64,7 @@ export function add(Type, descriptor) {
     }
   }
 
-  Object.defineProperty(TypeWithProperty.property, name, {
+  Object.defineProperty(TypeWithProperty, name, {
     configurable: true,
     enumerable: descriptor.enumerable != false,
     get: () => this._properties[name],

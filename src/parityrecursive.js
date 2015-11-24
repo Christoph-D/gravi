@@ -1,4 +1,4 @@
-import ParityGame from "paritygame";
+import ParityGame from "./paritygame";
 
 // Based on Jurdziński, 2006:
 // "A deterministic subexponential algorithm for solving parity games"
@@ -7,23 +7,23 @@ import ParityGame from "paritygame";
 // in this paper, not an implementation of the subexponential
 // algorithm.
 
-const notRemoved = (v) => v.removed != true;
+function notRemoved(v) { return v.removed != true; }
 
-const even = (priority) => priority % 2 == 0;
+function even(priority) { return priority % 2 == 0; }
 
-const minPriority = (graph) => {
+function minPriority(graph) {
   return Math.min(...graph.getVertices(notRemoved).map(v => v.priority));
-};
+}
 
-const verticesOfPriority = (graph, priority) => {
+function verticesOfPriority(graph, priority) {
   return graph.getVertices(notRemoved).filter(v => v.priority == priority);
-};
+}
 
-const allNeighborsVisited = (graph, v, visited) => {
+function allNeighborsVisited(graph, v, visited) {
   return v.outNeighbors(notRemoved).every(w => visited[w.id]);
-};
+}
 
-const attractor = (graph, player, subset) => {
+function attractor(graph, player, subset) {
   let visited = {};
   subset.map(u => visited[u.id] = true);
   while(true) {
@@ -43,22 +43,22 @@ const attractor = (graph, player, subset) => {
     subset = subset.concat(addition);
   }
   return subset;
-};
+}
 
 let totalRemoved = 0;
 
-const markRemoved = (graph, vertices) => {
+function markRemoved(graph, vertices) {
   vertices.map(v => v.removed = true);
   totalRemoved += vertices.length;
-};
+}
 
-const unmarkRemoved = (graph, vertices) => {
+function unmarkRemoved(graph, vertices) {
   vertices.map(v => delete v.removed);
   totalRemoved -= vertices.length;
-};
+}
 
 // Assumes no dead-ends.
-const parityWinRecursive = (graph) => {
+function parityWinRecursive(graph) {
   if(totalRemoved == graph.vertices.length)
     return [[],[]];
   const d = minPriority(graph);
@@ -86,15 +86,15 @@ const parityWinRecursive = (graph) => {
         winningRegions[j].push(v);
   }
   return winningRegions;
-};
+}
 
-const findDeadEnds = (graph, player) => {
+function findDeadEnds(graph, player) {
   return graph.getVertices()
     .filter(v => v.player == player && v.outNeighbors().length == 0);
-};
+}
 
 // Removes dead-ends and their attractors.
-const simplifyDeadEnds = (graph) => {
+function simplifyDeadEnds(graph) {
   const player0DeadEnds = findDeadEnds(graph, ParityGame.PLAYER0);
   const W1 = attractor(graph, ParityGame.PLAYER1, player0DeadEnds);
   const player1DeadEnds = findDeadEnds(graph, ParityGame.PLAYER1);
@@ -102,9 +102,9 @@ const simplifyDeadEnds = (graph) => {
   markRemoved(graph, W0);
   markRemoved(graph, W1);
   return [W0, W1];
-};
+}
 
-export const parityWin = (graph) => {
+export default function parityWin(graph) {
   // We want totalRemoved == graph.vertices.length to mean "all
   // vertices are removed".  For this, we cannot have null entries in
   // the vertex list.
@@ -127,4 +127,4 @@ export const parityWin = (graph) => {
   graph.history.saveStep();
 
   return W;
-};
+}

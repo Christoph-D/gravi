@@ -1,6 +1,6 @@
-import Extensible from "extensible";
-import * as CustomProperty from "customproperty";
-import Listenable from "event";
+import Extensible from "./extensible";
+import * as CustomProperty from "./customproperty";
+import Listenable from "./event";
 
 export class Vertex extends CustomProperty.addMany(Listenable, [
   { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false },
@@ -73,7 +73,7 @@ export class Edge extends CustomProperty.addMany(Listenable, [
   // No methods here.  Everything is in custom properties.
 }
 
-export class Graph extends Listenable {
+export default class Graph extends Listenable {
   get name() { return "Graph"; }
 
   constructor(options = {}) {

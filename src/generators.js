@@ -1,5 +1,5 @@
-import * as G from "graph";
-import ParityGame from "paritygame";
+import * as G from "./graph";
+import ParityGame from "./paritygame";
 
 export function generateRandomGraph(n, p) {
   const g = new ParityGame;

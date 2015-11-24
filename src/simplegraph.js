@@ -1,4 +1,4 @@
-import * as G from "graph";
+import * as G from "./graph";
 
 export function circleEdgeAnchor(s, t, distance) {
   const result = { x: s.x, y: s.y };
@@ -87,13 +87,14 @@ export class EdgeDrawable extends EdgeDrawableDefault {
   }
 }
 
-export class SimpleGraph extends G.Graph {
+export default class SimpleGraph extends G.Graph {
+  get name() { return "SimpleGraph"; }
   get version() { return "0.1"; }
 
   init() {
-    this.VertexType = this.VertexType.newTypeWithMixin(G.VertexDrawableCircular);
+    this.VertexType = this.VertexType.newTypeWithMixin(VertexDrawableCircular);
     this.VertexType.onStatic("changeLabel", () => this.dispatch("redrawNeeded"));
 
-    this.EdgeType = this.EdgeType.newTypeWithMixin(G.EdgeDrawable);
+    this.EdgeType = this.EdgeType.newTypeWithMixin(EdgeDrawable);
   }
 }

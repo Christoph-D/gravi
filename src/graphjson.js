@@ -1,8 +1,10 @@
 // Functions to convert between a graph and its JSON representation.
 
-import * as G from "graph";
+import SimpleGraph from "./simplegraph";
+import FiniteAutomaton from "./finiteautomaton";
+import ParityGame from "./paritygame";
 
-export function vertexOrEdgeToJSON(v) {
+function vertexOrEdgeToJSON(v) {
   if(v === null)
     return null;
   const w = {};
@@ -14,23 +16,24 @@ export function vertexOrEdgeToJSON(v) {
   return w;
 }
 
-G.Graph.prototype.toJSON = function() {
-  const g = { type: this.name, version: this.version, vertices: [], edges: [] };
-  for(let v of this.vertices)
-    g.vertices.push(G.vertexOrEdgeToJSON(v));
-  for(let e of this.edges)
-    g.edges.push(G.vertexOrEdgeToJSON(e));
+//G.Graph.prototype.toJSON = function() {
+function toJSON(graph) {
+  const g = { type: graph.name, version: graph.version, vertices: [], edges: [] };
+  graph.vertices.map(v => g.vertices.push(vertexOrEdgeToJSON(v)));
+  graph.edges.map(e => g.edges.push(vertexOrEdgeToJSON(e)));
   return g;
-};
+}
 
-export function graphFromJSON(json, validTypes = ["SimpleGraph", "FiniteAutomaton", "ParityGame"]) {
+export default function graphFromJSON(json, validTypes = [SimpleGraph, FiniteAutomaton, ParityGame]) {
   const raw = JSON.parse(json);
   if(raw.type == null)
     throw TypeError("Missing property: \"type\"");
-  if(!(raw.type in validTypes))
-    throw TypeError(`Don't know how to make a graph of type "${raw.type}". Known types: ${validTypes}`);
+  const typeNames = validTypes.map(t => t.name);
+  const typeIndex = typeNames.indexOf(raw.type);
+  if(typeIndex === -1)
+    throw TypeError(`Don't know how to make a graph of type "${raw.type}". Known types: ${typeNames}`);
 
-  let g = new (raw.type in G ? G[raw.type] : window[raw.type]);
+  const g = new validTypes[typeIndex];
 
   if(raw.vertices != null) {
     for(let [i, v] of raw.vertices.entries()) {

@@ -1,4 +1,5 @@
-return [ """
+export default [
+  `
 {
   "type": "ParityGame",
   "vertices": [
@@ -132,5 +133,5 @@ return [ """
     }
   ]
 }
-"""
-]
+`
+];
