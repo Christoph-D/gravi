@@ -5,7 +5,7 @@ require "./algorithmrunner"
 require "./simplegraph"
 require "./finiteautomaton"
 require "./paritygame"
-require "./strategyimprovement"
+#require "./strategyimprovement"
 require "./generators"
 require "./editor"
 if window?

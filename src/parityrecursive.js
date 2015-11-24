@@ -1,4 +1,4 @@
-import * as G from "paritygame";
+import ParityGame from "paritygame";
 
 // Based on Jurdziński, 2006:
 // "A deterministic subexponential algorithm for solving parity games"
@@ -66,7 +66,7 @@ const parityWinRecursive = (graph) => {
   const i = even(d) ? 0 : 1;
   const j = even(d) ? 1 : 0;
 
-  let B = attractor(graph, (i == 0 ? G.PLAYER0 : G.PLAYER1), A);
+  let B = attractor(graph, (i == 0 ? ParityGame.PLAYER0 : ParityGame.PLAYER1), A);
   markRemoved(graph, B);
   let winningRegions = parityWinRecursive(graph);
   unmarkRemoved(graph, B);
@@ -75,7 +75,7 @@ const parityWinRecursive = (graph) => {
     winningRegions[i] = graph.getVertices(notRemoved);
   }
   else {
-    B = attractor(graph, (j == 0 ? G.PLAYER0 : G.PLAYER1), winningRegions[j]);
+    B = attractor(graph, (j == 0 ? ParityGame.PLAYER0 : ParityGame.PLAYER1), winningRegions[j]);
     markRemoved(graph, B);
     winningRegions = parityWinRecursive(graph);
     unmarkRemoved(graph, B);
@@ -95,10 +95,10 @@ const findDeadEnds = (graph, player) => {
 
 // Removes dead-ends and their attractors.
 const simplifyDeadEnds = (graph) => {
-  const player0DeadEnds = findDeadEnds(graph, G.PLAYER0);
-  const W1 = attractor(graph, G.PLAYER1, player0DeadEnds);
-  const player1DeadEnds = findDeadEnds(graph, G.PLAYER1);
-  const W0 = attractor(graph, G.PLAYER0, player1DeadEnds);
+  const player0DeadEnds = findDeadEnds(graph, ParityGame.PLAYER0);
+  const W1 = attractor(graph, ParityGame.PLAYER1, player0DeadEnds);
+  const player1DeadEnds = findDeadEnds(graph, ParityGame.PLAYER1);
+  const W0 = attractor(graph, ParityGame.PLAYER0, player1DeadEnds);
   markRemoved(graph, W0);
   markRemoved(graph, W1);
   return [W0, W1];

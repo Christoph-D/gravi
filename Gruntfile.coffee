@@ -53,7 +53,7 @@ module.exports = (grunt) ->
       options:
         atBegin: true
       gravi:
-        files: [ '<%= srcDir %>/*.coffee' ],
+        files: [ '<%= srcDir %>/*.{coffee,js}' ],
         tasks: [ 'compile', 'karma:single-test' ]
       site:
         files: [ '<%= siteDir %>/*' ],
@@ -81,7 +81,9 @@ module.exports = (grunt) ->
       lib:
         expand: true
         dest: '<%= buildDir %>/'
-        src: [ 'require.js', 'd3/d3.min.js', 'd3.slider/*.{js,css}', 'jquery-2.*.min.js', 'jquery-ui/**/*' ]
+        src: [ 'require.js', 'd3/d3.min.js', 'd3.slider/*.{js,css}',
+          'jquery-2.*.min.js', 'jquery-ui/**/*',
+          'babel-polyfill.min.js' ]
         cwd: 'lib'
     clean:
       all: [ "<%= buildDir %>/**/*" ]
@@ -100,6 +102,11 @@ module.exports = (grunt) ->
         flatten: true
         src: "<%= srcDir %>/*.js"
         dest: "<%= buildDir %>/js"
+      test:
+        expand: true
+        flatten: true
+        src: "spec/*.js"
+        dest: "<%= buildDir %>/specjs"
       options:
         sourceMap: true
 
@@ -122,6 +129,6 @@ module.exports = (grunt) ->
 
   grunt.registerTask('doc', [ 'shell:doc'])
 
-  grunt.registerTask('test', [ 'wrap:test', 'coffee:test', 'karma:single-test' ])
+  grunt.registerTask('test', [ 'babel:test', 'karma:single-test' ])
 
   grunt.registerTask('default', [ 'build', 'doc', 'test' ])
