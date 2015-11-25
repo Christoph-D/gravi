@@ -1,12 +1,46 @@
-export function mixin(base, mixin) {
-  const result = class extends base {};
-  for(let p of Object.getOwnPropertyNames(mixin.prototype)) {
-    if(p !== "prototype") {
-      const desc = Object.getOwnPropertyDescriptor(mixin.prototype, p);
-      Object.defineProperty(result.prototype, p, desc);
-    }
+// Walks the prototype chain to find the descriptor of the given
+// property.
+function findDescriptor(object, name) {
+  let desc = null;
+  while(desc == null && object != null) {
+    desc = Object.getOwnPropertyDescriptor(object, name);
+    object = Object.getPrototypeOf(object);
   }
+  return desc;
 }
+
+function getOwnDescriptors(object) {
+  const descriptors = {};
+  for(let p of Object.getOwnPropertyNames(object))
+    if(p !== "prototype")
+      descriptors[p] = Object.getOwnPropertyDescriptor(object, p);
+  return descriptors;
+}
+
+// Creates a new object containing all the descriptors of properties
+// of the given object and its prototype chain.
+function getSquashedPrototypeChain(object) {
+  let descriptors = {};
+  while(object != null) {
+    descriptors = Object.assign(getOwnDescriptors(object), descriptors);
+    object = Object.getPrototypeOf(object);
+  }
+  return descriptors;
+}
+
+export function mixin(base, mixin) {
+  const result = class extends base {
+    constructor() {
+      super(...arguments);
+      mixin.apply(this, arguments);
+      //this.__mixinConstuctor.apply(this, arguments);
+    }
+  };
+  const descriptors = getSquashedPrototypeChain(mixin);
+  Object.defineProperties(result, descriptors);
+  return result;
+}
+
 /*
   constructor() {
     this.__mixinConstructor?.apply(this, arguments);

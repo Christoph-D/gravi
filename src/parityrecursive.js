@@ -9,9 +9,9 @@ import ParityGame from "./paritygame";
 
 function notRemoved(v) { return v.removed != true; }
 
-function even(priority) { return priority % 2 == 0; }
+export function even(priority) { return priority % 2 == 0; }
 
-function minPriority(graph) {
+export function minPriority(graph) {
   return Math.min(...graph.getVertices(notRemoved).map(v => v.priority));
 }
 
@@ -23,7 +23,7 @@ function allNeighborsVisited(graph, v, visited) {
   return v.outNeighbors(notRemoved).every(w => visited[w.id]);
 }
 
-function attractor(graph, player, subset) {
+export function attractor(graph, player, subset) {
   let visited = {};
   subset.map(u => visited[u.id] = true);
   while(true) {
@@ -104,7 +104,7 @@ function simplifyDeadEnds(graph) {
   return [W0, W1];
 }
 
-export default function parityWin(graph) {
+export default function parityWin(graph, options = {}) {
   // We want totalRemoved == graph.vertices.length to mean "all
   // vertices are removed".  For this, we cannot have null entries in
   // the vertex list.
@@ -122,9 +122,11 @@ export default function parityWin(graph) {
   W[1] = W[1].concat(simpleW[1]);
 
   // Highlight the winning regions.
-  W[0].map(v => v.highlight.set("player0"));
-  W[1].map(v => v.highlight.set("player1"));
-  graph.history.saveStep();
+  if(!options.nohighlights) {
+    W[0].map(v => v.highlight.set("player0"));
+    W[1].map(v => v.highlight.set("player1"));
+    graph.history.saveStep();
+  }
 
   return W;
 }

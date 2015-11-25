@@ -31,7 +31,7 @@ export function add(Type, descriptor) {
     if(typeof value !== typeToCheck && typeof value !== "undefined")
       throw TypeError(`Property "${name}" received invalid type "${typeof value}", expected "${descriptor.type}"`);
     if(isEnum === true && !(value in descriptor.values))
-      throw TypeError(`Enum property "${name}" received invalid value "${value}"`);
+      throw TypeError(`Enum property "${name}" received invalid value "${value}".  Valid values: ${descriptor.values}`);
     const oldValue = this._properties[name];
     this._properties[name] = value;
     if(descriptor.notify !== false && oldValue !== value)

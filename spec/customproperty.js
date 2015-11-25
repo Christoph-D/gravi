@@ -50,9 +50,6 @@ describe("A custom property", function() {
       T = CustomProperty.add(A, D);
       expect(Object.keys(new T)).not.toContain("notenumerable");
     });
-    /*it("is not enumerable as an own property", function() {
-      expect(Object.keys(v)).not.toContain("foo");
-    });*/
     it("internal property list is not enumerable", function() {
       expect(Object.keys(v)).not.toContain("_properties");
     });
@@ -129,7 +126,7 @@ describe("A custom property", function() {
 
   describe("of enum type", function() {
     beforeEach(function() {
-      const D = {
+      D = {
         name: "bar",
         type: "enum",
         values: [0, 1],
@@ -147,7 +144,7 @@ describe("A custom property", function() {
     });
     it("rejects invalid values", function() {
       expect(() => v.bar = 2).toThrow(
-        new TypeError("Enum property \"bar\" received invalid value \"2\""));
+        new TypeError(`Enum property \"bar\" received invalid value \"2\".  Valid values: ${D.values}`));
     });
   });
 });

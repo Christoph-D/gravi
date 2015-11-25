@@ -1,5 +1,5 @@
 import Graph from "./graph";
-import * as G from "./simplegraph";
+import { circleEdgeAnchor, VertexDrawableDefault, EdgeDrawable } from "./simplegraph";
 import * as CustomProperty from "./customproperty";
 
 // Enum values
@@ -14,14 +14,14 @@ const radiusC = Math.round(radiusR * 100 * Math.sqrt(4 / Math.PI)) / 100;
 const rectangle = `M -${radiusR},-${radiusR} v ${radiusR*2} h ${radiusR*2} v -${radiusR*2} z`;
 const circle = `M ${radiusC},0 A ${radiusC},${radiusC} 0 1,0 ${radiusC},0.00001 z`;
 
-// Vertex mixin.  Draws a vertex either as a rectangle (player 1) or as
-// a circle (player 0).  Also draws the priority inside the vertex.
-class VertexDrawableParity extends G.VertexDrawableDefault {
+// Vertex that is either a rectangle (player 1) or a circle (player
+// 0).  Also the priority is drawn inside the vertex.
+class VertexDrawableParity extends VertexDrawableDefault {
   edgeAnchor(otherNode, distanceOffset = 0) {
     if(this.x == otherNode.x && this.y == otherNode.y)
       return { x: this.x, y: this.y };
     if(this.player == PLAYER0)
-      return G.circleEdgeAnchor(this, otherNode, distanceOffset + this._radiusC);
+      return circleEdgeAnchor(this, otherNode, distanceOffset + this._radiusC);
     else {
       // Calculate the intersection between the line this -> otherNode
       // and a square of width 2*this._radiusR centered at otherNode.
@@ -59,6 +59,7 @@ class VertexDrawableParity extends G.VertexDrawableDefault {
     }
   }
   drawEnter(editor, svgGroup) {
+    super.drawEnter(editor, svgGroup);
     svgGroup.append("path").attr("class", "main");
     svgGroup.append("text").attr("class", "priority")
       .attr("font-family", "sans-serif")
@@ -69,7 +70,7 @@ class VertexDrawableParity extends G.VertexDrawableDefault {
       .style("stroke", "none");
   }
   drawUpdate(editor, svgGroup) {
-    this.setCSSClass(editor, svgGroup);
+    super.drawUpdate(editor, svgGroup);
     svgGroup.attr("transform", "translate(#{this.x},#{this.y})");
     svgGroup.select("path.main").attr("d", this.player == PLAYER0 ? circle : rectangle);
     const priority = svgGroup.select("text.priority").text(this.priority);
@@ -83,8 +84,8 @@ class VertexDrawableParity extends G.VertexDrawableDefault {
 export default class ParityGame extends Graph {
   get name() { return "ParityGame"; }
 
-  get PLAYER0() { return PLAYER0; }
-  get PLAYER1() { return PLAYER1; }
+  static get PLAYER0() { return PLAYER0; }
+  static get PLAYER1() { return PLAYER1; }
 
   get player() {
     return {
@@ -104,15 +105,14 @@ export default class ParityGame extends Graph {
   }
 
   init() {
-    this.VertexType = CustomProperty.addMany(this.VertexType, [this.player, this.priority]);
-    this.VertexType = this.VertexType.newTypeWithMixin(VertexDrawableParity);
+    this.VertexType = CustomProperty.addMany(VertexDrawableParity, [this.player, this.priority]);
 
-    this.VertexType.onStatic("changePlayer", () => {
+    this.VertexType.onStatic("changePlayer", function() {
       this.markIncidentEdgesModified();
       this.dispatch("redrawNeeded");
     });
     this.VertexType.onStatic("changePriority", () => this.dispatch("redrawNeeded"));
 
-    this.EdgeType = this.EdgeType.newTypeWithMixin(G.EdgeDrawable);
+    this.EdgeType = EdgeDrawable;
   }
 }

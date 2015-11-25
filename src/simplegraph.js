@@ -1,4 +1,4 @@
-import Graph from "./graph";
+import Graph, { Vertex, Edge } from "./graph";
 
 export function circleEdgeAnchor(s, t, distance) {
   const result = { x: s.x, y: s.y };
@@ -21,14 +21,14 @@ function setCSSClass(editor, svgGroup) {
   return svgGroup.attr("class", c.join(" "));
 }
 
-export class VertexDrawableDefault {
+// A vertex with basic draw functionality.
+export class VertexDrawableDefault extends Vertex {
+  get defaultCSSClass() { return "vertex"; }
   drawEnter(editor, svgGroup) {}
-  drawUpdate(editor, svgGroup) { this.setCSSClass(editor, svgGroup); }
-  static setCSSClass(editor, svgGroup) { setCSSClass(editor, svgGroup); }
-  static get defaultCSSClass() { return "vertex"; }
 }
+VertexDrawableDefault.prototype.drawUpdate = setCSSClass;
 
-// Mixin to draw a vertex with a circular shape.
+// A vertex with a circular shape.
 export class VertexDrawableCircular extends VertexDrawableDefault {
   get radius() { return 10; }
   edgeAnchor(otherNode, distanceOffset = 0) {
@@ -46,15 +46,17 @@ export class VertexDrawableCircular extends VertexDrawableDefault {
   }
 }
 
-export class EdgeDrawableDefault {
+export class EdgeDrawableDefault extends Edge {
   get defaultCSSClass() { return "edge"; }
+  drawEnter(editor, svgGroup) {}
 }
+EdgeDrawableDefault.prototype.drawUpdate = setCSSClass;
 // Same behavior as default vertices.
-EdgeDrawableDefault.prototype.drawEnter = VertexDrawableDefault.prototype.drawEnter;
-EdgeDrawableDefault.prototype.drawUpdate = VertexDrawableDefault.prototype.drawUpdate;
-EdgeDrawableDefault.prototype.setCSSClass = setCSSClass;
+//EdgeDrawableDefault.prototype.drawEnter = VertexDrawableDefault.prototype.drawEnter;
+//EdgeDrawableDefault.prototype.drawUpdate = VertexDrawableDefault.prototype.drawUpdate;
+//EdgeDrawableDefault.prototype.setCSSClass = setCSSClass;
 
-// Mixin to draw an edge with an arrow at its head.
+// An edge with an arrow at its head.
 export class EdgeDrawable extends EdgeDrawableDefault {
   drawEnter(editor, svgGroup) {
     svgGroup.append("line").attr("class", "main");
@@ -92,9 +94,8 @@ export default class SimpleGraph extends Graph {
   get version() { return "0.1"; }
 
   init() {
-    this.VertexType = this.VertexType.newTypeWithMixin(VertexDrawableCircular);
+    this.VertexType = VertexDrawableCircular;
     this.VertexType.onStatic("changeLabel", () => this.dispatch("redrawNeeded"));
-
-    this.EdgeType = this.EdgeType.newTypeWithMixin(EdgeDrawable);
+    this.EdgeType = EdgeDrawable;
   }
 }
