@@ -6,60 +6,17 @@ module.exports = (grunt) ->
     siteDir: 'site'
     srcDir: 'src'
 
-    # Add AMD wrapper.
-    wrap:
-      gravi:
-        expand: true,
-        flatten: true,
-        src: '<%= srcDir %>/*.coffee',
-        dest: '<%= buildDir %>/js',
-        options:
-          wrapper: ['`define(function (require, exports, module) {`\n', '\n`})`\n']
-      test:
-        expand: true,
-        flatten: true,
-        src: 'spec/*.coffee',
-        dest: '<%= buildDir %>/specjs',
-        options:
-          wrapper: ['`define(function (require, exports, module) {`\n', '\n`})`\n']
-    # Compile coffeescript.
-    coffee:
-      options:
-        bare: true
-        sourceMap: true
-      gravi:
-        expand: true,
-        flatten: true,
-        src: '<%= buildDir %>/js/*.coffee'
-        dest: '<%= buildDir %>/js'
-        ext: '.js'
-      test:
-        expand: true,
-        flatten: true,
-        src: '<%= buildDir %>/specjs/*.coffee'
-        dest: '<%= buildDir %>/specjs'
-        ext: '.js'
-    requirejs:
-      gravi:
-        options:
-          baseUrl: "<%= buildDir %>/js"
-          name: "viewer"
-          out: "<%= buildDir %>/js/viewer.min.js"
-          optimize: "uglify2"
-          uglify2:
-            output:
-              semicolons: false
     watch:
       options:
         atBegin: true
       gravi:
-        files: [ '<%= srcDir %>/*.{coffee,js}' ],
+        files: [ '<%= srcDir %>/*.js' ],
         tasks: [ 'compile', 'karma:single-test' ]
       site:
         files: [ '<%= siteDir %>/*' ],
         tasks: [ 'build-site' ]
       test:
-        files: [ 'spec/*.coffee' ]
+        files: [ 'spec/*.js' ]
         tasks: [ 'test' ]
       doc:
         files: 'doc/*.adoc'
@@ -110,19 +67,17 @@ module.exports = (grunt) ->
       options:
         sourceMap: true
 
-  grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-watch')
   grunt.loadNpmTasks('grunt-contrib-requirejs')
   grunt.loadNpmTasks('grunt-contrib-clean')
   grunt.loadNpmTasks('grunt-contrib-less')
   grunt.loadNpmTasks('grunt-contrib-copy')
-  grunt.loadNpmTasks('grunt-wrap')
   grunt.loadNpmTasks('grunt-autoprefixer')
   grunt.loadNpmTasks('grunt-shell')
   grunt.loadNpmTasks('grunt-karma')
   grunt.loadNpmTasks('grunt-babel')
 
-  grunt.registerTask('compile', [ 'wrap:gravi', 'coffee:gravi', 'babel:gravi' ])
+  grunt.registerTask('compile', [ 'babel:gravi' ])
   grunt.registerTask('build-site', [ 'less', 'autoprefixer', 'copy' ])
   grunt.registerTask('build', [ 'compile', 'build-site' ])
   grunt.registerTask('minify', [ 'compile', 'requirejs:gravi' ])
