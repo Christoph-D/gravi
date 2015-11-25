@@ -26,7 +26,14 @@ extends CustomProperty.add(VertexDrawableCircular, accepting) {
   }
 }
 
-class EdgeDrawableFiniteAutomaton extends EdgeDrawable {
+const letter = {
+  name: "letter",
+  type: "string",
+  defaultValue: ""
+};
+
+class EdgeDrawableFiniteAutomaton
+extends CustomProperty.add(EdgeDrawable, letter) {
   drawEnter(editor, svgGroup) {
     super.drawEnter(editor, svgGroup);
     svgGroup.append("rect").attr("class", "letter")
@@ -63,19 +70,11 @@ class EdgeDrawableFiniteAutomaton extends EdgeDrawable {
 export default class FiniteAutomaton extends Graph {
   get name() { return "FiniteAutomaton"; }
 
-  get letter() {
-    return {
-      name: "letter",
-      type: "string",
-      defaultValue: ""
-    };
-  }
-
   init() {
     this.VertexType = class extends VertexDrawableFiniteAutomaton {};
     this.VertexType.onStatic("changeAccepting", function() { this.dispatch("redrawNeeded"); });
 
-    this.EdgeType = CustomProperty.add(EdgeDrawableFiniteAutomaton, this.letter);
+    this.EdgeType = class extends EdgeDrawableFiniteAutomaton {};
     this.EdgeType.onStatic("changeLetter", function() { this.dispatch("redrawNeeded"); });
   }
 }
