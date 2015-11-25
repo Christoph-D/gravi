@@ -130,3 +130,5 @@ export default function parityWin(graph, options = {}) {
 
   return W;
 }
+
+parityWin.requiredProperties = ["player", "priority"];

@@ -1,4 +1,4 @@
-import * as G from "./graph";
+import Graph from "./graph";
 import ParityGame from "./paritygame";
 
 export function generateRandomGraph(n, p) {
@@ -28,15 +28,15 @@ export function generateRandomGraph(n, p) {
 };
 
 export function generatePath(n) {
-  const g = new G.Graph;
-  for(i = 0; i < n; ++i) {
+  const g = new Graph;
+  for(let i = 0; i < n; ++i) {
     const v = new g.VertexType({
       x: -200 * Math.cos(Math.PI / (n - 1) * i) + 350,
       y: 200 * Math.sin(Math.PI / (n - 1) * i) + 100
     });
     g.addVertex(v);
   }
-  for(i = 0; i < n - 1; ++i)
+  for(let i = 0; i < n - 1; ++i)
     g.addEdge(new g.EdgeType({tail: i, head: i + 1}));
   return g;
 }

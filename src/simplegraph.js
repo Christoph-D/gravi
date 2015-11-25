@@ -32,17 +32,17 @@ VertexDrawableDefault.prototype.drawUpdate = setCSSClass;
 export class VertexDrawableCircular extends VertexDrawableDefault {
   get radius() { return 10; }
   edgeAnchor(otherNode, distanceOffset = 0) {
-    circleEdgeAnchor(this, otherNode, distanceOffset + this.radius);
+    return circleEdgeAnchor(this, otherNode, distanceOffset + this.radius);
   }
   drawEnter(editor, svgGroup) {
-    svgGroup.append("circle").attr("class", "main").attr("r", this.radius);
     super.drawEnter(editor, svgGroup);
+    svgGroup.append("circle").attr("class", "main").attr("r", this.radius);
   }
   drawUpdate(editor, svgGroup) {
+    super.drawUpdate(editor, svgGroup);
     svgGroup.selectAll("circle.main")
       .attr("cx", this.x)
       .attr("cy", this.y);
-    super.drawUpdate(editor, svgGroup);
   }
 }
 
@@ -59,11 +59,12 @@ EdgeDrawableDefault.prototype.drawUpdate = setCSSClass;
 // An edge with an arrow at its head.
 export class EdgeDrawable extends EdgeDrawableDefault {
   drawEnter(editor, svgGroup) {
+    super.drawEnter(editor, svgGroup);
     svgGroup.append("line").attr("class", "main");
     svgGroup.append("line").attr("class", "click-target");
-    super.drawEnter(editor, svgGroup);
   }
   drawUpdate(editor, svgGroup) {
+    super.drawUpdate(editor, svgGroup);
     const s = this.graph.vertices[this.tail];
     const t = this.graph.vertices[this.head];
     const anchorS = s.edgeAnchor(t);
@@ -85,7 +86,6 @@ export class EdgeDrawable extends EdgeDrawableDefault {
         .attr("x2", anchorT.x)
         .attr("y2", anchorT.y);
     }
-    super.drawUpdate(editor, svgGroup);
   }
 }
 
@@ -94,8 +94,8 @@ export default class SimpleGraph extends Graph {
   get version() { return "0.1"; }
 
   init() {
-    this.VertexType = VertexDrawableCircular;
+    this.VertexType = class extends VertexDrawableCircular {};
     this.VertexType.onStatic("changeLabel", () => this.dispatch("redrawNeeded"));
-    this.EdgeType = EdgeDrawable;
+    this.EdgeType = class extends EdgeDrawable {};
   }
 }

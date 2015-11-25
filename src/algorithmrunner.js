@@ -4,10 +4,14 @@ export default class AlgorithmRunner {
   }
   run(graph) {
     const properties = graph.VertexType.propertyDescriptors.map(p => p.name);
-    if(this.algorithm.requiredProperties != null)
+    if(this.algorithm.requiredProperties != null) {
+      const missing = [];
       for(let p of this.algorithm.requiredProperties)
         if(properties.indexOf(p) === -1)
-          throw Error(`Property "${p}" required by this algorithm does not exist in this graph.`);
+          missing.push(p);
+      if(missing.length > 0)
+        throw Error(`Properties "${missing}" required by this algorithm do not exist in this graph.`);
+    }
     graph.history.reset();
     if(this.algorithm.checkPreConditions != null)
       this.algorithm.checkPreConditions(graph);

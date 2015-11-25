@@ -3,7 +3,14 @@ import Graph from "./graph";
 import { VertexDrawableCircular, EdgeDrawable } from "./simplegraph";
 import * as CustomProperty from "./customproperty";
 
-class VertexDrawableFiniteAutomaton extends VertexDrawableCircular {
+const accepting = {
+  name: "accepting",
+  type: "boolean",
+  defaultValue: false
+};
+
+class VertexDrawableFiniteAutomaton
+extends CustomProperty.add(VertexDrawableCircular, accepting) {
   drawEnter(editor, svgGroup) {
     super.drawEnter(editor, svgGroup);
     svgGroup.append("circle").attr("class", "accepting accepting1").attr("r", this.radius - 1);
@@ -56,14 +63,6 @@ class EdgeDrawableFiniteAutomaton extends EdgeDrawable {
 export default class FiniteAutomaton extends Graph {
   get name() { return "FiniteAutomaton"; }
 
-  get accepting() {
-    return {
-      name: "accepting",
-      type: "boolean",
-      defaultValue: false
-    };
-  }
-
   get letter() {
     return {
       name: "letter",
@@ -73,10 +72,10 @@ export default class FiniteAutomaton extends Graph {
   }
 
   init() {
-    this.VertexType = CustomProperty.add(VertexDrawableFiniteAutomaton, this.accepting);
-    this.VertexType.onStatic("changeAccepting", () => this.dispatch("redrawNeeded"));
+    this.VertexType = class extends VertexDrawableFiniteAutomaton {};
+    this.VertexType.onStatic("changeAccepting", function() { this.dispatch("redrawNeeded"); });
 
     this.EdgeType = CustomProperty.add(EdgeDrawableFiniteAutomaton, this.letter);
-    this.EdgeType.onStatic("changeLetter", () => this.dispatch("redrawNeeded"));
+    this.EdgeType.onStatic("changeLetter", function() { this.dispatch("redrawNeeded"); });
   }
 }

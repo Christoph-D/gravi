@@ -21,20 +21,20 @@ function appendToDom(dom, propertyDescriptor) {
       .on("input", function() { self[name] = this.value; });
     break;
   case "number":
-    let onChange = () => {
+    let onChange = function() {
       const i = parseInt(this.value);
       if(!isNaN(i))
         self[name] = i;
       else
         self[name] = propertyDescriptor.defaultValue;
-      const elem = form.append("input")
-        .attr("type", "text")
-        .attr("name", name)
-        .attr("maxlength", "6")
-        .property("value", this[name])
-        .on("change", onChange);
-      $(elem).spinner({stop: onChange});
     };
+    const elem = form.append("input")
+            .attr("type", "text")
+            .attr("name", name)
+            .attr("maxlength", "6")
+            .property("value", this[name])
+            .on("change", onChange);
+    $(elem).spinner({ stop: onChange });
     break;
   case "boolean":
     form.append("input")
@@ -61,4 +61,6 @@ function appendToDom(dom, propertyDescriptor) {
   }
 }
 
-export default dom => this.eachProperty(p => appendToDom.call(this, dom, p));
+export default function appendAllToDom(dom) {
+  this.eachProperty(p => appendToDom.call(this, dom, p));
+}

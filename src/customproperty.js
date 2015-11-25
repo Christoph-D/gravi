@@ -81,11 +81,8 @@ export function add(Type, descriptor) {
     propertyDescriptors() {
       return TypeWithProperty.propertyDescriptors;
     }
-
-    appendPropertiesToDom() {
-      appendToDom();
-    }
-  };
+  }
+  TypeWithProperty.prototype.appendPropertiesToDom = appendToDom;
 
   if(TypeWithProperty.propertyDescriptors != null)
     TypeWithProperty.propertyDescriptors = TypeWithProperty.propertyDescriptors.slice();

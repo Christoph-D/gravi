@@ -5,12 +5,17 @@ function addListener(where, event, listener) {
     where[event] = [listener];
 }
 
-const listenersStaticPerm = {};
-
 export default class Listenable {
   constructor() {
-    this._listeners = {};
-    this._listenersPerm = {};
+    // These internal variables should not be enumerable.
+    for(let p of ["_listeners", "_listenersPerm"]) {
+      Object.defineProperty(this, p, {
+        configurable: true,
+        writable: true,
+        enumerable: false,
+        value: {}
+      });
+    }
   }
 
   on(event, listener, options = {}) {

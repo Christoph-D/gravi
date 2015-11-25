@@ -1,10 +1,10 @@
-import * as G from "./gravi";
 import * as generators from "./generators";
 import dfsAlgo from "./dfs";
 import examples from "./examples";
 import solver from "./parityrecursive";
 import AlgorithmRunner from "./algorithmrunner";
 import graphFromJSON from "./graphjson";
+import GraphEditor from "./editor";
 
 function addVertexListener(v) {
   v.on("changePlayer", runAlgorithm);
@@ -71,7 +71,7 @@ function generateGraph() {
   if(state.editor != null)
     state.editor.setGraph(state.g);
   else {
-    state.editor = new G.GraphEditor(state.g, d3.select("#graph"));
+    state.editor = new GraphEditor(state.g, d3.select("#graph"));
     if(state.slider == null) {
       state.slider = d3.slider()
         .on("slide", function(event, value) {
@@ -90,7 +90,7 @@ function loadGraph(json) {
     json = document.getElementById("dump").value;
   d3.select("#loading-message").text("");
   try {
-    state.g = prepareGraph(graphjson.graphFromJSON(json));
+    state.g = prepareGraph(graphFromJSON(json));
     state.g.compressIds();
     state.editor.setGraph(state.g);
     runAlgorithm();

@@ -21,42 +21,40 @@ class VertexDrawableParity extends VertexDrawableDefault {
     if(this.x == otherNode.x && this.y == otherNode.y)
       return { x: this.x, y: this.y };
     if(this.player == PLAYER0)
-      return circleEdgeAnchor(this, otherNode, distanceOffset + this._radiusC);
-    else {
-      // Calculate the intersection between the line this -> otherNode
-      // and a square of width 2*this._radiusR centered at otherNode.
-      const dx = otherNode.x - this.x;
-      const dy = otherNode.y - this.y;
-      const s = dy / dx;
-      const result = {};
-      if(s <= -1 || s >= 1) {
-        if(otherNode.y < this.y) { // top edge
-          result.x = this.x - radiusR / s;
-          result.y = this.y - radiusR;
-        }
-        else { // bottom edge
-          result.x = this.x + radiusR / s;
-          result.y = this.y + radiusR;
-        }
+      return circleEdgeAnchor(this, otherNode, distanceOffset + radiusC);
+    // Calculate the intersection between the line this -> otherNode
+    // and a square of width 2*radiusR centered at otherNode.
+    const dx = otherNode.x - this.x;
+    const dy = otherNode.y - this.y;
+    const s = dy / dx;
+    const result = {};
+    if(s <= -1 || s >= 1) {
+      if(otherNode.y < this.y) { // top edge
+        result.x = this.x - radiusR / s;
+        result.y = this.y - radiusR;
       }
-      else {
-        if(otherNode.x < this.x) { // left edge
-          result.x = this.x - radiusR;
-          result.y = this.y - radiusR * s;
-        }
-        else { // right edge
-          result.x = this.x + radiusR;
-          result.y = this.y + radiusR * s;
-        }
+      else { // bottom edge
+        result.x = this.x + radiusR / s;
+        result.y = this.y + radiusR;
       }
-      // If requested, set back the endpoint a little.
-      if(distanceOffset != 0) {
-        const D = Math.sqrt(dx * dx + dy * dy);
-        result.x += dx / D * distanceOffset;
-        result.y += dy / D * distanceOffset;
-      }
-      return result;
     }
+    else {
+      if(otherNode.x < this.x) { // left edge
+        result.x = this.x - radiusR;
+        result.y = this.y - radiusR * s;
+      }
+      else { // right edge
+        result.x = this.x + radiusR;
+        result.y = this.y + radiusR * s;
+      }
+    }
+    // If requested, set back the endpoint a little.
+    if(distanceOffset != 0) {
+      const D = Math.sqrt(dx * dx + dy * dy);
+      result.x += dx / D * distanceOffset;
+      result.y += dy / D * distanceOffset;
+    }
+    return result;
   }
   drawEnter(editor, svgGroup) {
     super.drawEnter(editor, svgGroup);
@@ -111,8 +109,8 @@ export default class ParityGame extends Graph {
       this.markIncidentEdgesModified();
       this.dispatch("redrawNeeded");
     });
-    this.VertexType.onStatic("changePriority", () => this.dispatch("redrawNeeded"));
+    this.VertexType.onStatic("changePriority", function() { this.dispatch("redrawNeeded"); });
 
-    this.EdgeType = EdgeDrawable;
+    this.EdgeType = class extends EdgeDrawable {};
   }
 }
