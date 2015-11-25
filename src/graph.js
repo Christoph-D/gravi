@@ -85,6 +85,14 @@ export class Edge extends CustomProperty.addMany(Listenable, [
   // No methods here.  Everything is in custom properties.
 }
 
+// Helper function for Graph.compressIds()
+function idTranslationTable(what) {
+  const ids = {};
+  let j = 0;
+  what.map((x, i) => { if(x != null) ids[i] = j++; });
+  return ids;
+}
+
 export default class Graph extends Listenable {
   get name() { return "Graph"; }
 
@@ -115,7 +123,7 @@ export default class Graph extends Listenable {
 
   removeVertex(v) {
     for(let [i, w] of this.vertices.entries()) {
-      if(w == null)
+      if(w === null)
         continue;
       if(v === w) {
         v.inEdges().map(e => this.removeEdge(e));
@@ -178,16 +186,10 @@ export default class Graph extends Listenable {
     return this;
   }
 
-  idTranslationTable(what) {
-    const ids = {};
-    let j = 0;
-    what.filter(x => x != null).map((x, i) => ids[i] = j++);
-    return ids;
-  }
   // Removes null vertices and edges by reassigning all ids.
   compressIds() {
-    const idsV = this.idTranslationTable(this.vertices);
-    const idsE = this.idTranslationTable(this.edges);
+    const idsV = idTranslationTable(this.vertices);
+    const idsE = idTranslationTable(this.edges);
 
     // Remove all null entries and then fix all the ids.
     this.vertices = this.getVertices();
@@ -198,7 +200,7 @@ export default class Graph extends Listenable {
     }
 
     this.edges = this.getEdges();
-    for(let e in this.edges) {
+    for(let e of this.edges) {
       e.id = idsE[e.id];
       e.tail = idsV[e.tail];
       e.head = idsV[e.head];
