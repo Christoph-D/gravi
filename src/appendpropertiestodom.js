@@ -1,4 +1,4 @@
-function appendToDom(dom, propertyDescriptor) {
+function appendSingleToDom(dom, propertyDescriptor) {
   if(propertyDescriptor.editable === false)
     return;
 
@@ -61,6 +61,6 @@ function appendToDom(dom, propertyDescriptor) {
   }
 }
 
-export default function appendAllToDom(dom) {
-  this.eachProperty(p => appendToDom.call(this, dom, p));
+export default function appendToDom(dom) {
+  this.eachProperty(p => appendSingleToDom.call(this, dom, p));
 }

@@ -1,4 +1,4 @@
-const dfsStep = (graph, visited, v) => {
+function dfsStep(graph, visited, v) {
   graph.cursor.set(v);
   if(visited[v.id]) {
     graph.history.saveStep();
@@ -16,6 +16,8 @@ const dfsStep = (graph, visited, v) => {
     e.highlight.set("done");
     graph.history.saveStep();
   }
-};
+}
 
-export default graph => dfsStep(graph, [], graph.vertices[0]);
+export default function dfs(graph) {
+  dfsStep(graph, [], graph.vertices[0]);
+}
