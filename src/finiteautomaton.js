@@ -1,10 +1,9 @@
 import Graph from "./graph";
 // For H.VertexDrawableCircular and H.EdgeDrawable
-import * as H from "./simplegraph";
+import { VertexDrawableCircular, EdgeDrawable } from "./simplegraph";
+import * as CustomProperty from "./customproperty";
 
-import CustomProperty from "./customproperty";
-
-class VertexDrawableFiniteAutomaton extends H.VertexDrawableCircular {
+class VertexDrawableFiniteAutomaton extends VertexDrawableCircular {
   drawEnter(editor, svgGroup) {
     super.drawEnter(editor, svgGroup);
     svgGroup.append("circle").attr("class", "accepting accepting1").attr("r", this.radius - 1);
@@ -20,7 +19,7 @@ class VertexDrawableFiniteAutomaton extends H.VertexDrawableCircular {
   }
 }
 
-class EdgeDrawableFiniteAutomaton extends H.EdgeDrawable {
+class EdgeDrawableFiniteAutomaton extends EdgeDrawable {
   drawEnter(editor, svgGroup) {
     super.drawEnter(editor, svgGroup);
     svgGroup.append("rect").attr("class", "letter")
@@ -74,12 +73,10 @@ export default class FiniteAutomaton extends Graph {
   }
 
   init() {
-    this.VertexType = CustomProperty.add(this.VertexType, this.accepting);
-    this.VertexType = this.VertexType.newTypeWithMixin(VertexDrawableFiniteAutomaton);
+    this.VertexType = CustomProperty.add(VertexDrawableFiniteAutomaton, this.accepting);
     this.VertexType.onStatic("changeAccepting", () => this.dispatch("redrawNeeded"));
 
-    this.EdgeType = CustomProperty.add(this.EdgeType, this.letter);
-    this.EdgeType = this.EdgeType.newTypeWithMixin(EdgeDrawableFiniteAutomaton);
+    this.EdgeType = CustomProperty.add(EdgeDrawableFiniteAutomaton, this.letter);
     this.EdgeType.onStatic("changeLetter", () => this.dispatch("redrawNeeded"));
   }
 }
