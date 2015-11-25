@@ -71,7 +71,7 @@ class VertexDrawableParity extends VertexDrawableDefault {
   }
   drawUpdate(editor, svgGroup) {
     super.drawUpdate(editor, svgGroup);
-    svgGroup.attr("transform", "translate(#{this.x},#{this.y})");
+    svgGroup.attr("transform", `translate(${this.x},${this.y})`);
     svgGroup.select("path.main").attr("d", this.player == PLAYER0 ? circle : rectangle);
     const priority = svgGroup.select("text.priority").text(this.priority);
     if(this.priority >= 10 || this.priority < 0)
