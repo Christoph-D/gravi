@@ -18,7 +18,7 @@ describe("A class with a delayed property", function() {
     expect(Object.hasOwnProperty.call(D.prototype, "delayed")).toBe(true);
   });
 
-  fit("does not allow access to the property in its prototype", function() {
+  it("does not allow access to the property in its prototype", function() {
     expect(() => D.prototype.delayed).toThrow(
       new Error("This property is only accessible from an instance"));
   });
