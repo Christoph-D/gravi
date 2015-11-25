@@ -2,6 +2,18 @@ import Extensible from "./extensible";
 import * as CustomProperty from "./customproperty";
 import Listenable from "./event";
 
+function vertexOrEdgeToJSON(v) {
+  if(v === null)
+    return null;
+  const w = {};
+  for(let p of v.propertyDescriptors != null ? v.propertyDescriptors() : []) {
+    // Save only properties different from the default value.
+    if(p.shouldBeSaved !== false && v[p.name] !== p.defaultValue)
+      w[p.name] = v[p.name];
+  }
+  return w;
+}
+
 export class Vertex extends CustomProperty.addMany(Listenable, [
   { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false },
   { name: "id", type: "number", editable: false, shouldBeSaved: false, defaultValue: undefined },
@@ -213,5 +225,12 @@ export default class Graph extends Listenable {
       return this.edges.filter(e => e != null && edgeFilter(e));
     else
       return this.edges.filter(e => e != null);
+  }
+
+  toJSON() {
+    const g = { type: this.name, version: this.version, vertices: [], edges: [] };
+    this.vertices.map(v => g.vertices.push(vertexOrEdgeToJSON(v)));
+    this.edges.map(e => g.edges.push(vertexOrEdgeToJSON(e)));
+    return g;
   }
 }

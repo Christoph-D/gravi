@@ -15,7 +15,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      '../spec/config.js',
+      '../specconfig.js',
       '../node_modules/babel-polyfill/dist/polyfill.min.js',
       {pattern: 'js/*.js', included: false},
       {pattern: 'specjs/*.js', included: false}

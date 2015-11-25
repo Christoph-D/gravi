@@ -1,28 +1,8 @@
-// Functions to convert between a graph and its JSON representation.
+// Function to create a graph from its JSON representation.
 
 import SimpleGraph from "./simplegraph";
 import FiniteAutomaton from "./finiteautomaton";
 import ParityGame from "./paritygame";
-
-function vertexOrEdgeToJSON(v) {
-  if(v === null)
-    return null;
-  const w = {};
-  for(let p of v.propertyDescriptors != null ? v.propertyDescriptors() : []) {
-    // Save only properties different from the default value.
-    if(p.shouldBeSaved !== false && v[p.name] !== p.defaultValue)
-      w[p.name] = v[p.name];
-  }
-  return w;
-}
-
-//G.Graph.prototype.toJSON = function() {
-function toJSON(graph) {
-  const g = { type: graph.name, version: graph.version, vertices: [], edges: [] };
-  graph.vertices.map(v => g.vertices.push(vertexOrEdgeToJSON(v)));
-  graph.edges.map(e => g.edges.push(vertexOrEdgeToJSON(e)));
-  return g;
-}
 
 export default function graphFromJSON(json, validTypes = [SimpleGraph, FiniteAutomaton, ParityGame]) {
   const raw = JSON.parse(json);
