@@ -10,13 +10,13 @@
     "grunt-autoprefixer": "~2.2.0",
     "grunt-babel": "^6.0.0",
     "grunt-contrib-clean": "~0.6.0",
-    "grunt-contrib-copy": "~0.8.0",
-    "grunt-contrib-less": "~1.0.0",
-    "grunt-contrib-requirejs": "~0.4.4",
-    "grunt-contrib-watch": "~0.6.1",
+    "grunt-contrib-copy": "^0.8.2",
+    "grunt-contrib-less": "^1.1.0",
+    "grunt-contrib-requirejs": "^0.4.4",
+    "grunt-contrib-watch": "^0.6.1",
     "grunt-karma": "^0.12.1",
     "grunt-postcss": "^0.7.1",
-    "grunt-shell": "~1.1.2",
+    "grunt-shell": "^1.1.2",
     "jasmine-core": "^2.3.4",
     "karma": "^0.13.15",
     "karma-coverage": "^0.5.3",
@@ -26,7 +26,7 @@
     "karma-requirejs": "^0.2.2",
     "phantomjs": "^1.9.19",
     "requirejs": "^2.1.22",
-    "uglify": "~0.1.1"
+    "uglify": "^0.1.5"
   },
   "author": {
     "name": "Christoph Dittmann"
