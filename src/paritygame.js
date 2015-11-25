@@ -1,3 +1,4 @@
+import Graph from "./graph";
 import * as G from "./simplegraph";
 import * as CustomProperty from "./customproperty";
 
@@ -79,7 +80,7 @@ class VertexDrawableParity extends G.VertexDrawableDefault {
   }
 }
 
-export default class ParityGame extends G.Graph {
+export default class ParityGame extends Graph {
   get name() { return "ParityGame"; }
 
   get PLAYER0() { return PLAYER0; }

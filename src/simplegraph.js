@@ -1,4 +1,4 @@
-import * as G from "./graph";
+import Graph from "./graph";
 
 export function circleEdgeAnchor(s, t, distance) {
   const result = { x: s.x, y: s.y };
@@ -87,7 +87,7 @@ export class EdgeDrawable extends EdgeDrawableDefault {
   }
 }
 
-export default class SimpleGraph extends G.Graph {
+export default class SimpleGraph extends Graph {
   get name() { return "SimpleGraph"; }
   get version() { return "0.1"; }
 

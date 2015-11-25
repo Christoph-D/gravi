@@ -1,4 +1,4 @@
-import * as G from "./graph";
+import Graph from "./graph";
 // For H.VertexDrawableCircular and H.EdgeDrawable
 import * as H from "./simplegraph";
 
@@ -54,7 +54,7 @@ class EdgeDrawableFiniteAutomaton extends H.EdgeDrawable {
   }
 }
 
-export default class FiniteAutomaton extends G.Graph {
+export default class FiniteAutomaton extends Graph {
   get name() { return "FiniteAutomaton"; }
 
   get accepting() {
