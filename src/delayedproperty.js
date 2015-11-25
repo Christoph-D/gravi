@@ -19,7 +19,6 @@ export default function injectDelayedProperty(object, propName, template) {
         configurable: true,
         enumerable: true,
         writable: true,
-        // Here this also refers to the instance.
         value: new template(this)
       });
       return this[propName];
