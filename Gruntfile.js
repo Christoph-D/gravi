@@ -27,10 +27,18 @@ module.exports = function(grunt) {
         tasks: [ 'doc' ]
       }
     },
-    autoprefixer: {
+    postcss: {
+      options: {
+        processors: [
+          require('autoprefixer')(),
+          require('cssnano')()
+        ]
+      },
       gravi: {
-        src: "<%= buildDir %>/graphs.css",
-        dest: "<%= buildDir %>/graphs.css"
+        expand: true,
+        cwd: "<%= buildDir %>/",
+        src: "*.css",
+        dest: "<%= buildDir %>/"
       }
     },
     less: {
@@ -96,13 +104,13 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-autoprefixer');
+  grunt.loadNpmTasks('grunt-postcss');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-babel');
 
   grunt.registerTask('compile', [ 'babel:gravi' ]);
-  grunt.registerTask('build-site', [ 'less', 'autoprefixer', 'copy' ]);
+  grunt.registerTask('build-site', [ 'less', 'postcss', 'copy' ]);
   grunt.registerTask('build', [ 'compile', 'build-site' ]);
   grunt.registerTask('minify', [ 'compile', 'requirejs:gravi' ]);
 
