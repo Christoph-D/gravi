@@ -70,7 +70,8 @@ export default class GraphEditor {
         this.queueRedraw();
       });
 
-    // Selecting and right clicks.
+    // Clicks on empty space (left click deselects, right click
+    // creates a vertex).
     this.svg.on("contextmenu", () => d3.event.preventDefault());
     this.svg.on("mousedown", () => {
       switch(d3.event.button) {
@@ -80,7 +81,7 @@ export default class GraphEditor {
         this.drawEdgeMode = false;
         break;
       case 2: // right click
-        // Create new vertices on right click.
+        // Create a new vertex on right click.
         d3.event.stopPropagation();
         d3.event.preventDefault();
         const v = new this.g.VertexType({ x: this.mouse.x, y: this.mouse.y });
@@ -197,10 +198,10 @@ export default class GraphEditor {
     vertices.enter().append("g")
       .each(function(v) { v.drawEnter(editor, d3.select(this)); })
       .call(this.drag)
-      .on("dblclick", () => this.onDoubleClickVertex())
-      .on("mousedown", () => this.onMouseDownVertex())
+      .on("dblclick", (d) => this.onDoubleClickVertex(d))
+      .on("mousedown", (d) => this.onMouseDownVertex(d))
       .on("contextmenu", () => d3.event.preventDefault())
-      .on("mouseover", () => this.onMouseOverVertex());
+      .on("mouseover", (d) => this.onMouseOverVertex(d));
     vertices.exit().remove();
     vertices.each(function(v) {
       if(v.modified)
@@ -262,7 +263,7 @@ export default class GraphEditor {
     edges.enter().append("g")
       .each(function (e) { e.drawEnter(editor, d3.select(this)); })
       .on("contextmenu", () => d3.event.preventDefault())
-      .on("mousedown", () => this.onMouseDownEdge);
+      .on("mousedown", (d) => this.onMouseDownEdge(d));
     edges.exit().remove();
     edges.each(function(e) {
       if(e.modified) {
