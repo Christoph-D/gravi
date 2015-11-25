@@ -1,4 +1,4 @@
-import injectDelayedProperty from "gravi/extensible";
+import injectDelayedProperty from "gravi/delayedproperty";
 
 describe("A class with a delayed property", function() {
   let D = {};

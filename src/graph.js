@@ -1,4 +1,4 @@
-import Extensible from "./extensible";
+import Extensible from "./delayedproperty";
 import * as CustomProperty from "./customproperty";
 import Listenable from "./event";
 

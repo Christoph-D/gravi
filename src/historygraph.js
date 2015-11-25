@@ -3,7 +3,7 @@
 
 import Graph, { Vertex, Edge } from "./graph";
 import TimedProperty from "./timed";
-import injectDelayedProperty from "./extensible";
+import injectDelayedProperty from "./delayedproperty";
 
 // Adds a global timeline to the graph.  Useful in combination with
 // TimedProperty on the vertices/edges.
