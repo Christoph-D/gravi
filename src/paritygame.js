@@ -3,8 +3,8 @@ import { circleEdgeAnchor, VertexDrawableDefault, EdgeDrawable } from "./simpleg
 import * as CustomProperty from "./customproperty";
 
 // Enum values
-const PLAYER0 = 0;
-const PLAYER1 = 1;
+export const PLAYER0 = 0;
+export const PLAYER1 = 1;
 
 // The radius for circles is a little larger than for rectangles so
 // that the area of the shape is the same.
@@ -14,9 +14,23 @@ const radiusC = Math.round(radiusR * 100 * Math.sqrt(4 / Math.PI)) / 100;
 const rectangle = `M -${radiusR},-${radiusR} v ${radiusR*2} h ${radiusR*2} v -${radiusR*2} z`;
 const circle = `M ${radiusC},0 A ${radiusC},${radiusC} 0 1,0 ${radiusC},0.00001 z`;
 
+const player = {
+  name: "player",
+  type: "enum",
+  values: [PLAYER0, PLAYER1],
+  defaultValue: PLAYER0
+};
+
+const priority = {
+  name: "priority",
+  type: "number",
+  defaultValue: 0
+};
+
 // Vertex that is either a rectangle (player 1) or a circle (player
 // 0).  Also the priority is drawn inside the vertex.
-class VertexDrawableParity extends VertexDrawableDefault {
+class VertexDrawableParity
+extends CustomProperty.addMany(VertexDrawableDefault, [player, priority]) {
   edgeAnchor(otherNode, distanceOffset = 0) {
     if(this.x == otherNode.x && this.y == otherNode.y)
       return { x: this.x, y: this.y };
@@ -82,34 +96,22 @@ class VertexDrawableParity extends VertexDrawableDefault {
 export default class ParityGame extends Graph {
   get name() { return "ParityGame"; }
 
+  // PLAYER0 and PLAYER1 are exported.  Nonetheless, we add them as
+  // static properties so that they are always available as
+  // ParityGame.PLAYER0 etc. without explicitly importing them.
   static get PLAYER0() { return PLAYER0; }
   static get PLAYER1() { return PLAYER1; }
 
-  get player() {
-    return {
-      name: "player",
-      type: "enum",
-      values: [PLAYER0, PLAYER1],
-      defaultValue: PLAYER0
-    };
-  }
-
-  get priority() {
-    return {
-      name: "priority",
-      type: "number",
-      defaultValue: 0
-    };
-  }
-
   init() {
-    this.VertexType = CustomProperty.addMany(VertexDrawableParity, [this.player, this.priority]);
+    this.VertexType = class extends VertexDrawableParity {};
 
     this.VertexType.onStatic("changePlayer", function() {
       this.markIncidentEdgesModified();
       this.dispatch("redrawNeeded");
     });
-    this.VertexType.onStatic("changePriority", function() { this.dispatch("redrawNeeded"); });
+    this.VertexType.onStatic("changePriority", function() {
+      this.dispatch("redrawNeeded");
+    });
 
     this.EdgeType = class extends EdgeDrawable {};
   }
