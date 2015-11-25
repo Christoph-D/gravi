@@ -5,13 +5,13 @@
 :author: Christoph Dittmann
 :email: github@christoph-d.de
 :source-highlighter: pygments
-:language: coffeescript
+:language: javascript
 
 == Graph
 
 .Create a simple graph
 [source]
-g = new G.Graph numVertices: 4, edgeList: [[0,1], [1,2]]
+g = new G.Graph({ numVertices: 4, edgeList: [[0,1], [1,2]] });
 
 If you need more than a plain graph, then instead of `G.Graph` you may
 want to use `G.graphFromJSON()` or specific subclasses such as
@@ -56,7 +56,7 @@ entries.
 
 === Helper Methods
 
-G.graphFromJSON(json):: Creates a graph from the specified string,
+graphjson.graphFromJSON(json):: Creates a graph from the specified string,
 parsing it as JSON.  Can create `G.ParityGame` or other (whitelisted)
 graphs, depending on the JSON content.
 
@@ -64,9 +64,9 @@ graphs, depending on the JSON content.
 
 .Example
 [source]
-g = new G.Graph numVertices: 4, edgeList: [[0,1], [1,2]]
-g.on("postAddVertex", (v) -> console.log "Added vertex #{v.id}!")
-g.addVertex(new G.Vertex) # Prints "Added vertex 4!"
+g = new G.Graph({ numVertices: 4, edgeList: [[0,1], [1,2]] });
+g.on("postAddVertex", (v) => console.log(`Added vertex ${v.id}!`));
+g.addVertex(new G.Vertex) // Prints "Added vertex 4!";
 
 Known events include `postAddVertex`, `postAddEdge`,
 `postRemoveVertex`, `postRemoveEdge` and `redrawNeeded`.
