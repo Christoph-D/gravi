@@ -24,10 +24,10 @@ export function add(Type, descriptor) {
     }
   }
 
-  const getCustomProperty = function() {
+  function getCustomProperty() {
     return this._properties[name];
-  };
-  const setCustomProperty = function(value) {
+  }
+  function setCustomProperty(value) {
     if(typeof value !== typeToCheck && typeof value !== "undefined")
       throw TypeError(`Property "${name}" received invalid type "${typeof value}", expected "${descriptor.type}"`);
     if(isEnum === true && !(value in descriptor.values))
@@ -39,9 +39,9 @@ export function add(Type, descriptor) {
     if(this.dispatch != null)
       this.dispatch(onChange);
     return value;
-  };
+  }
 
-  const TypeWithProperty = class extends Type {
+  class TypeWithProperty extends Type {
     constructor(v) {
       super(...arguments);
       Object.defineProperty(this, name, {
