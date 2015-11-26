@@ -55,10 +55,13 @@ export default function addListenableProperty(Type, ...descriptors) {
 
       const oldValue = this._properties[d.name];
       this._properties[d.name] = value;
-      if(d.notify !== false && oldValue !== value)
+
+      if(d.notify !== false && oldValue !== value) {
         this.modified = true;
-      if(this.dispatch != null)
-        this.dispatch(onChange);
+        if(this.dispatch != null)
+          this.dispatch(onChange);
+      }
+
       return value;
     };
   }
