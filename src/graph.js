@@ -2,18 +2,6 @@ import Extensible from "./delayedproperty";
 import addListenableProperty from "./listenable-property";
 import Listenable from "./listenable";
 
-function vertexOrEdgeToJSON(v) {
-  if(v === null)
-    return null;
-  const w = {};
-  for(let p of v.propertyDescriptors != null ? v.propertyDescriptors() : []) {
-    // Save only properties different from the default value.
-    if(p.shouldBeSaved !== false && v[p.name] !== p.defaultValue)
-      w[p.name] = v[p.name];
-  }
-  return w;
-}
-
 export class Vertex extends addListenableProperty(Listenable,
   { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false },
   { name: "id", type: "number", editable: false, shouldBeSaved: false, defaultValue: undefined },
@@ -93,21 +81,40 @@ function idTranslationTable(what) {
   return ids;
 }
 
+// Helper function for Graph.toJSON()
+function vertexOrEdgeToJSON(v) {
+  if(v === null)
+    return null;
+  const w = {};
+  for(let p of v.propertyDescriptors != null ? v.propertyDescriptors() : []) {
+    // Save only properties different from the default value.
+    if(p.shouldBeSaved !== false && v[p.name] !== p.defaultValue)
+      w[p.name] = v[p.name];
+  }
+  return w;
+}
+
 export default class Graph extends Listenable {
   get name() { return "Graph"; }
 
-  constructor(options = {}) {
+  constructor({
+    VertexType: VertexType = Vertex,
+    EdgeType: EdgeType = Edge,
+    numVertices: numVertices = 0,
+    edgeList: edgeList = []
+  } = {}) {
     super();
-    this.VertexType = options.VertexType != null ? options.VertexType : Vertex;
-    this.EdgeType = options.EdgeType != null ? options.EdgeType : Edge;
+
+    this.VertexType = VertexType;
+    this.EdgeType = EdgeType;
 
     this.vertices = [];
-    if(options.numVertices != null && options.numVertices > 0)
-      for(let i = 0; i < options.numVertices; ++i)
+    if(numVertices > 0)
+      for(let i = 0; i < numVertices; ++i)
         this.addVertex(new this.VertexType);
+
     this.edges = [];
-    if(options.edgeList != null)
-      options.edgeList.map(e => this.addEdge(e[0], e[1]));
+    edgeList.map(e => this.addEdge(e[0], e[1]));
   }
 
   addVertex(v) {
