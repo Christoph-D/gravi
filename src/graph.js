@@ -1,6 +1,6 @@
 import Extensible from "./delayedproperty";
-import * as CustomProperty from "./customproperty";
-import Listenable from "./event";
+import addListenableProperty from "./listenable-property";
+import Listenable from "./listenable";
 
 function vertexOrEdgeToJSON(v) {
   if(v === null)
@@ -14,14 +14,14 @@ function vertexOrEdgeToJSON(v) {
   return w;
 }
 
-export class Vertex extends CustomProperty.addMany(Listenable, [
+export class Vertex extends addListenableProperty(Listenable,
   { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false },
   { name: "id", type: "number", editable: false, shouldBeSaved: false, defaultValue: undefined },
   { name: "outE", type: "array", editable: false, shouldBeSaved: false },
   { name: "inE", type: "array", editable: false, shouldBeSaved: false },
   { name: "label", type: "string" },
   { name: "x", type: "number", editable: false },
-  { name: "y", type: "number", editable: false }])
+  { name: "y", type: "number", editable: false })
 {
   addOutEdge(edgeId) {
     this.outE.push(edgeId);
@@ -76,13 +76,13 @@ export class Vertex extends CustomProperty.addMany(Listenable, [
   }
 }
 
-export class Edge extends CustomProperty.addMany(Listenable, [
+export class Edge extends addListenableProperty(Listenable,
   { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false },
   { name: "id", type: "number", editable: false, shouldBeSaved: false, defaultValue: undefined },
   { name: "head", type: "number", editable: false, defaultValue: undefined },
-  { name: "tail", type: "number", editable: false, defaultValue: undefined }])
+  { name: "tail", type: "number", editable: false, defaultValue: undefined })
 {
-  // No methods here.  Everything is in custom properties.
+  // No methods here.  Everything is in listenable properties.
 }
 
 // Helper function for Graph.compressIds()

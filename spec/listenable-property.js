@@ -1,7 +1,7 @@
-import Listenable from "gravi/event";
-import * as CustomProperty from "gravi/customproperty";
+import Listenable from "gravi/listenable";
+import addListenableProperty from "gravi/listenable-property";
 
-describe("A custom property", function() {
+describe("A listenable property", function() {
   let A = {};
   let D = {};
   let T = {};
@@ -16,7 +16,7 @@ describe("A custom property", function() {
         type: "string",
         defaultValue: "foo"
       };
-      T = CustomProperty.add(A, D);
+      T = addListenableProperty(A, D);
       v = new T;
     });
     it("exists", function() {
@@ -35,8 +35,8 @@ describe("A custom property", function() {
         new TypeError('Property "foo" received invalid type "object", expected "string"'));
     });
     it("cannot be declared twice", function() {
-      expect(() => CustomProperty.add(T, D)).toThrow(
-        new TypeError("Custom property \"foo\" already exists."));
+      expect(() => addListenableProperty(T, D)).toThrow(
+        new TypeError("Listenable property \"foo\" already exists."));
     });
     it("is enumerable", function() {
       expect(Object.keys(v)).toContain("foo");
@@ -47,7 +47,7 @@ describe("A custom property", function() {
         type: "string",
         enumerable: false
       };
-      T = CustomProperty.add(A, D);
+      T = addListenableProperty(A, D);
       expect(Object.keys(new T)).not.toContain("notenumerable");
     });
     it("internal property list is not enumerable", function() {
@@ -89,7 +89,7 @@ describe("A custom property", function() {
     function checkType(type, defaultValue) {
       it(`of ${type} type has the correct default value`, function() {
         const D = { name: "foo", type: type };
-        T = CustomProperty.add(A, D);
+        T = addListenableProperty(A, D);
         expect((new T).foo).toEqual(defaultValue);
       });
     }
@@ -107,7 +107,7 @@ describe("A custom property", function() {
         type: "array",
         defaultValue: defaultValue
       };
-      T = CustomProperty.add(A, D);
+      T = addListenableProperty(A, D);
       v = new T;
     });
     it("copies the default value", function() {
@@ -132,7 +132,7 @@ describe("A custom property", function() {
         values: [0, 1],
         defaultValue: 1
       };
-      T = CustomProperty.add(A, D);
+      T = addListenableProperty(A, D);
       v = new T;
     });
     it("exists", function() {
@@ -145,6 +145,23 @@ describe("A custom property", function() {
     it("rejects invalid values", function() {
       expect(() => v.bar = 2).toThrow(
         new TypeError(`Enum property \"bar\" received invalid value \"2\".  Valid values: ${D.values}`));
+    });
+  });
+  describe("with multiple properties", function() {
+    let E = {};
+    beforeEach(function() {
+      D = { name: "foo", type: "string", defaultValue: "foo" };
+      E = { name: "bar", type: "string", defaultValue: "bar" };
+      T = addListenableProperty(A, D, E);
+      v = new T;
+    });
+    it("exists", function() {
+      expect(v.foo).toEqual("foo");
+      expect(v.bar).toEqual("bar");
+    });
+    it("rejects repeated properties", function() {
+      expect(() => addListenableProperty(A, D, D)).toThrow(
+        new TypeError("Listenable property \"foo\" cannot be added twice."));
     });
   });
 });

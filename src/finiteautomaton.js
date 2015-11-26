@@ -1,7 +1,7 @@
 import Graph from "./graph";
 // For H.VertexDrawableCircular and H.EdgeDrawable
 import { VertexDrawableCircular, EdgeDrawable } from "./simplegraph";
-import * as CustomProperty from "./customproperty";
+import addListenableProperty from "./listenable-property";
 
 const accepting = {
   name: "accepting",
@@ -10,7 +10,7 @@ const accepting = {
 };
 
 class VertexDrawableFiniteAutomaton
-extends CustomProperty.add(VertexDrawableCircular, accepting) {
+extends addListenableProperty(VertexDrawableCircular, accepting) {
   drawEnter(editor, svgGroup) {
     super.drawEnter(editor, svgGroup);
     svgGroup.append("circle").attr("class", "accepting accepting1").attr("r", this.radius - 1);
@@ -33,7 +33,7 @@ const letter = {
 };
 
 class EdgeDrawableFiniteAutomaton
-extends CustomProperty.add(EdgeDrawable, letter) {
+extends addListenableProperty(EdgeDrawable, letter) {
   drawEnter(editor, svgGroup) {
     super.drawEnter(editor, svgGroup);
     svgGroup.append("rect").attr("class", "letter")

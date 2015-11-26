@@ -15,12 +15,12 @@ export default {
           return result;
         }
 
-        function compareCustomProperties(a, b, i, what) {
+        function compareListenableProperties(a, b, i, what) {
           if(a === null && b === null)
             return true;
           if(!util.equals(a.propertyDescriptors(), b.propertyDescriptors())) {
             result.message = () => `
-            List of custom properties of ${what} #${i} differs.
+            List of listenable properties of ${what} #${i} differs.
             Expected ${JSON.stringify(a.propertyDescriptors())} but received ${JSON.stringify(b.propertyDescriptors())}.
             `;
             return false;
@@ -30,7 +30,7 @@ export default {
           for(let p of a.propertyDescriptors().filter(p => p.name !== "graph")) {
             if(!util.equals(a[p.name], b[p.name])) {
               result.message = () => `
-              Custom property "${p.name}" of ${what} #${i} differs.
+              Listenable property "${p.name}" of ${what} #${i} differs.
               Expected ${JSON.stringify(a[p.name])} but received ${JSON.stringify(b[p.name])}.
             `;
               return false;
@@ -40,10 +40,10 @@ export default {
         }
 
         for(let [i, v] of actual.vertices.entries())
-          if(!compareCustomProperties(v, expected.vertices[i], i, "vertex"))
+          if(!compareListenableProperties(v, expected.vertices[i], i, "vertex"))
             return result;
         for(let [i, e] of actual.edges.entries())
-          if(!compareCustomProperties(e, expected.edges[i], i, "edge"))
+          if(!compareListenableProperties(e, expected.edges[i], i, "edge"))
             return result;
         return { pass: true };
       }

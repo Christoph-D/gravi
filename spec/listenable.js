@@ -1,4 +1,4 @@
-import Listenable from "gravi/event";
+import Listenable from "gravi/listenable";
 
 describe("A listenable object", function() {
   let A = {};
