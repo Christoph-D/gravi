@@ -19,9 +19,9 @@ export default function addListenableProperty(Type, ...descriptors) {
   // Prepare.
   for(let d of descriptors) {
     // Name is name with a capitalized first letter.
-    const Name = d.name[0].toUpperCase() + d.name.substr(1);
+    d.Name = d.name[0].toUpperCase() + d.name.substr(1);
     // The name of the onChange handler.
-    const onChange = `change${Name}`;
+    const onChange = `change${d.Name}`;
 
     let typeToCheck = d.type;
     if(typeToCheck === "array")
