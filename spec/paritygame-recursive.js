@@ -1,5 +1,5 @@
 import ParityGame from "gravi/paritygame";
-import parityWin, * as solver from "gravi/parityrecursive";
+import parityWin, * as solver from "gravi/paritygame-recursive";
 
 describe("The recursive parity game solver", function() {
   let g = {};

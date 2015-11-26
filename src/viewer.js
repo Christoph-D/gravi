@@ -1,7 +1,7 @@
 import * as generators from "./generators";
 import dfsAlgo from "./dfs";
 import examples from "./examples";
-import solver from "./parityrecursive";
+import solver from "./paritygame-recursive";
 import AlgorithmRunner from "./algorithmrunner";
 import graphFromJSON from "./graphjson";
 import GraphEditor from "./editor";
