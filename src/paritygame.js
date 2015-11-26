@@ -102,17 +102,18 @@ export default class ParityGame extends Graph {
   static get PLAYER0() { return PLAYER0; }
   static get PLAYER1() { return PLAYER1; }
 
-  init() {
-    this.VertexType = class extends VertexDrawableParity {};
-
-    this.VertexType.onStatic("changePlayer", function() {
+  constructor(options = {}) {
+    options.VertexType = class extends VertexDrawableParity {};
+    options.VertexType.onStatic("changePlayer", function() {
       this.markIncidentEdgesModified();
       this.dispatch("redrawNeeded");
     });
-    this.VertexType.onStatic("changePriority", function() {
+    options.VertexType.onStatic("changePriority", function() {
       this.dispatch("redrawNeeded");
     });
 
-    this.EdgeType = class extends EdgeDrawable {};
+    options.EdgeType = class extends EdgeDrawable {};
+
+    super(options);
   }
 }

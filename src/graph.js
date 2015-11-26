@@ -101,9 +101,6 @@ export default class Graph extends Listenable {
     this.VertexType = options.VertexType != null ? options.VertexType : Vertex;
     this.EdgeType = options.EdgeType != null ? options.EdgeType : Edge;
 
-    if(this.init != null)
-      this.init(options);
-
     this.vertices = [];
     if(options.numVertices != null && options.numVertices > 0)
       for(let i = 0; i < options.numVertices; ++i)

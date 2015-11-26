@@ -70,11 +70,17 @@ extends addListenableProperty(EdgeDrawable, letter) {
 export default class FiniteAutomaton extends Graph {
   get name() { return "FiniteAutomaton"; }
 
-  init() {
-    this.VertexType = class extends VertexDrawableFiniteAutomaton {};
-    this.VertexType.onStatic("changeAccepting", function() { this.dispatch("redrawNeeded"); });
+  constructor(options = {}) {
+    options.VertexType = class extends VertexDrawableFiniteAutomaton {};
+    options.VertexType.onStatic("changeAccepting", function() {
+      this.dispatch("redrawNeeded");
+    });
 
-    this.EdgeType = class extends EdgeDrawableFiniteAutomaton {};
-    this.EdgeType.onStatic("changeLetter", function() { this.dispatch("redrawNeeded"); });
+    options.EdgeType = class extends EdgeDrawableFiniteAutomaton {};
+    options.EdgeType.onStatic("changeLetter", function() {
+      this.dispatch("redrawNeeded");
+    });
+
+    super(options);
   }
 }
