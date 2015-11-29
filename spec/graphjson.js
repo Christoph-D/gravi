@@ -1,4 +1,4 @@
-import Graph, { Vertex, Edge } from "gravi/graph";
+import Graph, { Vertex } from "gravi/graph";
 import graphFromJSON from "gravi/graphjson";
 import graphMatcher from "./graphmatcher";
 

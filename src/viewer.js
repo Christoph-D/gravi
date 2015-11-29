@@ -1,3 +1,5 @@
+/*global d3*/
+/*eslint-env browser, jquery*/
 import * as generators from "./generators";
 import dfsAlgo from "./dfs";
 import examples from "./examples";

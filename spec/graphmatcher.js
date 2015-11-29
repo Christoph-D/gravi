@@ -2,7 +2,7 @@
 // and edge lists, including ids.  This is a stronger condition than
 // just being isomorphic.
 export default {
-  toBeGraphEquivalent(util, customEqualityTesters) {
+  toBeGraphEquivalent(util) {
     return {
       compare(actual, expected) {
         const result = { pass: false };

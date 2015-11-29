@@ -14,7 +14,7 @@ export function generateRandomGraph(n, p) {
   }
   for(let i = 0; i < n; ++i) {
     for(let j = 0; j <= n - 1; ++j) {
-      if(i == j || g.hasEdge(i, j) || g.hasEdge(j, i))
+      if(i === j || g.hasEdge(i, j) || g.hasEdge(j, i))
         continue;
       if(Math.random() < p) {
         g.addEdge(new g.EdgeType({head: i, tail: j}));
@@ -25,7 +25,7 @@ export function generateRandomGraph(n, p) {
     }
   }
   return g;
-};
+}
 
 export function generatePath(n) {
   const g = new Graph;

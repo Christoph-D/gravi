@@ -1,4 +1,3 @@
-import Extensible from "./delayedproperty";
 import addListenableProperty from "./listenable-property";
 import Listenable from "./listenable";
 
@@ -21,8 +20,8 @@ export class Vertex extends addListenableProperty(Listenable,
   }
 
   removeEdgeId(edgeId) {
-    this.outE = this.outE.filter(e => e != edgeId);
-    this.inE = this.inE.filter(e => e != edgeId);
+    this.outE = this.outE.filter(e => e !== edgeId);
+    this.inE = this.inE.filter(e => e !== edgeId);
     return this;
   }
 

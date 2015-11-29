@@ -32,9 +32,9 @@ const priority = {
 class VertexDrawableParity
 extends addListenableProperty(VertexDrawableDefault, player, priority) {
   edgeAnchor(otherNode, distanceOffset = 0) {
-    if(this.x == otherNode.x && this.y == otherNode.y)
+    if(this.x === otherNode.x && this.y === otherNode.y)
       return { x: this.x, y: this.y };
-    if(this.player == PLAYER0)
+    if(this.player === PLAYER0)
       return circleEdgeAnchor(this, otherNode, distanceOffset + radiusC);
     // Calculate the intersection between the line this -> otherNode
     // and a square of width 2*radiusR centered at otherNode.
@@ -63,7 +63,7 @@ extends addListenableProperty(VertexDrawableDefault, player, priority) {
       }
     }
     // If requested, set back the endpoint a little.
-    if(distanceOffset != 0) {
+    if(distanceOffset !== 0) {
       const D = Math.sqrt(dx * dx + dy * dy);
       result.x += dx / D * distanceOffset;
       result.y += dy / D * distanceOffset;
@@ -84,7 +84,7 @@ extends addListenableProperty(VertexDrawableDefault, player, priority) {
   drawUpdate(editor, svgGroup) {
     super.drawUpdate(editor, svgGroup);
     svgGroup.attr("transform", `translate(${this.x},${this.y})`);
-    svgGroup.select("path.main").attr("d", this.player == PLAYER0 ? circle : rectangle);
+    svgGroup.select("path.main").attr("d", this.player === PLAYER0 ? circle : rectangle);
     const priority = svgGroup.select("text.priority").text(this.priority);
     if(this.priority >= 10 || this.priority < 0)
       priority.attr("font-size", "15");

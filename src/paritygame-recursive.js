@@ -7,16 +7,16 @@ import ParityGame from "./paritygame";
 // in this paper, not an implementation of the subexponential
 // algorithm.
 
-function notRemoved(v) { return v.removed != true; }
+function notRemoved(v) { return v.removed !== true; }
 
-export function even(priority) { return priority % 2 == 0; }
+export function even(priority) { return priority % 2 === 0; }
 
 export function minPriority(graph) {
   return Math.min(...graph.getVertices(notRemoved).map(v => v.priority));
 }
 
 function verticesOfPriority(graph, priority) {
-  return graph.getVertices(notRemoved).filter(v => v.priority == priority);
+  return graph.getVertices(notRemoved).filter(v => v.priority === priority);
 }
 
 function allNeighborsVisited(graph, v, visited) {
@@ -26,19 +26,19 @@ function allNeighborsVisited(graph, v, visited) {
 export function attractor(graph, player, subset) {
   let visited = {};
   subset.map(u => visited[u.id] = true);
-  while(true) {
+  for(;;) {
     let addition = [];
     for(let u of subset) {
       for(let v of u.inNeighbors(notRemoved)) {
         if(visited[v.id])
           continue;
-        if(v.player == player || allNeighborsVisited(graph, v, visited)) {
+        if(v.player === player || allNeighborsVisited(graph, v, visited)) {
           visited[v.id] = true;
           addition.push(v);
         }
       }
     }
-    if(addition.length == 0)
+    if(addition.length === 0)
       break;
     subset = subset.concat(addition);
   }
@@ -59,30 +59,30 @@ function unmarkRemoved(graph, vertices) {
 
 // Assumes no dead-ends.
 function parityWinRecursive(graph) {
-  if(totalRemoved == graph.vertices.length)
+  if(totalRemoved === graph.vertices.length)
     return [[],[]];
   const d = minPriority(graph);
   const A = verticesOfPriority(graph, d);
   const i = even(d) ? 0 : 1;
   const j = even(d) ? 1 : 0;
 
-  let B = attractor(graph, (i == 0 ? ParityGame.PLAYER0 : ParityGame.PLAYER1), A);
+  let B = attractor(graph, (i === 0 ? ParityGame.PLAYER0 : ParityGame.PLAYER1), A);
   markRemoved(graph, B);
   let winningRegions = parityWinRecursive(graph);
   unmarkRemoved(graph, B);
 
-  if(winningRegions[j].length == 0) {
+  if(winningRegions[j].length === 0) {
     winningRegions[i] = graph.getVertices(notRemoved);
   }
   else {
-    B = attractor(graph, (j == 0 ? ParityGame.PLAYER0 : ParityGame.PLAYER1), winningRegions[j]);
+    B = attractor(graph, (j === 0 ? ParityGame.PLAYER0 : ParityGame.PLAYER1), winningRegions[j]);
     markRemoved(graph, B);
     winningRegions = parityWinRecursive(graph);
     unmarkRemoved(graph, B);
 
     winningRegions[j] = [];
     for(let v of graph.getVertices(notRemoved))
-      if(winningRegions[i].indexOf(v) == -1)
+      if(winningRegions[i].indexOf(v) === -1)
         winningRegions[j].push(v);
   }
   return winningRegions;
@@ -90,7 +90,7 @@ function parityWinRecursive(graph) {
 
 function findDeadEnds(graph, player) {
   return graph.getVertices()
-    .filter(v => v.player == player && v.outNeighbors().length == 0);
+    .filter(v => v.player === player && v.outNeighbors().length === 0);
 }
 
 // Removes dead-ends and their attractors.

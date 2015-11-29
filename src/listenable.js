@@ -27,7 +27,7 @@ export default class Listenable {
   }
 
   static onStatic(event, listener) {
-    if(this == Listenable)
+    if(this === Listenable)
       throw Error("Cannot add a static listener to Listenable directly.  Please use a subclass.");
     if(this.listenersStaticPerm == null)
       this.listenersStaticPerm = {};

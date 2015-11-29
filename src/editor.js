@@ -1,3 +1,5 @@
+/*global d3*/
+/*eslint-env browser*/
 import { circleEdgeAnchor } from "./simplegraph";
 import "./historygraph";
 
@@ -306,7 +308,7 @@ export default class GraphEditor {
     this.times.push(end - start);
     if(this.times.length > 40)
       this.times.shift();
-    const median = this.times.slice().sort()[Math.floor(this.times.length / 2)];
+    //const median = this.times.slice().sort()[Math.floor(this.times.length / 2)];
     //d3.select("#performance").text("#{median} ms");
     return this;
   }

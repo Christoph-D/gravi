@@ -1,5 +1,4 @@
-// Karma configuration
-// Generated on Tue May 05 2015 14:12:06 GMT+0200 (CEST)
+/*eslint-env commonjs*/
 
 module.exports = function(config) {
   config.set({

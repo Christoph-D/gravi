@@ -1,9 +1,10 @@
+/*global $*/
 function appendSingleToDom(dom, propertyDescriptor) {
   if(propertyDescriptor.editable === false)
     return;
 
   const name = propertyDescriptor.name;
-  self = this;
+  const self = this;
   const form = dom.append("form")
           .attr("class", `property-input ${propertyDescriptor.type}-input`);
   form.append("span")
@@ -50,7 +51,7 @@ function appendSingleToDom(dom, propertyDescriptor) {
         .attr("name", `${name}`)
         .attr("id", `${name}-${n}`)
         .attr("value", `${n}`)
-        .property("checked", self[name] == n)
+        .property("checked", self[name] === n)
         .on("change", function() { self[name] = parseInt(this.value); });
       form.append("label")
         .attr("for", `${name}-${n}`)

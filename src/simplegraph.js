@@ -24,7 +24,7 @@ function setCSSClass(editor, svgGroup) {
 // A vertex with basic draw functionality.
 export class VertexDrawableDefault extends Vertex {
   get defaultCSSClass() { return "vertex"; }
-  drawEnter(editor, svgGroup) {}
+  drawEnter(/* editor, svgGroup */) {}
 }
 VertexDrawableDefault.prototype.drawUpdate = setCSSClass;
 
@@ -48,7 +48,7 @@ export class VertexDrawableCircular extends VertexDrawableDefault {
 
 export class EdgeDrawableDefault extends Edge {
   get defaultCSSClass() { return "edge"; }
-  drawEnter(editor, svgGroup) {}
+  drawEnter(/* editor, svgGroup */) {}
 }
 EdgeDrawableDefault.prototype.drawUpdate = setCSSClass;
 // Same behavior as default vertices.

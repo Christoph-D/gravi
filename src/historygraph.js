@@ -66,7 +66,7 @@ injectDelayedProperty(Graph, "cursor", class {
 function translateHighlightIds(id) {
   if(id === "active" || id === "player0")
     return 1;
-  if(id == "done" || id == "player1")
+  if(id === "done" || id === "player1")
     return 2;
   throw TypeError(`Not a valid highlight id: ${id}`);
 }

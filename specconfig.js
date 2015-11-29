@@ -1,3 +1,5 @@
+/*eslint-env browser, commonjs*/
+
 var allTestFiles = [];
 var TEST_REGEXP = /specjs/;
 
