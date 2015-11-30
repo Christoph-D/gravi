@@ -4,20 +4,20 @@ module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: 'build/',
+    basePath: "build/",
 
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine', 'requirejs'],
+    frameworks: ["jasmine", "requirejs"],
 
 
     // list of files / patterns to load in the browser
     files: [
-      '../specconfig.js',
-      '../node_modules/babel-polyfill/dist/polyfill.min.js',
-      {pattern: 'js/*.js', included: false},
-      {pattern: 'specjs/*.js', included: false}
+      "../specconfig.js",
+      "../node_modules/babel-polyfill/dist/polyfill.min.js",
+      {pattern: "js/*.js", included: false},
+      {pattern: "specjs/*.js", included: false}
     ],
 
 
@@ -35,7 +35,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ["progress"],
 
 
     // web server port
@@ -57,7 +57,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS'],
+    browsers: ["PhantomJS"],
 
 
     // Continuous Integration mode

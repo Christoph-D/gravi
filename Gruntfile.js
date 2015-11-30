@@ -2,38 +2,38 @@
 
 module.exports = function(grunt) {
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
+    pkg: grunt.file.readJSON("package.json"),
 
-    buildDir: 'build',
-    siteDir: 'site',
-    srcDir: 'src',
+    buildDir: "build",
+    siteDir: "site",
+    srcDir: "src",
 
     watch: {
       options: {
         atBegin: true
       },
       gravi: {
-        files: [ '<%= srcDir %>/*.js' ],
-        tasks: [ 'compile', 'karma:single-test' ]
+        files: [ "<%= srcDir %>/*.js" ],
+        tasks: [ "compile", "karma:single-test" ]
       },
       site: {
-        files: [ '<%= siteDir %>/*' ],
-        tasks: [ 'build-site' ]
+        files: [ "<%= siteDir %>/*" ],
+        tasks: [ "build-site" ]
       },
       test: {
-        files: [ 'spec/*.js' ],
-        tasks: [ 'test' ]
+        files: [ "spec/*.js" ],
+        tasks: [ "test" ]
       },
       doc: {
-        files: 'doc/*.adoc',
-        tasks: [ 'doc' ]
+        files: "doc/*.adoc",
+        tasks: [ "doc" ]
       }
     },
     postcss: {
       options: {
         processors: [
-          require('autoprefixer')(),
-          require('cssnano')()
+          require("autoprefixer")(),
+          require("cssnano")()
         ]
       },
       gravi: {
@@ -52,17 +52,17 @@ module.exports = function(grunt) {
     copy: {
       index: {
         expand: true,
-        dest: '<%= buildDir %>/',
-        src: 'index.html',
-        cwd: '<%= siteDir %>'
+        dest: "<%= buildDir %>/",
+        src: "index.html",
+        cwd: "<%= siteDir %>"
       },
       lib: {
         expand: true,
-        dest: '<%= buildDir %>/lib/',
-        src: [ 'require.js', 'd3/d3.min.js', 'd3.slider/*.{js,css}',
-               'jquery-2.*.min.js', 'jquery-ui/**/*',
-               'babel-polyfill.min.js' ],
-        cwd: 'lib'
+        dest: "<%= buildDir %>/lib/",
+        src: [ "require.js", "d3/d3.min.js", "d3.slider/*.{js,css}",
+               "jquery-2.*.min.js", "jquery-ui/**/*",
+               "babel-polyfill.min.js" ],
+        cwd: "lib"
       }
     },
     clean: {
@@ -70,16 +70,16 @@ module.exports = function(grunt) {
     },
     shell: {
       doc: {
-        command: 'asciidoctor --destination-dir=\'<%= buildDir %>/doc\' doc/\*.adoc || true'
+        command: "asciidoctor --destination-dir='<%= buildDir %>/doc' doc/\*.adoc || true"
       }
     },
     karma: {
-      'single-test': {
-        configFile: 'karma.conf.js',
+      "single-test": {
+        configFile: "karma.conf.js",
         singleRun: true
       },
       watch: {
-        configFile: 'karma.conf.js'
+        configFile: "karma.conf.js"
       }
     },
     babel: {
@@ -101,24 +101,24 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-requirejs');
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-less');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-postcss');
-  grunt.loadNpmTasks('grunt-shell');
-  grunt.loadNpmTasks('grunt-karma');
-  grunt.loadNpmTasks('grunt-babel');
+  grunt.loadNpmTasks("grunt-contrib-watch");
+  grunt.loadNpmTasks("grunt-contrib-requirejs");
+  grunt.loadNpmTasks("grunt-contrib-clean");
+  grunt.loadNpmTasks("grunt-contrib-less");
+  grunt.loadNpmTasks("grunt-contrib-copy");
+  grunt.loadNpmTasks("grunt-postcss");
+  grunt.loadNpmTasks("grunt-shell");
+  grunt.loadNpmTasks("grunt-karma");
+  grunt.loadNpmTasks("grunt-babel");
 
-  grunt.registerTask('compile', [ 'babel:gravi' ]);
-  grunt.registerTask('build-site', [ 'less', 'postcss', 'copy' ]);
-  grunt.registerTask('build', [ 'compile', 'build-site' ]);
-  grunt.registerTask('minify', [ 'compile', 'requirejs:gravi' ]);
+  grunt.registerTask("compile", [ "babel:gravi" ]);
+  grunt.registerTask("build-site", [ "less", "postcss", "copy" ]);
+  grunt.registerTask("build", [ "compile", "build-site" ]);
+  grunt.registerTask("minify", [ "compile", "requirejs:gravi" ]);
 
-  grunt.registerTask('doc', [ 'shell:doc']);
+  grunt.registerTask("doc", [ "shell:doc"]);
 
-  grunt.registerTask('test', [ 'babel:test', 'karma:single-test' ]);
+  grunt.registerTask("test", [ "babel:test", "karma:single-test" ]);
 
-  grunt.registerTask('default', [ 'build', 'doc', 'test' ]);
+  grunt.registerTask("default", [ "build", "doc", "test" ]);
 };

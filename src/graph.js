@@ -120,7 +120,7 @@ export default class Graph extends Listenable {
     v.id = this.vertices.length;
     v.graph = this;
     this.vertices.push(v);
-    this.dispatch('postAddVertex', v);
+    this.dispatch("postAddVertex", v);
     return this;
   }
 
@@ -132,7 +132,7 @@ export default class Graph extends Listenable {
         v.inEdges().map(e => this.removeEdge(e));
         v.outEdges().map(e => this.removeEdge(e));
         this.vertices[i] = null;
-        this.dispatch('postRemoveVertex');
+        this.dispatch("postRemoveVertex");
         return this;
       }
     }
@@ -165,7 +165,7 @@ export default class Graph extends Listenable {
     this.vertices[e.tail].addOutEdge(e.id);
     this.vertices[e.head].addInEdge(e.id);
     this.edges.push(e);
-    this.dispatch('postAddEdge', e);
+    this.dispatch("postAddEdge", e);
     return this;
   }
 
@@ -182,7 +182,7 @@ export default class Graph extends Listenable {
         // this.edges.  Removing/adding lots of edges will thus clutter
         // this.edges with null entries.  See this.compressIds().
         this.edges[i] = null;
-        this.dispatch('postRemoveEdge', f);
+        this.dispatch("postRemoveEdge", f);
         return this;
       }
     }

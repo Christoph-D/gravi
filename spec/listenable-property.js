@@ -55,7 +55,7 @@ describe("A listenable property", function() {
     });
     it("fires the change event exactly once per change", function() {
       const a = { f: function() {} };
-      spyOn(a, 'f');
+      spyOn(a, "f");
       v.on("changeFoo", a.f);
       v.foo = "bar";
       // Jasmine v2
