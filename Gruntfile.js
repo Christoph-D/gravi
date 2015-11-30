@@ -98,6 +98,14 @@ module.exports = function(grunt) {
       options: {
         sourceMap: true
       }
+    },
+    eslint: {
+      gravi: {
+        src: ["<%= srcDir %>/*.js"]
+      },
+      test: {
+        src: ["spec/*.js"]
+      }
     }
   });
 
@@ -106,19 +114,20 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-clean");
   grunt.loadNpmTasks("grunt-contrib-less");
   grunt.loadNpmTasks("grunt-contrib-copy");
+  grunt.loadNpmTasks("gruntify-eslint");
   grunt.loadNpmTasks("grunt-postcss");
   grunt.loadNpmTasks("grunt-shell");
   grunt.loadNpmTasks("grunt-karma");
   grunt.loadNpmTasks("grunt-babel");
 
-  grunt.registerTask("compile", [ "babel:gravi" ]);
+  grunt.registerTask("compile", [ "babel:gravi", "eslint:gravi" ]);
   grunt.registerTask("build-site", [ "less", "postcss", "copy" ]);
   grunt.registerTask("build", [ "compile", "build-site" ]);
   grunt.registerTask("minify", [ "compile", "requirejs:gravi" ]);
 
   grunt.registerTask("doc", [ "shell:doc"]);
 
-  grunt.registerTask("test", [ "babel:test", "karma:single-test" ]);
+  grunt.registerTask("test", [ "babel:test", "karma:single-test", "eslint:test" ]);
 
   grunt.registerTask("default", [ "build", "doc", "test" ]);
 };
