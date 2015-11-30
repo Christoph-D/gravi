@@ -27,7 +27,7 @@ export default {
           }
           // Don't compare the "graph" property because it simply
           // points to the graph.
-          for(let p of a.propertyDescriptors().filter(p => p.name !== "graph")) {
+          for(const p of a.propertyDescriptors().filter(p => p.name !== "graph")) {
             if(!util.equals(a[p.name], b[p.name])) {
               result.message = () => `
               Listenable property "${p.name}" of ${what} #${i} differs.
@@ -39,10 +39,10 @@ export default {
           return true;
         }
 
-        for(let [i, v] of actual.vertices.entries())
+        for(const [i, v] of actual.vertices.entries())
           if(!compareListenableProperties(v, expected.vertices[i], i, "vertex"))
             return result;
-        for(let [i, e] of actual.edges.entries())
+        for(const [i, e] of actual.edges.entries())
           if(!compareListenableProperties(e, expected.edges[i], i, "edge"))
             return result;
         return { pass: true };

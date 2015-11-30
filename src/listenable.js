@@ -8,7 +8,7 @@ function addListener(where, event, listener) {
 export default class Listenable {
   constructor() {
     // These internal variables should not be enumerable.
-    for(let p of ["_listeners", "_listenersPerm"]) {
+    for(const p of ["_listeners", "_listenersPerm"]) {
       Object.defineProperty(this, p, {
         configurable: true,
         writable: true,
@@ -48,15 +48,15 @@ export default class Listenable {
 
   dispatch(event, ...args) {
     if(event in this._listeners) {
-      for(let f of this._listeners[event])
+      for(const f of this._listeners[event])
         f.apply(this, args);
       delete this._listeners[event];
     }
     if(event in this._listenersPerm)
-      for(let f of this._listenersPerm[event])
+      for(const f of this._listenersPerm[event])
         f.apply(this, args);
     if(this.constructor.listenersStaticPerm != null && event in this.constructor.listenersStaticPerm)
-      for(let f of this.constructor.listenersStaticPerm[event])
+      for(const f of this.constructor.listenersStaticPerm[event])
         f.apply(this, args);
     return this;
   }

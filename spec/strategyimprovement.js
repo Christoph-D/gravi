@@ -15,7 +15,7 @@ describe("The strategy improvement algorithm", function() {
   });
   it("has correct reward ordering", function() {
     const tests = [ [3, 4], [5, 4], [0, 2], [3, 1], [1, 1] ];
-    for(let [v, w] of tests) {
+    for(const [v, w] of tests) {
       expect(SI.rewardLessOrEqual(p(v), p(w))).toBe(true, `Priorities: ${v}, ${w}`);
       if(v !== w) {
         expect(SI.rewardLess(p(v), p(w))).toBe(true, `Priorities: ${v}, ${w}`);

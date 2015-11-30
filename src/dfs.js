@@ -8,7 +8,7 @@ function dfsStep(graph, visited, v) {
   v.highlight.set("active");
   graph.history.saveStep();
   v.highlight.set("done");
-  for(var e of v.outEdges()) {
+  for(const e of v.outEdges()) {
     const w = graph.vertices[e.head];
     e.highlight.set("active");
     dfsStep(graph, visited, w);

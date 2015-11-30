@@ -12,7 +12,7 @@ export default function addListenableProperty(Type, ...descriptors) {
   typeof undefined;
 
   // Check preconditions (no duplicates).
-  for(let [i, d] of descriptors.entries()) {
+  for(const [i, d] of descriptors.entries()) {
     if(Type.propertyDescriptors != null &&
        Type.propertyDescriptors.some(p => p.name === d.name))
       throw TypeError(`Listenable property "${d.name}" already exists.`);
@@ -21,7 +21,7 @@ export default function addListenableProperty(Type, ...descriptors) {
   }
 
   // Prepare.
-  for(let d of descriptors) {
+  for(const d of descriptors) {
     // Name is name with a capitalized first letter.
     d.Name = d.name[0].toUpperCase() + d.name.substr(1);
     // The name of the onChange handler.
@@ -79,7 +79,7 @@ export default function addListenableProperty(Type, ...descriptors) {
           value: {}
         });
       }
-      for(let d of descriptors) {
+      for(const d of descriptors) {
         // Define and initialize every property.
         Object.defineProperty(this, d.name, {
           configurable: true,

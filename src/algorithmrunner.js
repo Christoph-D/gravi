@@ -6,7 +6,7 @@ export default class AlgorithmRunner {
     const properties = graph.VertexType.propertyDescriptors.map(p => p.name);
     if(this.algorithm.requiredProperties != null) {
       const missing = [];
-      for(let p of this.algorithm.requiredProperties)
+      for(const p of this.algorithm.requiredProperties)
         if(properties.indexOf(p) === -1)
           missing.push(p);
       if(missing.length > 0)

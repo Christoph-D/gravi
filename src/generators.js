@@ -4,7 +4,7 @@ import ParityGame from "./paritygame";
 export function generateRandomGraph(n, p) {
   const g = new ParityGame;
   for(let i = 0; i < n; ++i) {
-    let v = new g.VertexType({
+    const v = new g.VertexType({
       x: -150 * Math.cos(2 * Math.PI / n * i) + 350,
       y: 150 * Math.sin(2 * Math.PI / n * i) + 200
     });

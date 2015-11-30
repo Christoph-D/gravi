@@ -30,7 +30,7 @@ function addHighlightedMarkers(svg) {
   // Create one marker without highlights.
   newMarker();
   // Create markers for all possible edge highlights.
-  for(let i of [1,2]) {
+  for(const i of [1,2]) {
     newMarker()
       .attr("id", `edgeArrowHighlight${i}`)
       .attr("class", `highlight${i}`);

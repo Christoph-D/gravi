@@ -7,7 +7,7 @@ export default class TimedProperty {
 
   interpolate(x, y, t) {
     const result = {};
-    for(let key of this.interpolateKeys) {
+    for(const key of this.interpolateKeys) {
       if(!(key in x && key in y))
         throw `Missing key: ${key}`;
       result[key] = x[key] * (1 - t) + y[key] * t;

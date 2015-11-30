@@ -24,12 +24,12 @@ function allNeighborsVisited(graph, v, visited) {
 }
 
 export function attractor(graph, player, subset) {
-  let visited = {};
+  const visited = {};
   subset.map(u => visited[u.id] = true);
   for(;;) {
-    let addition = [];
-    for(let u of subset) {
-      for(let v of u.inNeighbors(notRemoved)) {
+    const addition = [];
+    for(const u of subset) {
+      for(const v of u.inNeighbors(notRemoved)) {
         if(visited[v.id])
           continue;
         if(v.player === player || allNeighborsVisited(graph, v, visited)) {
@@ -81,7 +81,7 @@ function parityWinRecursive(graph) {
     unmarkRemoved(graph, B);
 
     winningRegions[j] = [];
-    for(let v of graph.getVertices(notRemoved))
+    for(const v of graph.getVertices(notRemoved))
       if(winningRegions[i].indexOf(v) === -1)
         winningRegions[j].push(v);
   }
@@ -117,7 +117,7 @@ export default function parityWin(graph, options = {}) {
   // dead-ends.
   const simpleW = simplifyDeadEnds(graph);
   // Compute the winning regions of the remaining graph.
-  let W = parityWinRecursive(graph);
+  const W = parityWinRecursive(graph);
   W[0] = W[0].concat(simpleW[0]);
   W[1] = W[1].concat(simpleW[1]);
 

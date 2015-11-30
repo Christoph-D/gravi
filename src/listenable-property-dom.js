@@ -22,7 +22,7 @@ function appendSingleToDom(dom, propertyDescriptor) {
       .on("input", function() { self[name] = this.value; });
     break;
   case "number":
-    let onChange = function() {
+    const onChange = function() {
       const i = parseInt(this.value);
       if(!isNaN(i))
         self[name] = i;
@@ -45,7 +45,7 @@ function appendSingleToDom(dom, propertyDescriptor) {
       .on("change", function() { self[name] = this.checked; });
     break;
   case "enum":
-    for(let n of propertyDescriptor.values) {
+    for(const n of propertyDescriptor.values) {
       form.append("input")
         .attr("type", "radio")
         .attr("name", `${name}`)

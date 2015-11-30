@@ -22,8 +22,8 @@ injectDelayedProperty(Graph, "history", class {
 
   reset() {
     // Blindly reset all properties.
-    for(let v of this.graph.getVertices()) {
-      for(let key in v) {
+    for(const v of this.graph.getVertices()) {
+      for(const key in v) {
         try {
           v[key].reset();
         }
@@ -31,8 +31,8 @@ injectDelayedProperty(Graph, "history", class {
       }
       v.modified = true;
     }
-    for(let e of this.graph.getEdges()) {
-      for(let key in e) {
+    for(const e of this.graph.getEdges()) {
+      for(const key in e) {
         try {
           e[key].reset();
         }

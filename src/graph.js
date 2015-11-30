@@ -85,7 +85,7 @@ function vertexOrEdgeToJSON(v) {
   if(v === null)
     return null;
   const w = {};
-  for(let p of v.propertyDescriptors != null ? v.propertyDescriptors() : []) {
+  for(const p of v.propertyDescriptors != null ? v.propertyDescriptors() : []) {
     // Save only properties different from the default value.
     if(p.shouldBeSaved !== false && v[p.name] !== p.defaultValue)
       w[p.name] = v[p.name];
@@ -125,7 +125,7 @@ export default class Graph extends Listenable {
   }
 
   removeVertex(v) {
-    for(let [i, w] of this.vertices.entries()) {
+    for(const [i, w] of this.vertices.entries()) {
       if(w === null)
         continue;
       if(v === w) {
@@ -172,7 +172,7 @@ export default class Graph extends Listenable {
   // Accepts a single Edge object or tail, head.  Ignores the edge id.
   removeEdge(tail, head) {
     const e = this.parseEdge(tail, head);
-    for(let [i, f] of this.edges.entries()) {
+    for(const [i, f] of this.edges.entries()) {
       if(f == null)
         continue;
       if(e.head === f.head && e.tail === f.tail) {
@@ -196,14 +196,14 @@ export default class Graph extends Listenable {
 
     // Remove all null entries and then fix all the ids.
     this.vertices = this.getVertices();
-    for(let v of this.vertices) {
+    for(const v of this.vertices) {
       v.id = idsV[v.id];
       v.outE = v.outE.map(i => idsE[i]);
       v.inE = v.inE.map(i => idsE[i]);
     }
 
     this.edges = this.getEdges();
-    for(let e of this.edges) {
+    for(const e of this.edges) {
       e.id = idsE[e.id];
       e.tail = idsV[e.tail];
       e.head = idsV[e.head];
@@ -213,7 +213,7 @@ export default class Graph extends Listenable {
 
   hasEdge(tail, head) {
     const e = this.parseEdge(tail, head);
-    for(let f of this.getEdges())
+    for(const f of this.getEdges())
       if(e.head === f.head && e.tail === f.tail)
         return true;
     return false;
