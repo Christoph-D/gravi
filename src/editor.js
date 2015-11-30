@@ -263,7 +263,7 @@ export default class GraphEditor {
     const edges = this.svg.select("#edges").selectAll(".edge").data(this.g.getEdges());
     const editor = this;
     edges.enter().append("g")
-      .each(function (e) { e.drawEnter(editor, d3.select(this)); })
+      .each(function(e) { e.drawEnter(editor, d3.select(this)); })
       .on("contextmenu", () => d3.event.preventDefault())
       .on("mousedown", (d) => this.onMouseDownEdge(d));
     edges.exit().remove();

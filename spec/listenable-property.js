@@ -54,7 +54,7 @@ describe("A listenable property", function() {
       expect(Object.keys(v)).not.toContain("_properties");
     });
     it("fires the change event exactly once per change", function() {
-      const a = { f: function () {} };
+      const a = { f: function() {} };
       spyOn(a, 'f');
       v.on("changeFoo", a.f);
       v.foo = "bar";
@@ -101,7 +101,7 @@ describe("A listenable property", function() {
 
   describe("of array type", function() {
     const defaultValue = [0,1];
-    beforeEach(function () {
+    beforeEach(function() {
       const D = {
         name: "foo",
         type: "array",
