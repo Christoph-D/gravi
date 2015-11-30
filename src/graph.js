@@ -97,10 +97,10 @@ export default class Graph extends Listenable {
   get name() { return "Graph"; }
 
   constructor({
-    VertexType: VertexType = Vertex,
-    EdgeType: EdgeType = Edge,
-    numVertices: numVertices = 0,
-    edgeList: edgeList = []
+    VertexType = Vertex,
+    EdgeType = Edge,
+    numVertices = 0,
+    edgeList = []
   } = {}) {
     super();
 
