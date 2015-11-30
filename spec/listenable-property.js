@@ -120,7 +120,7 @@ describe("A listenable property", function() {
     });
     it("copies parameters", function() {
       const a = [1,2];
-      expect((new T({foo: a})).foo).not.toBe(a);
+      expect((new T({ foo: a })).foo).not.toBe(a);
     });
   });
 

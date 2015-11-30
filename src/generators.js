@@ -17,7 +17,7 @@ export function generateRandomGraph(n, p) {
       if(i === j || g.hasEdge(i, j) || g.hasEdge(j, i))
         continue;
       if(Math.random() < p) {
-        g.addEdge(new g.EdgeType({head: i, tail: j}));
+        g.addEdge(new g.EdgeType({ head: i, tail: j }));
         //const a = "a".charCodeAt(0);
         //const b = "b".charCodeAt(0);
         //g.edges[g.edges.length - 1].letter = String.fromCharCode(Math.round(Math.random() * (b - a)) + a);
@@ -37,6 +37,6 @@ export function generatePath(n) {
     g.addVertex(v);
   }
   for(let i = 0; i < n - 1; ++i)
-    g.addEdge(new g.EdgeType({tail: i, head: i + 1}));
+    g.addEdge(new g.EdgeType({ tail: i, head: i + 1 }));
   return g;
 }

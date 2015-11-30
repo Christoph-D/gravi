@@ -16,8 +16,8 @@ module.exports = function(config) {
     files: [
       "../specconfig.js",
       "../node_modules/babel-polyfill/dist/polyfill.min.js",
-      {pattern: "js/*.js", included: false},
-      {pattern: "specjs/*.js", included: false}
+      { pattern: "js/*.js", included: false },
+      { pattern: "specjs/*.js", included: false }
     ],
 
 
