@@ -81,6 +81,7 @@ export default class GraphEditor {
         // Deselect everything.
         this.select(null);
         this.drawEdgeMode = false;
+        this.queueRedraw();
         break;
       case 2: // right click
         // Create a new vertex on right click.
