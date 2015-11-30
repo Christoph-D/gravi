@@ -9,7 +9,7 @@ export default class Listenable {
   constructor() {
     // These internal variables should not be enumerable.
     for(const p of ["_listeners", "_listenersPerm"]) {
-      Object.defineProperty(this, p, {
+      Reflect.defineProperty(this, p, {
         configurable: true,
         writable: true,
         enumerable: false,
@@ -37,27 +37,27 @@ export default class Listenable {
 
   static removeStaticListeners(event) {
     if(this.listenersStaticPerm != null)
-      delete this.listenersStaticPerm[event];
+      Reflect.deleteProperty(this.listenersStaticPerm, event);
     return this;
   }
 
   removePermanentListeners(event) {
-    delete this._listenersPerm[event];
+    Reflect.deleteProperty(this._listenersPerm, event);
     return this;
   }
 
   dispatch(event, ...args) {
     if(event in this._listeners) {
       for(const f of this._listeners[event])
-        f.apply(this, args);
-      delete this._listeners[event];
+        Reflect.apply(f, this, args);
+      Reflect.deleteProperty(this._listeners, event);
     }
     if(event in this._listenersPerm)
       for(const f of this._listenersPerm[event])
-        f.apply(this, args);
+        Reflect.apply(f, this, args);
     if(this.constructor.listenersStaticPerm != null && event in this.constructor.listenersStaticPerm)
       for(const f of this.constructor.listenersStaticPerm[event])
-        f.apply(this, args);
+        Reflect.apply(f, this, args);
     return this;
   }
 }

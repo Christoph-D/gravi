@@ -15,7 +15,7 @@ describe("A class with a delayed property", function() {
   });
 
   it("has the property in its prototype", function() {
-    expect(Object.hasOwnProperty.call(D.prototype, "delayed")).toBe(true);
+    expect(Reflect.apply(Object.hasOwnProperty, D.prototype, ["delayed"])).toBe(true);
   });
 
   it("does not allow access to the property in its prototype", function() {
@@ -24,7 +24,7 @@ describe("A class with a delayed property", function() {
   });
 
   it("has the property with a getter", function() {
-    const desc = Object.getOwnPropertyDescriptor(D.prototype, "delayed");
+    const desc = Reflect.getOwnPropertyDescriptor(D.prototype, "delayed");
     expect(desc.get).toBeDefined();
   });
 
@@ -34,7 +34,7 @@ describe("A class with a delayed property", function() {
   });
 
   it("does not have the property on fresh instances", function() {
-    expect(Object.hasOwnProperty.call(new D, "delayed")).toBe(false);
+    expect(Reflect.apply(Object.hasOwnProperty, new D, ["delayed"])).toBe(false);
   });
 
   describe("on access", function() {
@@ -45,11 +45,11 @@ describe("A class with a delayed property", function() {
     });
 
     it("gains the property", function() {
-      expect(Object.hasOwnProperty.call(d, "delayed")).toBe(true);
+      expect(Reflect.apply(Object.hasOwnProperty, d, ["delayed"])).toBe(true);
     });
 
     it("gains a plain property without getter/setter", function() {
-      const desc = Object.getOwnPropertyDescriptor(d, "delayed");
+      const desc = Reflect.getOwnPropertyDescriptor(d, "delayed");
       expect(desc.get).not.toBeDefined();
       expect(desc.set).not.toBeDefined();
     });
@@ -80,12 +80,12 @@ describe("A class with a delayed property", function() {
     });
 
     it("does not inadvertantly instantiate the property in the base class", function() {
-      const desc = Object.getOwnPropertyDescriptor(D.prototype, "delayed");
+      const desc = Reflect.getOwnPropertyDescriptor(D.prototype, "delayed");
       expect(desc.get).toBeDefined(); // still a special property with a getter
     });
 
     it("does not inadvertantly instantiate the property in the derived class", function() {
-      const desc = Object.getOwnPropertyDescriptor(E.prototype, "delayedE");
+      const desc = Reflect.getOwnPropertyDescriptor(E.prototype, "delayedE");
       expect(desc.get).toBeDefined(); // still a special property with a getter
     });
   });

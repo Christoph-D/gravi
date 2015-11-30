@@ -53,7 +53,7 @@ describe("The graph JSON converter", function() {
 
   it("refuses to load a graph with no type", function() {
     const j = JSON.parse(JSON.stringify(g));
-    delete j.type;
+    Reflect.deleteProperty(j, "type");
     expect(() => graphFromJSON(JSON.stringify(j)))
       .toThrow(TypeError("Missing property: \"type\""));
   });

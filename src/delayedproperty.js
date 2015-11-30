@@ -5,7 +5,7 @@
 export default function injectDelayedProperty(object, propName, template) {
   if(propName in object.prototype)
     throw Error(`Property "${propName}" already exists`);
-  Object.defineProperty(object.prototype, propName, {
+  Reflect.defineProperty(object.prototype, propName, {
     configurable: true,
     enumerable: true,
     get() {
@@ -15,7 +15,7 @@ export default function injectDelayedProperty(object, propName, template) {
         throw Error("This property is only accessible from an instance");
       // Instantiate the property and assign it as an own property to
       // this.
-      Object.defineProperty(this, propName, {
+      Reflect.defineProperty(this, propName, {
         configurable: true,
         enumerable: true,
         writable: true,

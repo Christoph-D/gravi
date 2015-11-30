@@ -72,7 +72,7 @@ export default function addListenableProperty(Type, ...descriptors) {
       super(...arguments);
       if(this._properties == null) {
         // We want this._properties to be not enumerable.
-        Object.defineProperty(this, "_properties", {
+        Reflect.defineProperty(this, "_properties", {
           configurable: true,
           enumerable: false,
           writable: true,
@@ -81,7 +81,7 @@ export default function addListenableProperty(Type, ...descriptors) {
       }
       for(const d of descriptors) {
         // Define and initialize every property.
-        Object.defineProperty(this, d.name, {
+        Reflect.defineProperty(this, d.name, {
           configurable: true,
           enumerable: d.enumerable !== false,
           get: d.getListenableProperty,

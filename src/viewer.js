@@ -161,4 +161,4 @@ generateGraph();
 loadGraph(examples[0]);
 
 if(d3.select("#dfs").property("checked"))
-  chooseAlgorithm.call({value: "dfs"});
+  Reflect.apply(chooseAlgorithm, {value: "dfs"}, []);
