@@ -149,13 +149,25 @@ function chooseAlgorithm() {
   runAlgorithm();
 }
 
+function showHideLoadSaveBox() {
+  const f = d3.select("#load-save-form");
+  if(document.getElementById("load-save-choice").checked)
+    f.style("display", "flex");
+  else
+    f.style("display", "none");
+}
+
+d3.select("#load").on("click", loadGraph);
+d3.select("#save").on("click", saveGraph);
+d3.select("#clear")
+  .on("click", () => document.getElementById("dump").value = "");
+
 d3.select("#dfs").on("change", chooseAlgorithm);
 d3.select("#parity").on("change", chooseAlgorithm);
 
 d3.select("#run").on("click", animateAlgorithm);
 d3.select("#generate").on("click", generateGraph);
-d3.select("#save").on("click", saveGraph);
-d3.select("#load").on("click", loadGraph);
+d3.select("#load-save-choice").on("change", showHideLoadSaveBox);
 d3.select("#example1").on("click", () => loadGraph(examples[0]));
 generateGraph();
 loadGraph(examples[0]);

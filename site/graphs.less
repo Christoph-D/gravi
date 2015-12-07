@@ -1,5 +1,4 @@
-@graphWidth: 750px;
-@graphHeight: 400px;
+@sliderWidth: 1000px;
 
 @vertexColor: #8888FF;
 @vertexHighlight1: #FF0000;
@@ -9,33 +8,83 @@
 @edgeHighlight1: #FF0000;
 @edgeHighlight2: #BBBBBB;
 
+@panelOpacity: 0.9;
+@borderColor: #EEEEEE;
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
 #graph {
-  outline: thin solid black;
-  width: @graphWidth;
-  height: @graphHeight;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 #infocol {
-  position: absolute;
+  position: fixed;
   top: 20px;
-  left: @graphWidth + 30px;
+  right: 30px;
+  padding: 10px;
+  background: rgba(255, 255, 255, @panelOpacity);
+  border: 5px solid @borderColor;
+  border-radius: 10px;
+}
+
+#control-panel {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  margin-left: -@sliderWidth / 2;
+  width: @sliderWidth + 20px;
+  padding: 10px;
+  background: rgba(255, 255, 255, @panelOpacity);
+  border: 5px solid @borderColor;
+  border-radius: 10px;
+}
+
+#control-buttons {
+  text-align: center;
+  width: @sliderWidth;
 }
 
 #run {
 }
 
 #slider {
-  width: @graphWidth - 20px;
+  width: @sliderWidth;
   margin: 10px;
-  margin-bottom: 30px;
 }
 
+#load-save-form {
+  display: none;
+  position: fixed;
+  right: 20px;
+  bottom: 120px;
+  flex-direction: column;
+  height: 500px;
+  width: 350px;
+  padding: 10px;
+  padding-right: 20px;
+  background: rgba(255, 255, 255, @panelOpacity);
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  p {
+    margin: 0;
+    padding: 0;
+  }
+}
 #loading-message {
   color: #AA0000;
 }
 #dump {
-  width: @graphWidth;
-  height: 1000px;
+  width: 100%;
+  height: 90%;
+  flex-grow: 1;
 }
 
 .vertex {

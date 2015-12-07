@@ -217,13 +217,14 @@ export default class GraphEditor {
     if(this.selection != null) {
       //d3.select("#info2").text(JSON.stringify(G.vertexOrEdgeToJSON(this.selection), undefined, 2));
       if(this.oldSelection !== this.selection) {
+        d3.select("#infocol").style("display", "block");
         d3.selectAll("#info *").remove();
         this.selection.appendPropertiesToDom(d3.select("#info"));
       }
     }
     else if(this.oldSelection !== this.selection) {
       d3.selectAll("#info *").remove();
-      //d3.select("#info2").text("");
+      d3.select("#infocol").style("display", "none");
     }
     this.oldSelection = this.selection;
   }

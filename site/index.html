@@ -16,34 +16,48 @@
 <script src="lib/jquery-ui/jquery-ui.min.js" charset="utf-8"></script>
 <script src="lib/babel-polyfill.min.js" charset="utf-8"></script>
 <svg id="graph" />
+
 <div id="infocol">
   <div id="info"></div>
-  <pre id="info2"></pre>
 </div>
-<form>
-<div>
-  <div id="algorithm-chooser" style="display: inline-block;">
-  <input id="dfs" type="radio" name="algorithm" value="dfs" />
-  <label for="dfs">DFS</label>
-  <input id="parity" type="radio" name="algorithm" value="parity" checked="checked" />
-  <label for="parity">Parity</label>
-  </div>
-  <input id="run" type="button" value="Run" disabled="disabled" />
-  <input id="generate" type="button" value="Random" />
-  <input id="save" type="button" value="To JSON" />
-  <input id="load" type="button" value="From JSON" />
-  <input id="example1" type="button" value="Load an example" />
+
+<div id="control-panel">
+  <form>
+    <div id="control-buttons">
+      <div id="algorithm-chooser" style="display: inline-block;">
+        <input id="dfs" type="radio" name="algorithm" value="dfs" />
+        <label for="dfs">DFS</label>
+        <input id="parity" type="radio" name="algorithm" value="parity" checked="checked" />
+        <label for="parity">Parity</label>
+      </div>
+      <input id="run" type="button" value="Run" disabled="disabled" />
+      <input id="generate" type="button" value="Random" />
+      <input id="load-save-choice" type="checkbox" value="load-save" />
+      <label for="load-save-choice">Load/Save</label>
+      <input id="example1" type="button" value="Load an example" />
+    </div>
+  </form>
+  <div id="slider"></div>
 </div>
-</form>
-<div id="slider"></div>
+
 <span id="performance"></span></br>
-<p>
-  Copy &amp; paste the graph here:<br />
-  <span id="loading-message"></span></br>
+
+<div id="load-save-form">
+  <form>
+    <input id="load" type="button" value="Load" />
+    <input id="save" type="button" value="Save" />
+    <input id="clear" type="button" value="Clear" />
+  </form>
+  <p>
+    Copy &amp; paste the graph here:<br />
+    <span id="loading-message"></span>
+  </p>
   <textarea id="dump"></textarea>
-</p>
+</div>
+
 <script>
   $("*[type=button]").button()
+  $("#load-save-choice").button()
   $("#algorithm-chooser").buttonset()
 </script>
 <script data-main="js/viewer.js" src="lib/require.js"></script>
