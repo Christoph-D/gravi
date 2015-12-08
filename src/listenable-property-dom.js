@@ -5,7 +5,7 @@ function appendSingleToDom(dom, propertyDescriptor) {
 
   const name = propertyDescriptor.name;
   const self = this;
-  const form = dom.append("form")
+  const form = dom.append("div")
           .attr("class", `property-input ${propertyDescriptor.type}-input`);
   form.append("span")
     .attr("class", "label")

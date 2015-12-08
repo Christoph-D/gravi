@@ -23,32 +23,28 @@
 </div>
 
 <div id="control-panel">
-  <form>
-    <div id="control-buttons">
-      <div id="algorithm-chooser" style="display: inline-block;">
-        <input id="dfs" type="radio" name="algorithm" value="dfs" />
-        <label for="dfs">DFS</label>
-        <input id="parity" type="radio" name="algorithm" value="parity" checked="checked" />
-        <label for="parity">Parity</label>
-      </div>
-      <input id="run" type="button" value="Run" disabled="disabled" />
-      <input id="generate" type="button" value="Random" />
-      <input id="load-save-choice" type="checkbox" value="load-save" />
-      <label for="load-save-choice">Load/Save</label>
-      <input id="example1" type="button" value="Load an example" />
+  <div id="control-buttons">
+    <div id="algorithm-chooser" style="display: inline-block;">
+      <input id="dfs" type="radio" name="algorithm" value="dfs" />
+      <label for="dfs">DFS</label>
+      <input id="parity" type="radio" name="algorithm" value="parity" checked="checked" />
+      <label for="parity">Parity</label>
     </div>
-  </form>
+    <input id="run" type="button" value="Run" disabled="disabled" />
+    <input id="generate" type="button" value="Random" />
+    <input id="load-save-choice" type="checkbox" value="load-save" />
+    <label for="load-save-choice">Load/Save</label>
+    <input id="example1" type="button" value="Load an example" />
+  </div>
   <div id="slider"></div>
 </div>
 
 <span id="performance"></span></br>
 
 <div id="load-save-form">
-  <form>
-    <input id="load" type="button" value="Load" />
-    <input id="save" type="button" value="Save" />
-    <input id="clear" type="button" value="Clear" />
-  </form>
+  <input id="load" type="button" value="Load" />
+  <input id="save" type="button" value="Save" />
+  <input id="clear" type="button" value="Clear" />
   <p>
     Copy &amp; paste the graph here:<br />
     <span id="loading-message"></span>
