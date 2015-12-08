@@ -48,12 +48,12 @@ export default class GraphEditor {
 
     const x = d3.scale.linear();
     const y = d3.scale.linear();
-    const zoom = d3.behavior.zoom()
+    this.zoom = d3.behavior.zoom()
             .x(x)
             .y(y)
-            .scaleExtent([0.5, 4])
+            .scaleExtent([0.25, 4])
             .on("zoom", () => this.onZoom());
-    this.svg.call(zoom);
+    this.svg.call(this.zoom);
 
     // Append the vertices after the edges or the click targets of
     // edges would obscure the vertices.
@@ -86,14 +86,16 @@ export default class GraphEditor {
     // Clicks on empty space (left click deselects, right click
     // creates a vertex).
     this.svg.on("contextmenu", () => d3.event.preventDefault());
-    this.svg.on("mousedown", () => {
-      switch(d3.event.button) {
-      case 0: // left click
+    this.svg.on("mouseup", () => {
+      if(d3.event.button === 0 && !d3.event.defaultPrevented) { // left click
         // Deselect everything.
         this.select(null);
         this.drawEdgeMode = false;
         this.queueRedraw();
-        break;
+      }
+    });
+    this.svg.on("mousedown", () => {
+      switch(d3.event.button) {
       case 2: // right click
         // Create a new vertex on right click.
         d3.event.stopPropagation();
@@ -138,6 +140,25 @@ export default class GraphEditor {
     // Rid the svg of previous clutter (keep the <defs>).
     this.graphGroup.selectAll("#vertices > *").remove();
     this.graphGroup.selectAll("#edges > *").remove();
+
+    this.recenter();
+  }
+
+  // Translate the view port so that the median vertex is centered.  x
+  // and y are considered separately.  Also reset the scale factor to
+  // 1.
+  recenter() {
+    const median = (f) => {
+      const vertices = this.g.getVertices();
+      if(vertices.length === 0)
+        return 0;
+      const positions = vertices.map(f).sort((a, b) => a - b);
+      return positions[Math.floor(positions.length / 2)];
+    };
+    this.zoom
+      .scale(1)
+      .translate([-median(v => v.x), -median(v => v.y)])
+      .event(this.svg);
   }
 
   select(vertexOrEdge) {
@@ -167,8 +188,9 @@ export default class GraphEditor {
   }
 
   onZoom() {
-    this.graphGroup.attr("transform",
-                         `translate(${d3.event.translate})scale(${d3.event.scale})`);
+    this.graphGroup
+      .attr("transform",
+            `translate(${d3.event.translate})scale(${d3.event.scale})`);
   }
 
   onDoubleClickVertex(d) {
@@ -179,9 +201,9 @@ export default class GraphEditor {
   }
   onMouseDownVertex(d) {
     switch(d3.event.button) {
-    case 0: // left click
-      // Stop the propagation or the click would propagate to the root
-      // svg, deselecting everything.
+    case 0:
+      // Stop the propagation or the click would start panning of the
+      // whole svg.
       d3.event.stopPropagation();
       // No need to select this vertex because the "dragstart" event does
       // it, saving one redraw.
@@ -194,6 +216,16 @@ export default class GraphEditor {
       this.g.compressIds();
       this.queueRedraw();
       break;
+    }
+  }
+  onMouseUpKeepSelected() {
+    if(d3.event.button === 0) { // left click
+      // We want to keep this vertex/edge selected after "mouseup".
+      // So we prevent the usual "mouseup" handler from running
+      // because it would deselect it.
+      d3.event.preventDefault();
+      // Do not call d3.event.stopPropagation() because we want
+      // "dragend" to fire.  Otherwise dragging would never end.
     }
   }
   onMouseOverVertex(d) {
@@ -221,6 +253,7 @@ export default class GraphEditor {
       .call(this.drag)
       .on("dblclick", (d) => this.onDoubleClickVertex(d))
       .on("mousedown", (d) => this.onMouseDownVertex(d))
+      .on("mouseup", () => this.onMouseUpKeepSelected())
       .on("contextmenu", () => d3.event.preventDefault())
       .on("mouseover", (d) => this.onMouseOverVertex(d));
     vertices.exit().remove();
@@ -278,7 +311,6 @@ export default class GraphEditor {
     }
     this.queueRedraw();
   }
-
   drawEdges() {
     const edges = this.graphGroup.select("#edges")
             .selectAll(".edge").data(this.g.getEdges());
@@ -286,7 +318,8 @@ export default class GraphEditor {
     edges.enter().append("g")
       .each(function(e) { e.drawEnter(editor, d3.select(this)); })
       .on("contextmenu", () => d3.event.preventDefault())
-      .on("mousedown", (d) => this.onMouseDownEdge(d));
+      .on("mousedown", (d) => this.onMouseDownEdge(d))
+      .on("mouseup", () => this.onMouseUpKeepSelected());
     edges.exit().remove();
     edges.each(function(e) {
       if(e.modified) {
