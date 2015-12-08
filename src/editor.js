@@ -48,11 +48,19 @@ export default class GraphEditor {
 
     const x = d3.scale.linear();
     const y = d3.scale.linear();
+    // We need to track manually if the user is panning the view.
+    // This affects the "mouseup" handler on empty space: If the user
+    // is panning, then we want to keep the selection active,
+    // otherwise we want to deselect everything.  this.panLast saves
+    // the last translation vector the "zoom" handler received.
+    this.panLast = [null, null];
+    this.panHappening = false;
     this.zoom = d3.behavior.zoom()
-            .x(x)
-            .y(y)
-            .scaleExtent([0.25, 4])
-            .on("zoom", () => this.onZoom());
+      .x(x)
+      .y(y)
+      .scaleExtent([0.25, 4])
+      .on("zoomstart", () => { this.panHappening = false; })
+      .on("zoom", () => this.onZoom());
     this.svg.call(this.zoom);
 
     // Append the vertices after the edges or the click targets of
@@ -87,8 +95,8 @@ export default class GraphEditor {
     // creates a vertex).
     this.svg.on("contextmenu", () => d3.event.preventDefault());
     this.svg.on("mouseup", () => {
-      if(d3.event.button === 0 && !d3.event.defaultPrevented) { // left click
-        // Deselect everything.
+      if(d3.event.button === 0 && !d3.event.defaultPrevented && !this.panHappening) {
+        // Left click.  Deselect everything.
         this.select(null);
         this.drawEdgeMode = false;
         this.queueRedraw();
@@ -191,6 +199,11 @@ export default class GraphEditor {
     this.graphGroup
       .attr("transform",
             `translate(${d3.event.translate})scale(${d3.event.scale})`);
+    if(this.panLast[0] !== d3.event.translate[0] ||
+       this.panLast[1] !== d3.event.translate[1]) {
+      this.panHappening = true;
+    }
+    this.panLast = d3.event.translate;
   }
 
   onDoubleClickVertex(d) {
