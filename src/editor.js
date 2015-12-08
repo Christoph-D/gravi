@@ -45,10 +45,21 @@ export default class GraphEditor {
 
     this.svg.selectAll("*").remove();
     addHighlightedMarkers(this.svg);
+
+    const x = d3.scale.linear();
+    const y = d3.scale.linear();
+    const zoom = d3.behavior.zoom()
+            .x(x)
+            .y(y)
+            .scaleExtent([0.5, 4])
+            .on("zoom", () => this.onZoom());
+    this.svg.call(zoom);
+
     // Append the vertices after the edges or the click targets of
     // edges would obscure the vertices.
-    this.svg.append("g").attr("id", "edges");
-    this.svg.append("g").attr("id", "vertices");
+    this.graphGroup = this.svg.append("g").attr("id", "graphgroup");
+    this.graphGroup.append("g").attr("id", "edges");
+    this.graphGroup.append("g").attr("id", "vertices");
 
     // The drag behavior for the vertices.
     let isLeftClickDrag = false;
@@ -102,7 +113,8 @@ export default class GraphEditor {
     // Global mousemove handler to keep track of the mouse.
     const editor = this;
     this.svg.on("mousemove", function() {
-      [editor.mouse.x, editor.mouse.y] = d3.mouse(this);
+      editor.mouse.x = x.invert(d3.mouse(this)[0]);
+      editor.mouse.y = y.invert(d3.mouse(this)[1]);
       if(editor.drawEdgeMode)
         editor.drawPointer();
     });
@@ -124,8 +136,8 @@ export default class GraphEditor {
     this.g.EdgeType.onStatic("redrawNeeded", () => this.queueRedraw());
 
     // Rid the svg of previous clutter (keep the <defs>).
-    this.svg.selectAll("#vertices > *").remove();
-    this.svg.selectAll("#edges > *").remove();
+    this.graphGroup.selectAll("#vertices > *").remove();
+    this.graphGroup.selectAll("#edges > *").remove();
   }
 
   select(vertexOrEdge) {
@@ -152,6 +164,11 @@ export default class GraphEditor {
     }
     this.g.history.currentStep = step;
     return step;
+  }
+
+  onZoom() {
+    this.graphGroup.attr("transform",
+                         `translate(${d3.event.translate})scale(${d3.event.scale})`);
   }
 
   onDoubleClickVertex(d) {
@@ -194,7 +211,8 @@ export default class GraphEditor {
     }
   }
   drawVertices() {
-    const vertices = this.svg.select("#vertices").selectAll(".vertex").data(this.g.getVertices());
+    const vertices = this.graphGroup.select("#vertices")
+            .selectAll(".vertex").data(this.g.getVertices());
     const editor = this;
     // For each new vertex, add a <g> element to the svg, call
     // drawEnter() and install the handlers.
@@ -231,10 +249,10 @@ export default class GraphEditor {
 
   drawCursor() {
     if(this.g.cursor.get() === null) {
-      this.svg.selectAll("#cursor").data([]).exit().remove();
+      this.graphGroup.selectAll("#cursor").data([]).exit().remove();
       return;
     }
-    const cursor = this.svg.selectAll("#cursor").data([this.g.cursor.get()]);
+    const cursor = this.graphGroup.selectAll("#cursor").data([this.g.cursor.get()]);
     cursor.enter().append("circle").attr("id", "cursor")
       .attr("r", "5")
       // Make the cursor transparent to mouse clicks.
@@ -262,7 +280,8 @@ export default class GraphEditor {
   }
 
   drawEdges() {
-    const edges = this.svg.select("#edges").selectAll(".edge").data(this.g.getEdges());
+    const edges = this.graphGroup.select("#edges")
+            .selectAll(".edge").data(this.g.getEdges());
     const editor = this;
     edges.enter().append("g")
       .each(function(e) { e.drawEnter(editor, d3.select(this)); })
@@ -281,7 +300,7 @@ export default class GraphEditor {
   drawPointer() {
     // Draw an edge from the selected node to the mouse cursor.
     if(this.drawEdgeMode) {
-      const pointer = this.svg.selectAll("#pointer").data([null]);
+      const pointer = this.graphGroup.selectAll("#pointer").data([null]);
       pointer.enter().append("line").attr("id", "pointer").attr("class", "edge");
       const edgeAnchorS = this.selection.edgeAnchor(this.mouse);
       const edgeAnchorT = circleEdgeAnchor(this.mouse, this.selection, 7);
@@ -292,7 +311,7 @@ export default class GraphEditor {
         .attr("y2", edgeAnchorT.y);
     }
     else
-      this.svg.selectAll("#pointer").remove();
+      this.graphGroup.selectAll("#pointer").remove();
     return this;
   }
 
