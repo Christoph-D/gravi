@@ -63,5 +63,5 @@ function appendSingleToDom(dom, propertyDescriptor) {
 }
 
 export default function appendToDom(dom) {
-  this.eachProperty(p => Reflect.apply(appendSingleToDom, this, [dom, p]));
+  this.propertyDescriptors().map(p => Reflect.apply(appendSingleToDom, this, [dom, p]));
 }

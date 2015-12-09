@@ -102,11 +102,6 @@ export default function addListenableProperty(Type, ...descriptors) {
       }
     }
 
-    eachProperty(f) {
-      this.propertyDescriptors().map(p => f(p));
-      return this;
-    }
-
     propertyDescriptors() {
       return TypeWithProperty.propertyDescriptors;
     }
