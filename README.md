@@ -1,6 +1,8 @@
 Gravi
 =====
 
+[![Build Status](https://travis-ci.org/Christoph-D/gravi.svg?branch=master)](https://travis-ci.org/Christoph-D/gravi)
+
 Visualizes graphs and algorithms.
 
 So far it implements the following algorithms:
