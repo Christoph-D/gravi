@@ -14,6 +14,7 @@
     "grunt": "^0.4.5",
     "grunt-autoprefixer": "^3.0.3",
     "grunt-babel": "^6.0.0",
+    "grunt-cli": "^0.1.13",
     "grunt-contrib-clean": "^0.7.0",
     "grunt-contrib-copy": "^0.8.2",
     "grunt-contrib-less": "^1.1.0",
@@ -44,5 +45,8 @@
     "plugins": [
       "transform-es2015-modules-amd"
     ]
+  },
+  "scripts": {
+    "test": "grunt && grunt test"
   }
 }
