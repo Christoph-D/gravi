@@ -104,7 +104,7 @@ export default class GraphEditor {
     });
     this.svg.on("mousedown", () => {
       switch(d3.event.button) {
-      case 2: // right click
+      case 2: { // right click
         // Create a new vertex on right click.
         d3.event.stopPropagation();
         d3.event.preventDefault();
@@ -117,6 +117,7 @@ export default class GraphEditor {
         }
         this.queueRedraw();
         break;
+      }
       }
     });
 

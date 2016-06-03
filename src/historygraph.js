@@ -27,7 +27,7 @@ injectDelayedProperty(Graph, "history", class {
         try {
           v[key].reset();
         }
-        catch (_) { /* ignore */ }
+        catch(_) { /* ignore */ }
       }
       v.modified = true;
     }
@@ -36,7 +36,7 @@ injectDelayedProperty(Graph, "history", class {
         try {
           e[key].reset();
         }
-        catch (_) { /* ignore */ }
+        catch(_) { /* ignore */ }
       }
       e.modified = true;
     }

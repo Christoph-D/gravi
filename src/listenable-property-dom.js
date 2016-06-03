@@ -21,7 +21,7 @@ function appendSingleToDom(dom, propertyDescriptor) {
       .property("value", this[name])
       .on("input", function() { self[name] = this.value; });
     break;
-  case "number":
+  case "number": {
     const onChange = function() {
       const i = parseInt(this.value);
       if(!isNaN(i))
@@ -37,6 +37,7 @@ function appendSingleToDom(dom, propertyDescriptor) {
             .on("change", onChange);
     $(elem).spinner({ stop: onChange });
     break;
+  }
   case "boolean":
     form.append("input")
       .attr("type", "checkbox")
@@ -44,7 +45,7 @@ function appendSingleToDom(dom, propertyDescriptor) {
       .property("checked", this[name])
       .on("change", function() { self[name] = this.checked; });
     break;
-  case "enum":
+  case "enum": {
     for(const n of propertyDescriptor.values) {
       form.append("input")
         .attr("type", "radio")
@@ -59,6 +60,7 @@ function appendSingleToDom(dom, propertyDescriptor) {
       $(form).buttonset();
     }
     break;
+  }
   }
 }
 
