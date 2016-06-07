@@ -217,12 +217,15 @@ export default class Graph extends Listenable {
     return this;
   }
 
-  hasEdge(tail, head) {
+  getEdge(tail, head) {
     const e = this.parseEdge(tail, head);
     for(const f of this.getEdges())
       if(e.head === f.head && e.tail === f.tail)
-        return true;
-    return false;
+        return f;
+    return null;
+  }
+  hasEdge(tail, head) {
+    return this.getEdge(tail, head) !== null;
   }
 
   getVertices(vertexFilter) {
