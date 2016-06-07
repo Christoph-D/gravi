@@ -173,11 +173,15 @@ export default class GraphEditor {
   select(vertexOrEdge) {
     // Mark the previous selection as modified so that we redraw it
     // without the selection marker.
-    if(this.selection != null)
+    if(this.selection != null) {
       this.selection.modified = true;
+      this.selection.selected = false;
+    }
     this.selection = vertexOrEdge;
-    if(this.selection != null)
+    if(this.selection != null) {
       this.selection.modified = true;
+      this.selection.selected = true;
+    }
   }
 
   totalSteps() {

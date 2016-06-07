@@ -7,6 +7,7 @@ import solver from "./paritygame-recursive";
 import AlgorithmRunner from "./algorithmrunner";
 import graphFromJSON from "./graphjson";
 import GraphEditor from "./editor";
+import GraphLayouter from "./layout";
 
 function addVertexListener(v) {
   v.on("changePlayer", runAlgorithm);
@@ -110,6 +111,7 @@ function saveGraph() {
 function stopAnimation() {
   d3.select("#slider").transition().duration(0);
   state.animating = false;
+  stopLayout();
 }
 
 function animateAlgorithm() {
@@ -149,6 +151,33 @@ function chooseAlgorithm() {
   runAlgorithm();
 }
 
+let layoutDone = false;
+function stopLayout() {
+  layoutDone = true;
+  $("#layout").attr("checked", false).button("refresh");
+}
+function runLayout() {
+  if(document.getElementById("layout").checked) {
+    layoutDone = false;
+    const layouter = new GraphLayouter(state.g);
+    let lastTime = null;
+    const step = (timestamp) => {
+      if(layoutDone)
+        return;
+      if(lastTime !== null) {
+        layouter.step(timestamp - lastTime);
+        state.editor.queueRedraw();
+      }
+      lastTime = timestamp;
+      window.requestAnimationFrame(step);
+    };
+    window.requestAnimationFrame(step);
+  }
+  else {
+    stopLayout();
+  }
+}
+
 function showHideLoadSaveBox() {
   const f = d3.select("#load-save-form");
   if(document.getElementById("load-save-choice").checked)
@@ -162,6 +191,7 @@ d3.select("#save").on("click", saveGraph);
 d3.select("#clear")
   .on("click", () => document.getElementById("dump").value = "");
 
+d3.select("#layout").on("change", runLayout);
 d3.select("#dfs").on("change", chooseAlgorithm);
 d3.select("#parity").on("change", chooseAlgorithm);
 
