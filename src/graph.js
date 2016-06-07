@@ -10,6 +10,12 @@ export class Vertex extends addListenableProperty(Listenable,
   { name: "x", type: "number", editable: false },
   { name: "y", type: "number", editable: false })
 {
+  constructor() {
+    super(...arguments);
+    this.on("changeX", () => this.markIncidentEdgesModified());
+    this.on("changeY", () => this.markIncidentEdgesModified());
+  }
+
   addOutEdge(edgeId) {
     this.outE.push(edgeId);
     return this;
