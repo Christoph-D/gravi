@@ -10,12 +10,6 @@ export class Vertex extends addListenableProperty(Listenable,
   { name: "x", type: "number", editable: false },
   { name: "y", type: "number", editable: false })
 {
-  constructor() {
-    super(...arguments);
-    this.on("changeX", () => this.markIncidentEdgesModified());
-    this.on("changeY", () => this.markIncidentEdgesModified());
-  }
-
   addOutEdge(edgeId) {
     this.outE.push(edgeId);
     return this;
@@ -68,6 +62,10 @@ export class Vertex extends addListenableProperty(Listenable,
     return this;
   }
 }
+// If we move a vertex, then we need to tell the adjacent edges that
+// something happened.
+Vertex.onStatic("changeX", function() { this.markIncidentEdgesModified(); });
+Vertex.onStatic("changeY", function() { this.markIncidentEdgesModified(); });
 
 export class Edge extends addListenableProperty(Listenable,
   { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false },
