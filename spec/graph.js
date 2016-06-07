@@ -21,6 +21,14 @@ describe("A graph", function() {
       expect(g.edges.length).toBe(2);
       expect(g.getEdges().length).toBe(2);
     });
+    it("can check individual edges", function() {
+      expect(g.hasEdge(0,1)).toBe(true);
+      expect(g.hasEdge(1,0)).toBe(false);
+    });
+    it("can access individual edges", function() {
+      expect(g.getEdge(0,1)).toBe(g.edges[0]);
+      expect(g.getEdge(1,0)).toBe(null);
+    });
     it("can filter vertices", function() {
       expect(g.getVertices(vertexFilter).length).toBe(0);
       g.vertices[1].activeV = true;
@@ -66,6 +74,17 @@ describe("A graph", function() {
       expect(g.vertices[1].inNeighbors(vertexFilter, edgeFilter)).toEqual([]);
       g.vertices[0].activeV = true;
       expect(g.vertices[1].inNeighbors(vertexFilter, edgeFilter)).toEqual([g.vertices[0]]);
+    });
+
+    it("updates outgoing edges when moving a vertex", function() {
+      g.edges[0].modified = false;
+      g.vertices[0].x = 1;
+      expect(g.edges[0].modified).toBe(true);
+    });
+    it("updates incoming edges when moving a vertex", function() {
+      g.edges[0].modified = false;
+      g.vertices[1].x = 1;
+      expect(g.edges[0].modified).toBe(true);
     });
 
     describe("with ordinary vertices/edges", function() {
