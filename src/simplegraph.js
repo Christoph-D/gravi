@@ -94,13 +94,8 @@ export default class SimpleGraph extends Graph {
   get version() { return "0.1"; }
 
   constructor(options = {}) {
-    options.VertexType = class extends VertexDrawableCircular {};
-    options.VertexType.onStatic("changeLabel", function() {
-      this.dispatch("redrawNeeded");
-    });
-
-    options.EdgeType = class extends EdgeDrawable {};
-
+    options.VertexType = VertexDrawableCircular;
+    options.EdgeType = EdgeDrawable;
     super(options);
   }
 }

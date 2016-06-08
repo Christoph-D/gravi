@@ -1,4 +1,4 @@
-import Graph from "./graph";
+import Graph, { Vertex } from "./graph";
 import { circleEdgeAnchor, VertexDrawableDefault, EdgeDrawable } from "./simplegraph";
 import addListenableProperty from "./listenable-property";
 
@@ -92,6 +92,13 @@ extends addListenableProperty(VertexDrawableDefault, player, priority) {
       priority.attr("font-size", "20");
   }
 }
+VertexDrawableParity.onStatic("changePlayer", function() {
+  // Changing the player changes the vertex shape, so we also need to
+  // redraw adjacent edges.
+  this.markIncidentEdgesModified();
+  this.queueRedraw();
+});
+VertexDrawableParity.onStatic("changePriority", Vertex.prototype.queueRedraw);
 
 export default class ParityGame extends Graph {
   get name() { return "ParityGame"; }
@@ -103,17 +110,8 @@ export default class ParityGame extends Graph {
   static get PLAYER1() { return PLAYER1; }
 
   constructor(options = {}) {
-    options.VertexType = class extends VertexDrawableParity {};
-    options.VertexType.onStatic("changePlayer", function() {
-      this.markIncidentEdgesModified();
-      this.dispatch("redrawNeeded");
-    });
-    options.VertexType.onStatic("changePriority", function() {
-      this.dispatch("redrawNeeded");
-    });
-
-    options.EdgeType = class extends EdgeDrawable {};
-
+    options.VertexType = VertexDrawableParity;
+    options.EdgeType = EdgeDrawable;
     super(options);
   }
 }

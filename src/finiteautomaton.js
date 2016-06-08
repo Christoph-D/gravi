@@ -1,4 +1,4 @@
-import Graph from "./graph";
+import Graph, { Vertex, Edge } from "./graph";
 // For H.VertexDrawableCircular and H.EdgeDrawable
 import { VertexDrawableCircular, EdgeDrawable } from "./simplegraph";
 import addListenableProperty from "./listenable-property";
@@ -25,6 +25,7 @@ extends addListenableProperty(VertexDrawableCircular, accepting) {
       .style("stroke-opacity", opacity);
   }
 }
+VertexDrawableFiniteAutomaton.onStatic("changeAccepting", Vertex.prototype.queueRedraw);
 
 const letter = {
   name: "letter",
@@ -66,21 +67,14 @@ extends addListenableProperty(EdgeDrawable, letter) {
       .attr("height", rectSize);
   }
 }
+EdgeDrawableFiniteAutomaton.onStatic("changeLetter", Edge.prototype.queueRedraw);
 
 export default class FiniteAutomaton extends Graph {
   get name() { return "FiniteAutomaton"; }
 
   constructor(options = {}) {
-    options.VertexType = class extends VertexDrawableFiniteAutomaton {};
-    options.VertexType.onStatic("changeAccepting", function() {
-      this.dispatch("redrawNeeded");
-    });
-
-    options.EdgeType = class extends EdgeDrawableFiniteAutomaton {};
-    options.EdgeType.onStatic("changeLetter", function() {
-      this.dispatch("redrawNeeded");
-    });
-
+    options.VertexType = VertexDrawableFiniteAutomaton;
+    options.EdgeType = EdgeDrawableFiniteAutomaton;
     super(options);
   }
 }

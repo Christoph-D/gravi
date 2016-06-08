@@ -10,6 +10,11 @@ export class Vertex extends addListenableProperty(Listenable,
   { name: "x", type: "number", editable: false },
   { name: "y", type: "number", editable: false })
 {
+  queueRedraw() {
+    if(this.graph !== undefined)
+      this.graph.dispatch("redrawNeeded");
+  }
+
   addOutEdge(edgeId) {
     this.outE.push(edgeId);
     return this;
@@ -62,10 +67,17 @@ export class Vertex extends addListenableProperty(Listenable,
     return this;
   }
 }
+Vertex.onStatic("changeLabel", Vertex.prototype.queueRedraw);
 // If we move a vertex, then we need to tell the adjacent edges that
 // something happened.
-Vertex.onStatic("changeX", function() { this.markIncidentEdgesModified(); });
-Vertex.onStatic("changeY", function() { this.markIncidentEdgesModified(); });
+Vertex.onStatic("changeX", function() {
+  this.markIncidentEdgesModified();
+  this.queueRedraw();
+});
+Vertex.onStatic("changeY", function() {
+  this.markIncidentEdgesModified();
+  this.queueRedraw();
+});
 
 export class Edge extends addListenableProperty(Listenable,
   { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false },
@@ -73,7 +85,10 @@ export class Edge extends addListenableProperty(Listenable,
   { name: "head", type: "number", editable: false, defaultValue: undefined },
   { name: "tail", type: "number", editable: false, defaultValue: undefined })
 {
-  // No methods here.  Everything is in listenable properties.
+  queueRedraw() {
+    if(this.graph !== undefined)
+      this.graph.dispatch("redrawNeeded");
+  }
 }
 
 // Helper function for Graph.compressIds()
@@ -246,3 +261,8 @@ export default class Graph extends Listenable {
     return g;
   }
 }
+Graph.onStatic("postAddVertex", function() { this.dispatch("changeGraphStructure"); });
+Graph.onStatic("postRemoveVertex", function() { this.dispatch("changeGraphStructure"); });
+Graph.onStatic("postAddVertex", function() { this.dispatch("changeGraphStructure"); });
+Graph.onStatic("postRemoveEdge", function() { this.dispatch("changeGraphStructure"); });
+Graph.onStatic("changeGraphStructure", function() { this.dispatch("redrawNeeded"); });

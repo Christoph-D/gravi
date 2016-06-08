@@ -133,7 +133,8 @@ export default class GraphEditor {
     this.setGraph(g);
   }
 
-  // Sets the underlying graph of this editor instance.
+  // Sets the underlying graph of this editor instance and establishes
+  // itself as the only listener to the "redrawNeeded" event.
   setGraph(g) {
     if(this.g === g)
       return;
@@ -141,10 +142,8 @@ export default class GraphEditor {
     // This is true when the user is drawing a new edge.
     this.drawEdgeMode = false;
     this.select(null);
-    this.g.VertexType.removeStaticListeners("redrawNeeded");
-    this.g.VertexType.onStatic("redrawNeeded", () => this.queueRedraw());
-    this.g.EdgeType.removeStaticListeners("redrawNeeded");
-    this.g.EdgeType.onStatic("redrawNeeded", () => this.queueRedraw());
+    this.g.removePermanentListeners("redrawNeeded");
+    this.g.on("redrawNeeded", () => this.queueRedraw());
 
     // Rid the svg of previous clutter (keep the <defs>).
     this.graphGroup.selectAll("#vertices > *").remove();

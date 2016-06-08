@@ -9,19 +9,8 @@ import graphFromJSON from "./graphjson";
 import GraphEditor from "./editor";
 import GraphLayouter from "./layout";
 
-function addVertexListener(v) {
-  v.on("changePlayer", runAlgorithm);
-  v.on("changePriority", runAlgorithm);
-}
-
 function prepareGraph(g) {
-  g.on("postAddEdge", runAlgorithm);
-  g.on("postAddVertex", runAlgorithm);
-  g.on("postAddVertex", addVertexListener);
-  g.vertices.map(v => addVertexListener(v));
-  g.on("postRemoveEdge", runAlgorithm);
-  g.on("postRemoveVertex", runAlgorithm);
-  return g;
+  return g.on("changeGraphStructure", runAlgorithm);
 }
 
 const state = {};
@@ -164,10 +153,8 @@ function runLayout() {
     const step = (timestamp) => {
       if(layoutDone)
         return;
-      if(lastTime !== null) {
+      if(lastTime !== null)
         layouter.step(timestamp - lastTime);
-        state.editor.queueRedraw();
-      }
       lastTime = timestamp;
       window.requestAnimationFrame(step);
     };
