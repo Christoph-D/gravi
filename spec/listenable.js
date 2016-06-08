@@ -97,9 +97,32 @@ describe("A listenable object", function() {
       A.onStatic("foo", function() { expect(this).toBe(a); });
       a.foo();
     });
-  });
 
-  it("does not allow a static listener on the base class", function() {
-    expect(() => Listenable.onStatic("foo", incrementSeen)).toThrow();
+    describe("with a derived class", function() {
+      let B = {};
+      beforeEach(() => {
+        B = class extends A {};
+        B.onStatic("foo", incrementSeen);
+        // B now has two static listeners both listening for "foo".
+      });
+
+      it("chains handlers across subclasses", function() {
+        (new B).foo();
+        expect(seen).toEqual(2);
+      });
+
+      it("maintains handlers across subclasses separately", function() {
+        a.foo();
+        // A should still have only one listener, unaffected by B.
+        expect(seen).toEqual(1);
+      });
+
+      it("is unaffected by removing listeners from the base class", function() {
+        A.removeStaticListeners("foo");
+        // The two static listeners of B should be unaffected.
+        (new B).foo();
+        expect(seen).toEqual(2);
+      });
+    });
   });
 });

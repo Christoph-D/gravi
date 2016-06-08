@@ -1,8 +1,19 @@
 function addListener(where, event, listener) {
-  if(event in where)
-    where[event].push(listener);
+  const l = where.get(event);
+  if(l === undefined)
+    where.set(event, [listener]);
   else
-    where[event] = [listener];
+    l.push(listener);
+}
+function initializeStaticListeners(self) {
+  // Every subclass of Listenable should have their own list of static
+  // listeners.
+  if(Reflect.getOwnPropertyDescriptor(self, "listenersStaticPerm") === undefined) {
+    const newListenersMap = new Map;
+    self.listenersStaticPerm.forEach(
+      (listeners, event) => newListenersMap.set(event, listeners.slice()));
+    self.listenersStaticPerm = newListenersMap;
+  }
 }
 
 export default class Listenable {
@@ -13,7 +24,7 @@ export default class Listenable {
         configurable: true,
         writable: true,
         enumerable: false,
-        value: {}
+        value: new Map
       });
     }
   }
@@ -27,37 +38,37 @@ export default class Listenable {
   }
 
   static onStatic(event, listener) {
-    if(this === Listenable)
-      throw Error("Cannot add a static listener to Listenable directly.  Please use a subclass.");
-    if(this.listenersStaticPerm == null)
-      this.listenersStaticPerm = {};
+    initializeStaticListeners(this);
     addListener(this.listenersStaticPerm, event, listener);
     return this;
   }
 
   static removeStaticListeners(event) {
-    if(this.listenersStaticPerm != null)
-      Reflect.deleteProperty(this.listenersStaticPerm, event);
+    initializeStaticListeners(this);
+    this.listenersStaticPerm.delete(event);
     return this;
   }
 
   removePermanentListeners(event) {
-    Reflect.deleteProperty(this._listenersPerm, event);
+    this._listenersPerm.delete(event);
     return this;
   }
 
   dispatch(event, ...args) {
-    if(event in this._listeners) {
-      for(const f of this._listeners[event])
+    if(this._listeners.has(event)) {
+      for(const f of this._listeners.get(event))
         Reflect.apply(f, this, args);
-      Reflect.deleteProperty(this._listeners, event);
+      this._listeners.delete(event);
     }
-    if(event in this._listenersPerm)
-      for(const f of this._listenersPerm[event])
+    if(this._listenersPerm.has(event))
+      for(const f of this._listenersPerm.get(event))
         Reflect.apply(f, this, args);
-    if(this.constructor.listenersStaticPerm != null && event in this.constructor.listenersStaticPerm)
-      for(const f of this.constructor.listenersStaticPerm[event])
+    if(this.constructor.listenersStaticPerm !== undefined &&
+       this.constructor.listenersStaticPerm.has(event))
+      for(const f of this.constructor.listenersStaticPerm.get(event))
         Reflect.apply(f, this, args);
     return this;
   }
 }
+// Initialize the list of static listeners.
+Listenable.listenersStaticPerm = new Map;
