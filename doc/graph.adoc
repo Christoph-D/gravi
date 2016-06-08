@@ -21,38 +21,44 @@ want to use `G.graphFromJSON()` or specific subclasses such as
 
 Graph::addVertex(v):: Adds the `Vertex` object `v`.  Precondition: `v`
 must not be an element of `Graph::getVertices()`.  Overwrites `v.id`.
+Dispatches the event `postAddVertex` to the graph.
 
 Graph::removeVertex(v):: Removes the vertex `v`.  Precondition: `v`
 must be an element of `Graph::getVertices()`.  You may want to call
 `Graph::compressIds()` afterwards to remove `null` entries from the
-vertex list.
+vertex list.  Dispatches the event `postRemoveVertex` to the graph.
 
 Graph::addEdge(tail, head)::
-Graph::addEdge(e):: Adds an edge.
+Graph::addEdge(e):: Adds an edge.  Dispatches the event
+`postAddEdge` to the graph.
 
 Graph::removeEdge(tail, head)::
 Graph::removeEdge(e):: Removes an edge.  If called with `e`, only uses
-`e.head` and `e.tail` to find the edge to be removed.
+`e.head` and `e.tail` to find the edge to be removed.  Dispatches the
+event `postRemoveEdge` to the graph.
 
 Graph::compressIds():: Reassigns all vertex and edge ids in order to
 remove `null` entries.
 
 Graph::hasEdge(tail, head)::
 Graph::hasEdge(e):: Return `true` if the given edge exists.  If called
-with `e`, only uses `e.head` and `e.tail` to find the edge.
+with `e`, then it uses only `e.head` and `e.tail` to find the edge
+(not the identity of the object `e`).
 
 Graph::getVertices():: Returns the list of vertices without `null`
 entries.
 Graph::getVertices(vertexFilter):: Like `Graph::getVertices()`, but
 only returns vertices `v` where `vertexFilter(v)` returns `true`.
 
-Graph::getEdge()::
-Graph::getEdge(edgeFilter):: Like `Graph::getVertices()`, but for edges.
+Graph::getEdges()::
+Graph::getEdges(edgeFilter):: Like `Graph::getVertices()`, but for edges.
 
 Graph::vertices:: The internal list of vertices.  May contain `null`
 entries.  `tail`/`head` of the edges refer to indices in this array.
+If a vertex with id `i` exists, then it will be in position `i` in the
+array `Graph::vertices`.
 Graph::edges:: The internal list of edges.  May contain `null`
-entries.
+entries.  The order of the edges is unspecified.
 
 === Helper Methods
 
@@ -62,14 +68,64 @@ graphs, depending on the JSON content.
 
 == Events
 
+`Graph`, `Vertex` and `Edge` all derive from `Listenable` which
+enables event handling.  You can fire events by calling
+`x.dispatch("eventname"[, arg1, arg2, ...])` on some instance `x`.
+
+You can register a one-shot listener function with with
+`x.on("eventname", somefunction, { once: true })`.  Then
+`someFunction` will be called whenever `"eventname"` is dispatched.
+The `this` context of `someFunction` will be `x` and `someFunction`
+will receive the arguments provided to `dispatch`.
+
+You can also register permanent listeners with `x.on("eventname",
+someFunction)`.  You can remove all listeners with
+`x.removePermanentListeners("eventname")`.
+
+You can also register listeners directly on a class instead of an
+instance with `ClassName.onStatic("eventname", someFunction)`.  This
+is only recommended for listeners that are added immediately after the
+class definition.  This is because subclasses copy the static
+listeners of their base class at the first opportunity, so listeners
+added to the base class later will not be able to listen to events on
+the subclass.
+
+=== Predefined Events
+
+Some events are predefined.
+
+The event `"changeGraphStructure"` is fired on a graph whenever the
+structure of the graph changes in a way that might affect the result
+of graph algorithms.
+
+In particular, `"changeGraphStructure"` fires when adding/removing
+vertices/edges and when changing most vertex/edge properties, for
+example when changing the priority of a vertex in a parity game.  One
+notable exception is that changing the x/y coordinates of a vertex
+does not fire this event.
+
+The following events are automatically followed by a
+`"changeGraphStructure"` event:
+
+ - `"postAddVertex"`, `"postRemoveVertex"`: Called after
+   adding/removing a vertex.  Receive the vertex as an argument.
+ - `"postAddEdge"`, `"postRemoveEdge"`: Called after adding/removing
+   an edge.  Receive the edge as an argument.
+
+The `"changeGraphStructure"` event is automatically followed by a
+`"redrawNeeded"` event, which queues a redraw request for the whole
+graph.  Changing the x/y coordinates of a vertex automatically fires
+`"redrawNeeded"`, too.
+
+Both `"changeGraphStructure"` and `"redrawNeeded"` can be fired
+manually by calling `dispatch` on a `Graph` instance.  If all you have
+is a vertex or an edge, you can call
+`VertexOrEdge::"changeGraphStructure"` to fire
+`changeGraphStructure` or `VertexOrEdge::queueRedraw` to fire
+`"redrawNeeded"`.
+
 .Example
 [source]
 g = new G.Graph({ numVertices: 4, edgeList: [[0,1], [1,2]] });
 g.on("postAddVertex", (v) => console.log(`Added vertex ${v.id}!`));
 g.addVertex(new G.Vertex) // Prints "Added vertex 4!";
-
-Known events include `postAddVertex`, `postAddEdge`,
-`postRemoveVertex`, `postRemoveEdge` and `redrawNeeded`.
-
-The `this` context of the event handler is the object on which it was
-registered.
