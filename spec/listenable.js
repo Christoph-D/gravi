@@ -89,12 +89,6 @@ describe("A listenable object", function() {
       expect(seen).toEqual(2);
     });
 
-    it("allows removing the handler", function() {
-      A.removeStaticListeners("foo");
-      a.foo();
-      expect(seen).toEqual(0);
-    });
-
     it("chains handlers", function() {
       A.onStatic("foo", incrementSeen);
       a.foo(); // increments seen twice
@@ -134,13 +128,6 @@ describe("A listenable object", function() {
         a.foo();
         // A should still have only one listener, unaffected by B.
         expect(seen).toEqual(1);
-      });
-
-      it("is unaffected by removing listeners from the base class", function() {
-        A.removeStaticListeners("foo");
-        // The two static listeners of B should be unaffected.
-        (new B).foo();
-        expect(seen).toEqual(2);
       });
     });
   });

@@ -45,12 +45,6 @@ export default class Listenable {
     return this;
   }
 
-  static removeStaticListeners(event) {
-    initializeStaticListeners(this);
-    this.listenersStaticPerm.delete(event);
-    return this;
-  }
-
   removePermanentListeners(event) {
     this._listenersPerm.delete(event);
     return this;
