@@ -14,6 +14,8 @@ Example
 
 http://christoph-d.github.io/gravi/
 
+[Documentation](http://christoph-d.github.io/gravi/doc/graph.html)
+
 Dependencies
 ------------
 
