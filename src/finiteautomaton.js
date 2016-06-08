@@ -1,4 +1,4 @@
-import Graph, { Vertex, Edge } from "./graph";
+import Graph, { VertexOrEdge } from "./graph";
 // For H.VertexDrawableCircular and H.EdgeDrawable
 import { VertexDrawableCircular, EdgeDrawable } from "./simplegraph";
 import addManagedProperty from "./managed-property";
@@ -25,7 +25,9 @@ extends addManagedProperty(VertexDrawableCircular, accepting) {
       .style("stroke-opacity", opacity);
   }
 }
-VertexDrawableFiniteAutomaton.onStatic("changeAccepting", Vertex.prototype.queueRedraw);
+VertexDrawableFiniteAutomaton.onStatic(
+  "changeAccepting",
+  VertexOrEdge.prototype.changeGraphStructure);
 
 const letter = {
   name: "letter",
@@ -67,7 +69,9 @@ extends addManagedProperty(EdgeDrawable, letter) {
       .attr("height", rectSize);
   }
 }
-EdgeDrawableFiniteAutomaton.onStatic("changeLetter", Edge.prototype.queueRedraw);
+EdgeDrawableFiniteAutomaton.onStatic(
+  "changeLetter",
+  VertexOrEdge.prototype.changeGraphStructure);
 
 export default class FiniteAutomaton extends Graph {
   get name() { return "FiniteAutomaton"; }

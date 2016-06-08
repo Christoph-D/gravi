@@ -1,7 +1,21 @@
 import addManagedProperty from "./managed-property";
 import Listenable from "./listenable";
 
-export class Vertex extends addManagedProperty(Listenable,
+export class VertexOrEdge extends Listenable {
+  // Notify listeners on the graph that the structure changed.  Also
+  // redraws the graph.
+  changeGraphStructure() {
+    if(this.graph !== undefined)
+      this.graph.dispatch("changeGraphStructure");
+  }
+  // Notify the graph that a redraw is needed.
+  queueRedraw() {
+    if(this.graph !== undefined)
+      this.graph.dispatch("redrawNeeded");
+  }
+}
+
+export class Vertex extends addManagedProperty(VertexOrEdge,
   { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false },
   { name: "id", type: "number", editable: false, shouldBeSaved: false, defaultValue: undefined },
   { name: "outE", type: "array", editable: false, shouldBeSaved: false },
@@ -10,11 +24,6 @@ export class Vertex extends addManagedProperty(Listenable,
   { name: "x", type: "number", editable: false },
   { name: "y", type: "number", editable: false })
 {
-  queueRedraw() {
-    if(this.graph !== undefined)
-      this.graph.dispatch("redrawNeeded");
-  }
-
   addOutEdge(edgeId) {
     this.outE.push(edgeId);
     return this;
@@ -67,7 +76,7 @@ export class Vertex extends addManagedProperty(Listenable,
     return this;
   }
 }
-Vertex.onStatic("changeLabel", Vertex.prototype.queueRedraw);
+Vertex.onStatic("changeLabel", VertexOrEdge.prototype.changeGraphStructure);
 // If we move a vertex, then we need to tell the adjacent edges that
 // something happened.
 Vertex.onStatic("changeX", function() {
@@ -79,16 +88,12 @@ Vertex.onStatic("changeY", function() {
   this.queueRedraw();
 });
 
-export class Edge extends addManagedProperty(Listenable,
+export class Edge extends addManagedProperty(VertexOrEdge,
   { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false },
   { name: "id", type: "number", editable: false, shouldBeSaved: false, defaultValue: undefined },
   { name: "head", type: "number", editable: false, defaultValue: undefined },
   { name: "tail", type: "number", editable: false, defaultValue: undefined })
 {
-  queueRedraw() {
-    if(this.graph !== undefined)
-      this.graph.dispatch("redrawNeeded");
-  }
 }
 
 // Helper function for Graph.compressIds()
