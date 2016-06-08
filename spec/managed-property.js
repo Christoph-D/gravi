@@ -1,7 +1,7 @@
 import Listenable from "gravi/listenable";
-import addListenableProperty from "gravi/listenable-property";
+import addManagedProperty from "gravi/managed-property";
 
-describe("A listenable property", function() {
+describe("A managed property", function() {
   let A = {};
   let D = {};
   let T = {};
@@ -16,7 +16,7 @@ describe("A listenable property", function() {
         type: "string",
         defaultValue: "foo"
       };
-      T = addListenableProperty(A, D);
+      T = addManagedProperty(A, D);
       v = new T;
     });
     it("exists", function() {
@@ -35,8 +35,8 @@ describe("A listenable property", function() {
         new TypeError('Property "foo" received invalid type "object", expected "string"'));
     });
     it("cannot be declared twice", function() {
-      expect(() => addListenableProperty(T, D)).toThrow(
-        new TypeError("Listenable property \"foo\" already exists."));
+      expect(() => addManagedProperty(T, D)).toThrow(
+        new TypeError("Managed property \"foo\" already exists."));
     });
     it("is enumerable", function() {
       expect(Object.keys(v)).toContain("foo");
@@ -47,7 +47,7 @@ describe("A listenable property", function() {
         type: "string",
         enumerable: false
       };
-      T = addListenableProperty(A, D);
+      T = addManagedProperty(A, D);
       expect(Object.keys(new T)).not.toContain("notenumerable");
     });
     it("internal property list is not enumerable", function() {
@@ -89,7 +89,7 @@ describe("A listenable property", function() {
     function checkType(type, defaultValue) {
       it(`of ${type} type has the correct default value`, function() {
         const D = { name: "foo", type: type };
-        T = addListenableProperty(A, D);
+        T = addManagedProperty(A, D);
         expect((new T).foo).toEqual(defaultValue);
       });
     }
@@ -107,7 +107,7 @@ describe("A listenable property", function() {
         type: "array",
         defaultValue: defaultValue
       };
-      T = addListenableProperty(A, D);
+      T = addManagedProperty(A, D);
       v = new T;
     });
     it("copies the default value", function() {
@@ -132,7 +132,7 @@ describe("A listenable property", function() {
         values: [0, 1],
         defaultValue: 1
       };
-      T = addListenableProperty(A, D);
+      T = addManagedProperty(A, D);
       v = new T;
     });
     it("exists", function() {
@@ -152,7 +152,7 @@ describe("A listenable property", function() {
     beforeEach(function() {
       D = { name: "foo", type: "string", defaultValue: "foo" };
       E = { name: "bar", type: "string", defaultValue: "bar" };
-      T = addListenableProperty(A, D, E);
+      T = addManagedProperty(A, D, E);
       v = new T;
     });
     it("exists", function() {
@@ -160,8 +160,8 @@ describe("A listenable property", function() {
       expect(v.bar).toEqual("bar");
     });
     it("rejects repeated properties", function() {
-      expect(() => addListenableProperty(A, D, D)).toThrow(
-        new TypeError("Listenable property \"foo\" cannot be added twice."));
+      expect(() => addManagedProperty(A, D, D)).toThrow(
+        new TypeError("Managed property \"foo\" cannot be added twice."));
     });
   });
 });

@@ -1,6 +1,6 @@
 import Graph, { Vertex } from "./graph";
 import { circleEdgeAnchor, VertexDrawableDefault, EdgeDrawable } from "./simplegraph";
-import addListenableProperty from "./listenable-property";
+import addManagedProperty from "./managed-property";
 
 // Enum values
 export const PLAYER0 = 0;
@@ -30,7 +30,7 @@ const priority = {
 // Vertex that is either a rectangle (player 1) or a circle (player
 // 0).  Also the priority is drawn inside the vertex.
 class VertexDrawableParity
-extends addListenableProperty(VertexDrawableDefault, player, priority) {
+extends addManagedProperty(VertexDrawableDefault, player, priority) {
   edgeAnchor(otherNode, distanceOffset = 0) {
     if(this.x === otherNode.x && this.y === otherNode.y)
       return { x: this.x, y: this.y };

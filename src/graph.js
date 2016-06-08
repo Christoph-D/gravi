@@ -1,7 +1,7 @@
-import addListenableProperty from "./listenable-property";
+import addManagedProperty from "./managed-property";
 import Listenable from "./listenable";
 
-export class Vertex extends addListenableProperty(Listenable,
+export class Vertex extends addManagedProperty(Listenable,
   { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false },
   { name: "id", type: "number", editable: false, shouldBeSaved: false, defaultValue: undefined },
   { name: "outE", type: "array", editable: false, shouldBeSaved: false },
@@ -79,7 +79,7 @@ Vertex.onStatic("changeY", function() {
   this.queueRedraw();
 });
 
-export class Edge extends addListenableProperty(Listenable,
+export class Edge extends addManagedProperty(Listenable,
   { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false },
   { name: "id", type: "number", editable: false, shouldBeSaved: false, defaultValue: undefined },
   { name: "head", type: "number", editable: false, defaultValue: undefined },
