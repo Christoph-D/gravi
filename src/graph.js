@@ -261,8 +261,8 @@ export default class Graph extends Listenable {
     return g;
   }
 }
-Graph.onStatic("postAddVertex", function() { this.dispatch("changeGraphStructure"); });
-Graph.onStatic("postRemoveVertex", function() { this.dispatch("changeGraphStructure"); });
-Graph.onStatic("postAddVertex", function() { this.dispatch("changeGraphStructure"); });
-Graph.onStatic("postRemoveEdge", function() { this.dispatch("changeGraphStructure"); });
-Graph.onStatic("changeGraphStructure", function() { this.dispatch("redrawNeeded"); });
+Graph.onStatic("postAddVertex", "changeGraphStructure");
+Graph.onStatic("postRemoveVertex", "changeGraphStructure");
+Graph.onStatic("postAddVertex", "changeGraphStructure");
+Graph.onStatic("postRemoveEdge", "changeGraphStructure");
+Graph.onStatic("changeGraphStructure", "redrawNeeded");

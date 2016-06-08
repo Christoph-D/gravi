@@ -1,4 +1,6 @@
 function addListener(where, event, listener) {
+  if(typeof listener === "string")
+    listener = function(x) { return function() { this.dispatch(x); }; }(listener);
   const l = where.get(event);
   if(l === undefined)
     where.set(event, [listener]);

@@ -34,6 +34,13 @@ describe("A listenable object", function() {
       expect(seen).toEqual(2);
     });
 
+    it("chains string handlers", function() {
+      a.on("bar", "foo", { once: true });
+      a.dispatch("bar");
+      a.dispatch("bar");
+      expect(seen).toEqual(1);
+    });
+
     it("applies the correct \"this\" context", function() {
       a.on("foo", function() { expect(this).toBe(a); });
       a.foo();
@@ -61,6 +68,12 @@ describe("A listenable object", function() {
       expect(seen).toEqual(2);
     });
 
+    it("chains string handlers", function() {
+      a.on("bar", "foo");
+      a.dispatch("bar");
+      expect(seen).toEqual(1);
+    });
+
     it("applies the correct \"this\" context", function() {
       a.on("foo", function() { expect(this).toBe(a); });
       a.foo();
@@ -86,6 +99,12 @@ describe("A listenable object", function() {
       A.onStatic("foo", incrementSeen);
       a.foo(); // increments seen twice
       expect(seen).toEqual(2);
+    });
+
+    it("chains string handlers", function() {
+      A.onStatic("bar", "foo");
+      a.dispatch("bar");
+      expect(seen).toEqual(1);
     });
 
     it("dispatches events on new objects", function() {
