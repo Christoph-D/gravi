@@ -11,6 +11,8 @@ const MIN_FORCE_SQUARED = 1;
 const MIN_REPULSIVE_DISTANCE_SQUARED = 5;
 // Clamp the maximum force to a reasonable value.
 const MAX_FORCE_SQUARED = 10000;
+// The maximum time delta.
+const MAX_STEP_SIZE_MS = 200;
 
 export default class GraphLayouter {
   constructor(graph) {
@@ -19,6 +21,8 @@ export default class GraphLayouter {
 
   // Returns true if the layouting is finished.
   step(delta) {
+    if(delta > MAX_STEP_SIZE_MS)
+      delta = MAX_STEP_SIZE_MS;
     const vertexForces = {};
     for(const v of this.graph.getVertices()) {
       const p = {
