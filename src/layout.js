@@ -53,9 +53,11 @@ export default class GraphLayouter {
       vertexForces[w.id].x -= springForce * (d.x / edgeLength);
       vertexForces[w.id].y -= springForce * (d.y / edgeLength);
     }
-    // Apply forces.
+    // Compute the maximum force over all vertices and bound the force
+    // on each vertex.
     let maxForce2 = 0;
-    for(const v of this.graph.getVertices()) {
+    // We do not apply force to the selected vertex.
+    for(const v of this.graph.getVertices((v) => !v.selected)) {
       const f = vertexForces[v.id];
       const f2 = f.x * f.x + f.y * f.y;
       if(f2 > maxForce2)
@@ -65,11 +67,15 @@ export default class GraphLayouter {
         f.x *= correctionFactor;
         f.y *= correctionFactor;
       }
-      if(!v.selected) { // Don't move the selected vertex.
-        v.x += SPEED * delta * f.x;
-        v.y += SPEED * delta * f.y;
-      }
     }
-    return maxForce2 < MIN_FORCE_SQUARED;
+    // If all forces are tiny, we do nothing.
+    if(maxForce2 < MIN_FORCE_SQUARED)
+      return true;
+    // If we have a sufficiently large force, apply all of them.
+    for(const v of this.graph.getVertices((v) => !v.selected)) {
+      v.x += SPEED * delta * vertexForces[v.id].x;
+      v.y += SPEED * delta * vertexForces[v.id].y;
+    }
+    return false;
   }
 }
