@@ -19,6 +19,10 @@ function initializeStaticListeners(self) {
 }
 
 export default class Listenable {
+  static listenersStaticPerm: Map<string, any>;
+  _listeners: Map<string, any>;
+  _listenersPerm: Map<string, any>;
+
   constructor() {
     // These internal variables should not be enumerable.
     for(const p of ["_listeners", "_listenersPerm"]) {
@@ -31,7 +35,7 @@ export default class Listenable {
     }
   }
 
-  on(event, listener, options = {}) {
+  on(event : string, listener, options : any = {}) {
     if(options.once)
       addListener(this._listeners, event, listener);
     else
@@ -39,18 +43,18 @@ export default class Listenable {
     return this;
   }
 
-  static onStatic(event, listener) {
+  static onStatic(event : string, listener) {
     initializeStaticListeners(this);
     addListener(this.listenersStaticPerm, event, listener);
     return this;
   }
 
-  removePermanentListeners(event) {
+  removePermanentListeners(event : string) {
     this._listenersPerm.delete(event);
     return this;
   }
 
-  dispatch(event, ...args) {
+  dispatch(event : string, ...args) {
     if(this._listeners.has(event)) {
       for(const f of this._listeners.get(event))
         Reflect.apply(f, this, args);
@@ -59,9 +63,9 @@ export default class Listenable {
     if(this._listenersPerm.has(event))
       for(const f of this._listenersPerm.get(event))
         Reflect.apply(f, this, args);
-    if(this.constructor.listenersStaticPerm !== undefined &&
-       this.constructor.listenersStaticPerm.has(event))
-      for(const f of this.constructor.listenersStaticPerm.get(event))
+    if((<typeof Listenable>this.constructor).listenersStaticPerm !== undefined &&
+       (<typeof Listenable>this.constructor).listenersStaticPerm.has(event))
+      for(const f of (<typeof Listenable>this.constructor).listenersStaticPerm.get(event))
         Reflect.apply(f, this, args);
     return this;
   }
