@@ -13,7 +13,7 @@ module.exports = function(grunt) {
         atBegin: true
       },
       gravi: {
-        files: [ "<%= srcDir %>/*.js" ],
+        files: [ "<%= srcDir %>/*.{js,ts}" ],
         tasks: [ "compile", "karma:single-test" ]
       },
       site: {
@@ -86,7 +86,7 @@ module.exports = function(grunt) {
       gravi: {
         expand: true,
         flatten: true,
-        src: "<%= srcDir %>/*.js",
+        src: [ "<%= srcDir %>/*.js", "<%= buildDir %>/js/ts/*.js" ],
         dest: "<%= buildDir %>/js"
       },
       test: {
@@ -97,6 +97,15 @@ module.exports = function(grunt) {
       },
       options: {
         sourceMap: true
+      }
+    },
+    ts: {
+      gravi: {
+        src: "<%= srcDir %>/*.ts",
+        dest: "<%= buildDir %>/js/ts",
+        options: {
+          target: "es6"
+        }
       }
     },
     eslint: {
@@ -119,8 +128,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-shell");
   grunt.loadNpmTasks("grunt-karma");
   grunt.loadNpmTasks("grunt-babel");
+  grunt.loadNpmTasks("grunt-ts");
 
-  grunt.registerTask("compile", [ "babel:gravi", "eslint:gravi" ]);
+  grunt.registerTask("compile", [ "ts:gravi", "babel:gravi", "eslint:gravi" ]);
   grunt.registerTask("build-site", [ "less", "postcss", "copy" ]);
   grunt.registerTask("build", [ "compile", "build-site" ]);
   grunt.registerTask("minify", [ "compile", "requirejs:gravi" ]);
