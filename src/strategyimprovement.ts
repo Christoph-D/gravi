@@ -1,11 +1,17 @@
+import { VertexDrawableParity } from "./paritygame";
+
 // A play profile contains l, B, k.
 export class PlayProfile {
+  l: number;
+  B: VertexDrawableParity[];
+  k: number;
+
   constructor({ l, B, k }) {
     this.l = l;
     this.B = B;
     this.k = k;
   }
-  lessThanOrEqual(other) {
+  lessThanOrEqual(other: PlayProfile) {
     if(this.l !== other.l)
       return SI.rewardLess(this.l, other.l);
     else {
@@ -25,35 +31,34 @@ export class PlayProfile {
 }
 
 export const SI = {
-  reward(v) {
-    if(v.priority != null)
-      v = v.priority;
-    if(v < 0)
-      throw Error("Priority canot be negative");
-    return v % 2 === 0 ? v : -v;
+  reward(v: VertexDrawableParity | number) {
+    const p = typeof v === "number" ? v : v.priority;
+    if(p < 0)
+      throw Error("A priority cannot be negative");
+    return p % 2 === 0 ? p : -p;
   },
   rewardLessOrEqual(v, w) { return SI.reward(v) <= SI.reward(w); },
   rewardLess(v, w) { return SI.reward(v) < SI.reward(w); },
-  maxDiffLessOrEqual(B, C) {
-    B = B.map(v => v.priority);
-    C = C.map(v => v.priority);
-    if(B.length === C.length) {
+  maxDiffLessOrEqual(B: VertexDrawableParity[], C: VertexDrawableParity[]) {
+    const B1 = B.map(v => v.priority);
+    const C1 = C.map(v => v.priority);
+    if(B1.length === C1.length) {
       let equal = true;
-      for(let i = 0; i < B.length; ++i)
-        if(B[i] !== C[i])
+      for(let i = 0; i < B1.length; ++i)
+        if(B1[i] !== C1[i])
           equal = false;
       if(equal)
         return true;
     }
-    const B2 = B.filter((v) => C.indexOf(v) === -1);
-    const C2 = C.filter((v) => B.indexOf(v) === -1);
+    const B2 = B1.filter((v) => C1.indexOf(v) === -1);
+    const C2 = C1.filter((v) => B1.indexOf(v) === -1);
     const d = Math.max(...B2.concat(C2));
     return (B2.indexOf(d) !== -1 && d % 2 === 1) || (C2.indexOf(d) !== -1 && d % 2 === 0);
   },
-  maxDiffLessOrEqualL(B, C, l) {
-    B = B.filter((v) => v.priority > l);
-    C = C.filter((v) => v.priority > l);
-    return SI.maxDiffLessOrEqual(B, C);
+  maxDiffLessOrEqualL(B: VertexDrawableParity[], C: VertexDrawableParity[], l: number) {
+    const B1 = B.filter((v) => v.priority > l);
+    const C1 = C.filter((v) => v.priority > l);
+    return SI.maxDiffLessOrEqual(B1, C1);
   },
   // maxDiffEqualL(B, C, l) {
   //   maxDiffLessOrEqualL(B, C, l) && maxDiffLessOrEqualL(C, B, l);

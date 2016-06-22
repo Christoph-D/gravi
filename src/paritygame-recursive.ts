@@ -1,3 +1,4 @@
+import Graph from "./graph";
 import ParityGame from "./paritygame";
 
 // Based on Jurdziński, 2006:
@@ -66,7 +67,7 @@ function parityWinRecursive(graph) {
   const i = even(d) ? 0 : 1;
   const j = even(d) ? 1 : 0;
 
-  let B = attractor(graph, (i === 0 ? ParityGame.PLAYER0 : ParityGame.PLAYER1), A);
+  let B = attractor(graph, (i === 0 ? ParityGame.Even : ParityGame.Odd), A);
   markRemoved(graph, B);
   let winningRegions = parityWinRecursive(graph);
   unmarkRemoved(graph, B);
@@ -75,7 +76,7 @@ function parityWinRecursive(graph) {
     winningRegions[i] = graph.getVertices(notRemoved);
   }
   else {
-    B = attractor(graph, (j === 0 ? ParityGame.PLAYER0 : ParityGame.PLAYER1), winningRegions[j]);
+    B = attractor(graph, (j === 0 ? ParityGame.Even : ParityGame.Odd), winningRegions[j]);
     markRemoved(graph, B);
     winningRegions = parityWinRecursive(graph);
     unmarkRemoved(graph, B);
@@ -95,16 +96,16 @@ function findDeadEnds(graph, player) {
 
 // Removes dead-ends and their attractors.
 function simplifyDeadEnds(graph) {
-  const player0DeadEnds = findDeadEnds(graph, ParityGame.PLAYER0);
-  const W1 = attractor(graph, ParityGame.PLAYER1, player0DeadEnds);
-  const player1DeadEnds = findDeadEnds(graph, ParityGame.PLAYER1);
-  const W0 = attractor(graph, ParityGame.PLAYER0, player1DeadEnds);
+  const player0DeadEnds = findDeadEnds(graph, ParityGame.Even);
+  const W1 = attractor(graph, ParityGame.Odd, player0DeadEnds);
+  const player1DeadEnds = findDeadEnds(graph, ParityGame.Odd);
+  const W0 = attractor(graph, ParityGame.Even, player1DeadEnds);
   markRemoved(graph, W0);
   markRemoved(graph, W1);
   return [W0, W1];
 }
 
-export default function parityWin(graph, options = {}) {
+export default function parityWin(graph, options: { nohighlights?: boolean } = {}) {
   // We want totalRemoved == graph.vertices.length to mean "all
   // vertices are removed".  For this, we cannot have null entries in
   // the vertex list.
@@ -131,4 +132,4 @@ export default function parityWin(graph, options = {}) {
   return W;
 }
 
-parityWin.requiredProperties = ["player", "priority"];
+(<any>parityWin).requiredProperties = ["player", "priority"];

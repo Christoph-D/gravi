@@ -9,8 +9,9 @@ const accepting = {
   defaultValue: false
 };
 
-class VertexDrawableFiniteAutomaton
-extends addManagedProperty(VertexDrawableCircular, accepting) {
+class VertexDrawableFiniteAutomaton extends VertexDrawableCircular {
+  accepting: boolean;
+
   drawEnter(editor, svgGroup) {
     super.drawEnter(editor, svgGroup);
     svgGroup.append("circle").attr("class", "accepting accepting1").attr("r", this.radius - 1);
@@ -25,6 +26,7 @@ extends addManagedProperty(VertexDrawableCircular, accepting) {
       .style("stroke-opacity", opacity);
   }
 }
+VertexDrawableFiniteAutomaton.manageProperties(accepting);
 VertexDrawableFiniteAutomaton.onStatic(
   "changeAccepting",
   VertexOrEdge.prototype.changeGraphStructure);
@@ -35,8 +37,9 @@ const letter = {
   defaultValue: ""
 };
 
-class EdgeDrawableFiniteAutomaton
-extends addManagedProperty(EdgeDrawable, letter) {
+class EdgeDrawableFiniteAutomaton extends EdgeDrawable {
+  letter: string;
+
   drawEnter(editor, svgGroup) {
     super.drawEnter(editor, svgGroup);
     svgGroup.append("rect").attr("class", "letter")
@@ -69,6 +72,7 @@ extends addManagedProperty(EdgeDrawable, letter) {
       .attr("height", rectSize);
   }
 }
+EdgeDrawableFiniteAutomaton.manageProperties(letter);
 EdgeDrawableFiniteAutomaton.onStatic(
   "changeLetter",
   VertexOrEdge.prototype.changeGraphStructure);
@@ -76,7 +80,7 @@ EdgeDrawableFiniteAutomaton.onStatic(
 export default class FiniteAutomaton extends Graph {
   get name() { return "FiniteAutomaton"; }
 
-  constructor(options = {}) {
+  constructor(options: any = {}) {
     options.VertexType = VertexDrawableFiniteAutomaton;
     options.EdgeType = EdgeDrawableFiniteAutomaton;
     super(options);

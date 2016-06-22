@@ -1,4 +1,8 @@
 export default class TimedProperty {
+  initialValue: any;
+  interpolateKeys: any[];
+  value: any;
+
   constructor(initialValue = null, interpolateKeys = []) {
     this.initialValue = initialValue;
     this.interpolateKeys = interpolateKeys;
@@ -15,17 +19,17 @@ export default class TimedProperty {
     return result;
   }
 
-  valueAtTime(time, value) {
+  valueAtTime(time, value?) {
     if(arguments.length === 2) {
       this.value[time] = value;
       return this;
     }
 
-    const lastTime = Math.max(...Object.keys(this.value).filter(v => v <= time));
+    const lastTime = Math.max(...(<any>Object.keys(this.value)).filter(v => v <= time));
     if(this.interpolateKeys.length === 0)
       return this.value[lastTime];
 
-    const nextTime = Math.min(...Object.keys(this.value).filter(v => v > lastTime));
+    const nextTime = Math.min(...(<any>Object.keys(this.value)).filter(v => v > lastTime));
     if(nextTime === Number.POSITIVE_INFINITY)
       return this.value[lastTime];
     const normedDiff = (time - lastTime) / (nextTime - lastTime);

@@ -1,17 +1,23 @@
-function addListener(where, event, listener) {
+type Listener = (...args: any[]) => void;
+
+function makeForwardingFunction(listener: string | Listener): Listener {
   if(typeof listener === "string")
-    listener = function(x) { return function() { this.dispatch(x); }; }(listener);
+    return function(x) { return function() { this.dispatch(x); }; }(listener);
+  return <Listener>listener;
+}
+function addListener(where: Map<string, Listener[]>, event: string, listener: string | Listener) {
   const l = where.get(event);
   if(l === undefined)
-    where.set(event, [listener]);
+    where.set(event, [makeForwardingFunction(listener)]);
   else
-    l.push(listener);
+    l.push(makeForwardingFunction(listener));
 }
-function initializeStaticListeners(self) {
+
+function initializeStaticListeners(self: typeof Listenable) {
   // Every subclass of Listenable should have their own list of static
   // listeners.
   if(Reflect.getOwnPropertyDescriptor(self, "listenersStaticPerm") === undefined) {
-    const newListenersMap = new Map;
+    const newListenersMap = new Map<string, Listener[]>();
     self.listenersStaticPerm.forEach(
       (listeners, event) => newListenersMap.set(event, listeners.slice()));
     self.listenersStaticPerm = newListenersMap;
@@ -19,9 +25,9 @@ function initializeStaticListeners(self) {
 }
 
 export default class Listenable {
-  static listenersStaticPerm: Map<string, any>;
-  _listeners: Map<string, any>;
-  _listenersPerm: Map<string, any>;
+  static listenersStaticPerm: Map<string, Listener[]>;
+  _listeners: Map<string, Listener[]>;
+  _listenersPerm: Map<string, Listener[]>;
 
   constructor() {
     // These internal variables should not be enumerable.
@@ -30,12 +36,12 @@ export default class Listenable {
         configurable: true,
         writable: true,
         enumerable: false,
-        value: new Map
+        value: new Map<string, Listener>()
       });
     }
   }
 
-  on(event : string, listener, options : any = {}) {
+  on(event: string, listener: Listener | string, options: any = {}) {
     if(options.once)
       addListener(this._listeners, event, listener);
     else
@@ -43,18 +49,18 @@ export default class Listenable {
     return this;
   }
 
-  static onStatic(event : string, listener) {
+  static onStatic(event: string, listener: Listener | string) {
     initializeStaticListeners(this);
     addListener(this.listenersStaticPerm, event, listener);
     return this;
   }
 
-  removePermanentListeners(event : string) {
+  removePermanentListeners(event: string) {
     this._listenersPerm.delete(event);
     return this;
   }
 
-  dispatch(event : string, ...args) {
+  dispatch(event: string, ...args: any[]) {
     if(this._listeners.has(event)) {
       for(const f of this._listeners.get(event))
         Reflect.apply(f, this, args);
@@ -71,4 +77,4 @@ export default class Listenable {
   }
 }
 // Initialize the list of static listeners.
-Listenable.listenersStaticPerm = new Map;
+Listenable.listenersStaticPerm = new Map<string, Listener[]>();

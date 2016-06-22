@@ -1,7 +1,12 @@
-import addManagedProperty from "./managed-property";
+import ManagedPropertiesListenable from "./managed-property";
 import Listenable from "./listenable";
 
-export class VertexOrEdge extends Listenable {
+export class VertexOrEdge extends ManagedPropertiesListenable {
+  id: number;
+  graph: Graph;
+  modified: boolean;
+  selected: boolean;
+
   // Notify listeners on the graph that the structure changed.  Also
   // redraws the graph.
   changeGraphStructure() {
@@ -15,15 +20,13 @@ export class VertexOrEdge extends Listenable {
   }
 }
 
-export class Vertex extends addManagedProperty(VertexOrEdge,
-  { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false },
-  { name: "id", type: "number", editable: false, shouldBeSaved: false, defaultValue: undefined },
-  { name: "outE", type: "array", editable: false, shouldBeSaved: false },
-  { name: "inE", type: "array", editable: false, shouldBeSaved: false },
-  { name: "label", type: "string" },
-  { name: "x", type: "number", editable: false },
-  { name: "y", type: "number", editable: false })
-{
+export class Vertex extends VertexOrEdge {
+  outE: number[];
+  inE: number[];
+  label: string;
+  x: number;
+  y: number;
+
   addOutEdge(edgeId) {
     this.outE.push(edgeId);
     return this;
@@ -41,13 +44,13 @@ export class Vertex extends addManagedProperty(VertexOrEdge,
 
   // this.outE contains only the ids of outgoing edges.  this.outEdges()
   // returns the corresponding list of Edge objects.
-  outEdges(edgeFilter) {
+  outEdges(edgeFilter?): Edge[] {
     let edges = this.outE.map(edgeId => this.graph.edges[edgeId]);
     if(edgeFilter != null)
       edges = edges.filter(edgeFilter);
     return edges;
   }
-  inEdges(edgeFilter) {
+  inEdges(edgeFilter?): Edge[] {
     let edges = this.inE.map(edgeId => this.graph.edges[edgeId]);
     if(edgeFilter != null)
       edges = edges.filter(edgeFilter);
@@ -55,13 +58,13 @@ export class Vertex extends addManagedProperty(VertexOrEdge,
   }
 
   // Returns a list of Vertex objects.
-  outNeighbors(vertexFilter, edgeFilter) {
+  outNeighbors(vertexFilter?, edgeFilter?): Vertex[] {
     let vertices = this.outEdges(edgeFilter).map(e => this.graph.vertices[e.head]);
     if(vertexFilter != null)
       vertices = vertices.filter(vertexFilter);
     return vertices;
   }
-  inNeighbors(vertexFilter, edgeFilter) {
+  inNeighbors(vertexFilter?, edgeFilter?): Vertex[] {
     let vertices = this.inEdges(edgeFilter).map(e => this.graph.vertices[e.tail]);
     if(vertexFilter != null)
       vertices = vertices.filter(vertexFilter);
@@ -76,6 +79,14 @@ export class Vertex extends addManagedProperty(VertexOrEdge,
     return this;
   }
 }
+Vertex.manageProperties(
+  { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false },
+  { name: "id", type: "number", editable: false, shouldBeSaved: false, defaultValue: undefined },
+  { name: "outE", type: "array", editable: false, shouldBeSaved: false },
+  { name: "inE", type: "array", editable: false, shouldBeSaved: false },
+  { name: "label", type: "string" },
+  { name: "x", type: "number", editable: false },
+  { name: "y", type: "number", editable: false });
 Vertex.onStatic("changeLabel", VertexOrEdge.prototype.changeGraphStructure);
 // If we move a vertex, then we need to tell the adjacent edges that
 // something happened.
@@ -88,16 +99,18 @@ Vertex.onStatic("changeY", function() {
   this.queueRedraw();
 });
 
-export class Edge extends addManagedProperty(VertexOrEdge,
+export class Edge extends VertexOrEdge {
+  head: number;
+  tail: number;
+}
+Edge.manageProperties(
   { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false },
   { name: "id", type: "number", editable: false, shouldBeSaved: false, defaultValue: undefined },
   { name: "head", type: "number", editable: false, defaultValue: undefined },
-  { name: "tail", type: "number", editable: false, defaultValue: undefined })
-{
-}
+  { name: "tail", type: "number", editable: false, defaultValue: undefined });
 
 // Helper function for Graph.compressIds()
-function idTranslationTable(what) {
+function idTranslationTable(what: VertexOrEdge[]) {
   const ids = {};
   let j = 0;
   what.map((x, i) => { if(x != null) ids[i] = j++; });
@@ -109,7 +122,7 @@ function vertexOrEdgeToJSON(v) {
   if(v === null)
     return null;
   const w = {};
-  for(const p of v.propertyDescriptors != null ? v.propertyDescriptors() : []) {
+  for(const p of v.propertyDescriptors != null ? v.propertyDescriptors(): []) {
     // Save only properties different from the default value.
     if(p.shouldBeSaved !== false && v[p.name] !== p.defaultValue)
       w[p.name] = v[p.name];
@@ -117,8 +130,17 @@ function vertexOrEdgeToJSON(v) {
   return w;
 }
 
+import { History, Cursor } from "./historygraph"
 export default class Graph extends Listenable {
   get name() { return "Graph"; }
+  get version() { return "1.0"; }
+
+  VertexType: any;
+  EdgeType: any;
+  vertices: Vertex[];
+  edges: Edge[];
+  history: History;
+  cursor: Cursor;
 
   constructor({
     VertexType = Vertex,
@@ -163,7 +185,7 @@ export default class Graph extends Listenable {
     return this;
   }
 
-  parseEdge(tail, head) {
+  parseEdge(tail, head?) {
     let e;
     if(head == null)
       e = tail; // assume that tail is already an Edge object
@@ -180,7 +202,7 @@ export default class Graph extends Listenable {
     return e;
   }
 
-  addEdge(tail, head) {
+  addEdge(tail, head?) {
     const e = this.parseEdge(tail, head);
     if(this.hasEdge(e))
       return this; // no duplicate edges
@@ -194,7 +216,7 @@ export default class Graph extends Listenable {
   }
 
   // Accepts a single Edge object or tail, head.  Ignores the edge id.
-  removeEdge(tail, head) {
+  removeEdge(tail, head?) {
     const e = this.parseEdge(tail, head);
     for(const [i, f] of this.edges.entries()) {
       if(f == null)
@@ -242,17 +264,17 @@ export default class Graph extends Listenable {
         return f;
     return null;
   }
-  hasEdge(tail, head) {
+  hasEdge(tail, head?) {
     return this.getEdge(tail, head) !== null;
   }
 
-  getVertices(vertexFilter) {
+  getVertices(vertexFilter?) {
     if(vertexFilter != null)
       return this.vertices.filter(v => v != null && vertexFilter(v));
     else
       return this.vertices.filter(v => v != null);
   }
-  getEdges(edgeFilter) {
+  getEdges(edgeFilter?) {
     if(edgeFilter != null)
       return this.edges.filter(e => e != null && edgeFilter(e));
     else

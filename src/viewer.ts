@@ -1,10 +1,9 @@
-/*global d3*/
-/*eslint-env browser, jquery*/
 import * as generators from "./generators";
 import dfsAlgo from "./dfs";
 import examples from "./examples";
 import solver from "./paritygame-recursive";
 import AlgorithmRunner from "./algorithmrunner";
+import Graph, { Vertex, Edge } from "./graph";
 import graphFromJSON from "./graphjson";
 import GraphEditor from "./editor";
 import GraphLayouter from "./layout";
@@ -13,7 +12,13 @@ function prepareGraph(g) {
   return g.on("changeGraphStructure", runAlgorithm);
 }
 
-const state = {};
+const state: {
+  g?: Graph,
+  alg?: any,
+  slider?: any,
+  editor?: GraphEditor,
+  animating?: boolean
+} = {};
 function runAlgorithm() {
   const g = state.g;
   d3.select("#loading-message").text("");
@@ -32,7 +37,7 @@ function runAlgorithm() {
       return;
     stopAnimation();
     let newStep = state.editor.currentStep();
-    switch(d3.event.keyCode) {
+    switch((<KeyboardEvent>d3.event).keyCode) {
     case 37: // left arrow
       if(newStep >= 1)
         --newStep;
@@ -42,9 +47,9 @@ function runAlgorithm() {
         ++newStep;
       break;
     case 46: // delete
-      if(g.getVertices().indexOf(state.editor.selection) !== -1)
+      if(g.getVertices().indexOf(<Vertex>state.editor.selection) !== -1)
         g.removeVertex(state.editor.selection);
-      else if(g.getEdges().indexOf(state.editor.selection) !== -1)
+      else if(g.getEdges().indexOf(<Edge>state.editor.selection) !== -1)
         g.removeEdge(state.editor.selection);
       break;
     }
@@ -65,7 +70,7 @@ function generateGraph() {
   else {
     state.editor = new GraphEditor(state.g, d3.select("#graph"));
     if(state.slider == null) {
-      state.slider = d3.slider()
+      state.slider = (<any>d3).slider()
         .on("slide", function(event, value) {
           stopAnimation();
           state.editor.currentStep(value);
@@ -79,7 +84,7 @@ function generateGraph() {
 function loadGraph(json) {
   stopAnimation();
   if(json == null)
-    json = document.getElementById("dump").value;
+    json = (<HTMLTextAreaElement>document.getElementById("dump")).value;
   d3.select("#loading-message").text("");
   try {
     state.g = prepareGraph(graphFromJSON(json));
@@ -94,7 +99,8 @@ function loadGraph(json) {
 
 function saveGraph() {
   state.g.compressIds();
-  document.getElementById("dump").value = JSON.stringify(state.g, undefined, 2);
+  (<HTMLTextAreaElement>document.getElementById("dump")).value =
+    JSON.stringify(state.g, undefined, 2);
 }
 
 function stopAnimation() {
@@ -127,11 +133,11 @@ state.alg = parity;
 function chooseAlgorithm() {
   if(this.value === "dfs") {
     state.alg = dfs;
-    $("#run").button("enable");
+    (<any>$("#run")).button("enable");
   }
   else {
     state.alg = parity;
-    $("#run").button("disable");
+    (<any>$("#run")).button("disable");
 
     // Hack to remove the cursor.
     // TODO: find the proper place for this.
@@ -143,10 +149,10 @@ function chooseAlgorithm() {
 let layoutDone = false;
 function stopLayout() {
   layoutDone = true;
-  $("#layout").attr("checked", false).button("refresh");
+  (<any>$("#layout")).attr("checked", false).button("refresh");
 }
 function runLayout() {
-  if(document.getElementById("layout").checked) {
+  if((<HTMLInputElement>document.getElementById("layout")).checked) {
     layoutDone = false;
     const layouter = new GraphLayouter(state.g);
     let lastTime = null;
@@ -167,7 +173,7 @@ function runLayout() {
 
 function showHideLoadSaveBox() {
   const f = d3.select("#load-save-form");
-  if(document.getElementById("load-save-choice").checked)
+  if((<HTMLInputElement>document.getElementById("load-save-choice")).checked)
     f.style("display", "flex");
   else
     f.style("display", "none");
@@ -176,7 +182,7 @@ function showHideLoadSaveBox() {
 d3.select("#load").on("click", loadGraph);
 d3.select("#save").on("click", saveGraph);
 d3.select("#clear")
-  .on("click", () => document.getElementById("dump").value = "");
+  .on("click", () => (<HTMLTextAreaElement>document.getElementById("dump")).value = "");
 
 d3.select("#layout").on("change", runLayout);
 d3.select("#dfs").on("change", chooseAlgorithm);

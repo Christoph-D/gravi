@@ -5,10 +5,10 @@ describe("The recursive parity game solver", function() {
   let g = {};
   beforeEach(function() {
     g = new ParityGame({ numVertices: 4, edgeList: [[0,1], [0,2], [3,2], [3,0]] });
-    g.vertices[0].player = ParityGame.PLAYER0;
-    g.vertices[1].player = ParityGame.PLAYER1;
-    g.vertices[2].player = ParityGame.PLAYER1;
-    g.vertices[3].player = ParityGame.PLAYER1;
+    g.vertices[0].player = ParityGame.Even;
+    g.vertices[1].player = ParityGame.Odd;
+    g.vertices[2].player = ParityGame.Odd;
+    g.vertices[3].player = ParityGame.Odd;
   });
   // Convert from a vertex ids to vertex objects.
   function V(vertices) { return vertices.map(i => g.vertices[i]); }
@@ -31,23 +31,23 @@ describe("The recursive parity game solver", function() {
   });
 
   it("computes attractors", function() {
-    expect(ids(solver.attractor(g, ParityGame.PLAYER1, (V([0]))))).toEqual([0,3]);
+    expect(ids(solver.attractor(g, ParityGame.Odd, (V([0]))))).toEqual([0,3]);
   });
   it("computes attractors", function() {
-    g.vertices[3].player = ParityGame.PLAYER0;
-    expect(ids(solver.attractor(g, ParityGame.PLAYER1, (V([0]))))).toEqual([0]);
+    g.vertices[3].player = ParityGame.Even;
+    expect(ids(solver.attractor(g, ParityGame.Odd, (V([0]))))).toEqual([0]);
   });
   it("computes longer attractors", function() {
     g = new ParityGame({ numVertices: 5, edgeList: [[0,1], [1,2], [2,3], [3,4]] });
-    expect(ids(solver.attractor(g, ParityGame.PLAYER1, (V([4]))))).toEqual([4,3,2,1,0]);
+    expect(ids(solver.attractor(g, ParityGame.Odd, (V([4]))))).toEqual([4,3,2,1,0]);
   });
 
   it("solves parity games", function() {
     g = new ParityGame({ numVertices: 4, edgeList: [[0,1], [1,0], [0,2], [2,3], [3,2]] });
-    g.vertices[0].player = ParityGame.PLAYER0;
-    g.vertices[1].player = ParityGame.PLAYER1;
-    g.vertices[2].player = ParityGame.PLAYER1;
-    g.vertices[3].player = ParityGame.PLAYER1;
+    g.vertices[0].player = ParityGame.Even;
+    g.vertices[1].player = ParityGame.Odd;
+    g.vertices[2].player = ParityGame.Odd;
+    g.vertices[3].player = ParityGame.Odd;
     g.vertices[0].priority = 0;
     g.vertices[1].priority = 1;
     g.vertices[2].priority = 1;
@@ -57,7 +57,7 @@ describe("The recursive parity game solver", function() {
     expect(ids(W[0])).toEqual([0, 1]);
     expect(ids(W[1])).toEqual([2, 3]);
 
-    g.vertices[0].player = ParityGame.PLAYER1;
+    g.vertices[0].player = ParityGame.Odd;
     W = parityWin(g, { nohighlights: true });
     expect(ids(W[0])).toEqual([]);
     expect(ids(W[1])).toEqual([0, 1, 2, 3]);

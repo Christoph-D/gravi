@@ -1,6 +1,6 @@
 import Graph, { Vertex, Edge } from "./graph";
 
-export function circleEdgeAnchor(s, t, distance) {
+export function circleEdgeAnchor(s, t, distance: number): { x: number, y: number } {
   const result = { x: s.x, y: s.y };
   if(distance !== 0 && (s.x !== t.x || s.y !== t.y)) {
     const dx = s.x - t.x;
@@ -24,7 +24,9 @@ function setCSSClass(editor, svgGroup) {
 // A vertex with basic draw functionality.
 export class VertexDrawableDefault extends Vertex {
   get defaultCSSClass() { return "vertex"; }
-  drawEnter(/* editor, svgGroup */) {}
+  drawEnter(editor?, svgGroup?) {}
+  drawUpdate(editor?, svgGroup?) {};
+  edgeAnchor(otherNode, distanceOffset = 0) { return { x: 0, y: 0 }; }
 }
 VertexDrawableDefault.prototype.drawUpdate = setCSSClass;
 
@@ -48,7 +50,8 @@ export class VertexDrawableCircular extends VertexDrawableDefault {
 
 export class EdgeDrawableDefault extends Edge {
   get defaultCSSClass() { return "edge"; }
-  drawEnter(/* editor, svgGroup */) {}
+  drawEnter(editor?, svgGroup?) {}
+  drawUpdate(editor?, svgGroup?) {};
 }
 EdgeDrawableDefault.prototype.drawUpdate = setCSSClass;
 // Same behavior as default vertices.
@@ -67,8 +70,8 @@ export class EdgeDrawable extends EdgeDrawableDefault {
     super.drawUpdate(editor, svgGroup);
     const s = this.graph.vertices[this.tail];
     const t = this.graph.vertices[this.head];
-    const anchorS = s.edgeAnchor(t);
-    const anchorT = t.edgeAnchor(s, 10);
+    const anchorS = (<any>s).edgeAnchor(t);
+    const anchorT = (<any>t).edgeAnchor(s, 10);
     // Don't draw edges pointing in the inverse direction.
     const xSign = s.x > t.x ? -1 : 1;
     const ySign = s.y > t.y ? -1 : 1;
@@ -93,7 +96,7 @@ export default class SimpleGraph extends Graph {
   get name() { return "SimpleGraph"; }
   get version() { return "0.1"; }
 
-  constructor(options = {}) {
+  constructor(options: any = {}) {
     options.VertexType = VertexDrawableCircular;
     options.EdgeType = EdgeDrawable;
     super(options);

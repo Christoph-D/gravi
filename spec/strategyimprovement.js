@@ -34,24 +34,24 @@ describe("The strategy improvement algorithm", function() {
 
   describe("has correct play profile comparisons", function() {
     it("with identical profiles", function() {
-      const a = new PlayProfile({ l: 1, B: [1], k: 1 });
+      const a = new PlayProfile({ l: 1, B: p([1]), k: 1 });
       expect(a.lessThanOrEqual(a)).toBe(true);
     });
     it("with l", function() {
-      const a = new PlayProfile({ l: 2, B: [2], k: 2 });
-      const b = new PlayProfile({ l: 3, B: [2], k: 2 });
+      const a = new PlayProfile({ l: 2, B: p([2]), k: 2 });
+      const b = new PlayProfile({ l: 3, B: p([2]), k: 2 });
       expect(a.lessThanOrEqual(b)).toBe(false);
       expect(b.lessThanOrEqual(a)).toBe(true);
     });
     it("with B", function() {
-      const a = new PlayProfile({ l: 3, B: [1], k: 2 });
-      const b = new PlayProfile({ l: 3, B: [2], k: 2 });
+      const a = new PlayProfile({ l: 3, B: p([1]), k: 2 });
+      const b = new PlayProfile({ l: 3, B: p([2]), k: 2 });
       expect(a.lessThanOrEqual(b)).toBe(true);
       expect(b.lessThanOrEqual(a)).toBe(true);
     });
     it("with k", function() {
-      const a = new PlayProfile({ l: 3, B: [2], k: 2 });
-      const b = new PlayProfile({ l: 3, B: [2], k: 3 });
+      const a = new PlayProfile({ l: 3, B: p([2]), k: 2 });
+      const b = new PlayProfile({ l: 3, B: p([2]), k: 3 });
       expect(a.lessThanOrEqual(b)).toBe(true);
       expect(b.lessThanOrEqual(a)).toBe(false);
       a.l = b.l = 2;

@@ -2,9 +2,7 @@ import Graph, { VertexOrEdge } from "./graph";
 import { circleEdgeAnchor, VertexDrawableDefault, EdgeDrawable } from "./simplegraph";
 import addManagedProperty from "./managed-property";
 
-// Enum values
-export const PLAYER0 = 0;
-export const PLAYER1 = 1;
+export enum Player { Even, Odd }
 
 // The radius for circles is a little larger than for rectangles so
 // that the area of the shape is the same.
@@ -17,8 +15,8 @@ const circle = `M ${radiusC},0 A ${radiusC},${radiusC} 0 1,0 ${radiusC},0.00001 
 const player = {
   name: "player",
   type: "enum",
-  values: [PLAYER0, PLAYER1],
-  defaultValue: PLAYER0
+  values: [Player.Even, Player.Odd],
+  defaultValue: Player.Even
 };
 
 const priority = {
@@ -29,19 +27,21 @@ const priority = {
 
 // Vertex that is either a rectangle (player 1) or a circle (player
 // 0).  Also the priority is drawn inside the vertex.
-class VertexDrawableParity
-extends addManagedProperty(VertexDrawableDefault, player, priority) {
+export class VertexDrawableParity extends VertexDrawableDefault {
+  player: Player;
+  priority: number;
+
   edgeAnchor(otherNode, distanceOffset = 0) {
     if(this.x === otherNode.x && this.y === otherNode.y)
       return { x: this.x, y: this.y };
-    if(this.player === PLAYER0)
+    if(this.player === Player.Even)
       return circleEdgeAnchor(this, otherNode, distanceOffset + radiusC);
     // Calculate the intersection between the line this -> otherNode
     // and a square of width 2*radiusR centered at otherNode.
     const dx = otherNode.x - this.x;
     const dy = otherNode.y - this.y;
     const s = dy / dx;
-    const result = {};
+    const result = { x: 0, y: 0 };
     if(s <= -1 || s >= 1) {
       if(otherNode.y < this.y) { // top edge
         result.x = this.x - radiusR / s;
@@ -84,7 +84,7 @@ extends addManagedProperty(VertexDrawableDefault, player, priority) {
   drawUpdate(editor, svgGroup) {
     super.drawUpdate(editor, svgGroup);
     svgGroup.attr("transform", `translate(${this.x},${this.y})`);
-    svgGroup.select("path.main").attr("d", this.player === PLAYER0 ? circle : rectangle);
+    svgGroup.select("path.main").attr("d", this.player === Player.Even ? circle : rectangle);
     const priority = svgGroup.select("text.priority").text(this.priority);
     if(this.priority >= 10 || this.priority < 0)
       priority.attr("font-size", "15");
@@ -92,6 +92,7 @@ extends addManagedProperty(VertexDrawableDefault, player, priority) {
       priority.attr("font-size", "20");
   }
 }
+VertexDrawableParity.manageProperties(player, priority);
 VertexDrawableParity.onStatic("changePlayer", function() {
   // Changing the player changes the vertex shape, so we also need to
   // redraw adjacent edges.
@@ -103,13 +104,14 @@ VertexDrawableParity.onStatic("changePriority", VertexOrEdge.prototype.queueRedr
 export default class ParityGame extends Graph {
   get name() { return "ParityGame"; }
 
-  // PLAYER0 and PLAYER1 are exported.  Nonetheless, we add them as
+  // The Player enum is exported.  Nonetheless, we add its values as
   // static properties so that they are always available as
-  // ParityGame.PLAYER0 etc. without explicitly importing them.
-  static get PLAYER0() { return PLAYER0; }
-  static get PLAYER1() { return PLAYER1; }
+  // ParityGame.Even and ParityGame.Odd without explicitly importing
+  // the enum.
+  static get Even() { return Player.Even; }
+  static get Odd() { return Player.Odd; }
 
-  constructor(options = {}) {
+  constructor(options: any = {}) {
     options.VertexType = VertexDrawableParity;
     options.EdgeType = EdgeDrawable;
     super(options);

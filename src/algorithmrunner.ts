@@ -1,4 +1,6 @@
 export default class AlgorithmRunner {
+  algorithm: any;
+
   constructor(algorithm) {
     this.algorithm = algorithm;
   }

@@ -8,7 +8,7 @@ export function generateRandomGraph(n, p) {
       x: -150 * Math.cos(2 * Math.PI / n * i),
       y: 150 * Math.sin(2 * Math.PI / n * i)
     });
-    v.player = Math.random() < 0.5 ? ParityGame.PLAYER0 : ParityGame.PLAYER1;
+    v.player = Math.random() < 0.5 ? ParityGame.Even : ParityGame.Odd;
     v.priority = Math.round(Math.random() * 6);
     g.addVertex(v);
   }

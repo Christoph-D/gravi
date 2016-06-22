@@ -1,13 +1,11 @@
-import Listenable from "gravi/listenable";
-import addManagedProperty from "gravi/managed-property";
+import ManagedPropertiesListenable from "gravi/managed-property";
 
 describe("A managed property", function() {
   let A = {};
   let D = {};
-  let T = {};
   let v = {};
   beforeEach(function() {
-    A = class extends Listenable {};
+    A = class extends ManagedPropertiesListenable {};
   });
   describe("basic", function() {
     beforeEach(function() {
@@ -16,8 +14,8 @@ describe("A managed property", function() {
         type: "string",
         defaultValue: "foo"
       };
-      T = addManagedProperty(A, D);
-      v = new T;
+      A.manageProperties(D);
+      v = new A;
     });
     it("exists", function() {
       expect(v.foo).toEqual("foo");
@@ -35,7 +33,7 @@ describe("A managed property", function() {
         new TypeError('Property "foo" received invalid type "object", expected "string"'));
     });
     it("cannot be declared twice", function() {
-      expect(() => addManagedProperty(T, D)).toThrow(
+      expect(() => A.manageProperties(D)).toThrow(
         new TypeError("Managed property \"foo\" already exists."));
     });
     it("is enumerable", function() {
@@ -47,8 +45,8 @@ describe("A managed property", function() {
         type: "string",
         enumerable: false
       };
-      T = addManagedProperty(A, D);
-      expect(Object.keys(new T)).not.toContain("notenumerable");
+      A.manageProperties(D);
+      expect(Object.keys(new A)).not.toContain("notenumerable");
     });
     it("internal property list is not enumerable", function() {
       expect(Object.keys(v)).not.toContain("_properties");
@@ -67,7 +65,7 @@ describe("A managed property", function() {
       let w = {};
       beforeEach(function() {
         v.foo = "v"; // Change from the default value
-        w = new T(v);
+        w = new A(v);
       });
       it("is preserved", function() {
         expect(w.foo).toEqual("v");
@@ -89,8 +87,8 @@ describe("A managed property", function() {
     function checkType(type, defaultValue) {
       it(`of ${type} type has the correct default value`, function() {
         const D = { name: "foo", type: type };
-        T = addManagedProperty(A, D);
-        expect((new T).foo).toEqual(defaultValue);
+        A.manageProperties(D);
+        expect((new A).foo).toEqual(defaultValue);
       });
     }
     checkType("array", []);
@@ -107,20 +105,20 @@ describe("A managed property", function() {
         type: "array",
         defaultValue: defaultValue
       };
-      T = addManagedProperty(A, D);
-      v = new T;
+      A.manageProperties(D);
+      v = new A;
     });
     it("copies the default value", function() {
       expect(v.foo).toEqual(defaultValue);
       expect(v.foo).not.toBe(defaultValue);
     });
     it("copies the default value between instances", function() {
-      expect(v.foo).toEqual((new T).foo);
-      expect(v.foo).not.toBe((new T).foo);
+      expect(v.foo).toEqual((new A).foo);
+      expect(v.foo).not.toBe((new A).foo);
     });
     it("copies parameters", function() {
       const a = [1,2];
-      expect((new T({ foo: a })).foo).not.toBe(a);
+      expect((new A({ foo: a })).foo).not.toBe(a);
     });
   });
 
@@ -132,8 +130,8 @@ describe("A managed property", function() {
         values: [0, 1],
         defaultValue: 1
       };
-      T = addManagedProperty(A, D);
-      v = new T;
+      A.manageProperties(D);
+      v = new A;
     });
     it("exists", function() {
       expect(v.bar).toEqual(1);
@@ -152,16 +150,12 @@ describe("A managed property", function() {
     beforeEach(function() {
       D = { name: "foo", type: "string", defaultValue: "foo" };
       E = { name: "bar", type: "string", defaultValue: "bar" };
-      T = addManagedProperty(A, D, E);
-      v = new T;
+      A.manageProperties(D, E);
+      v = new A;
     });
     it("exists", function() {
       expect(v.foo).toEqual("foo");
       expect(v.bar).toEqual("bar");
-    });
-    it("rejects repeated properties", function() {
-      expect(() => addManagedProperty(A, D, D)).toThrow(
-        new TypeError("Managed property \"foo\" cannot be added twice."));
     });
   });
 });

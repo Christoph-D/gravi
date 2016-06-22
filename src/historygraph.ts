@@ -1,13 +1,17 @@
 // This module does not export anything.  Importing it has the side
 // effect that Graph, Vertex and Edge become highlightable.
 
-import Graph, { Vertex, Edge } from "./graph";
+import Graph, { VertexOrEdge, Vertex, Edge } from "./graph";
 import TimedProperty from "./timed";
 import injectDelayedProperty from "./delayedproperty";
 
 // Adds a global timeline to the graph.  Useful in combination with
 // TimedProperty on the vertices/edges.
-injectDelayedProperty(Graph, "history", class {
+export class History {
+  graph: Graph;
+  totalSteps: number;
+  currentStep: number;
+
   constructor(graph) {
     this.graph = graph;
     this.totalSteps = 0;
@@ -44,11 +48,16 @@ injectDelayedProperty(Graph, "history", class {
     this.currentStep = 0;
     return this;
   }
-});
+}
+
+injectDelayedProperty(Graph, "history", History);
 
 // Marks a vertex in the graph.  Useful to show the state of
 // depth-first search and related algorithms.
-injectDelayedProperty(Graph, "cursor", class {
+export class Cursor {
+  graph: Graph;
+  cursor: TimedProperty;
+
   constructor(graph) {
     this.graph = graph;
     this.cursor = new TimedProperty(null, ["x", "y"]);
@@ -56,14 +65,16 @@ injectDelayedProperty(Graph, "cursor", class {
   set(cursor) {
     this.cursor.valueAtTime(this.graph.history.currentStep, cursor);
   }
-  get() {
+  get() : { x: number, y: number } {
     return this.cursor.valueAtTime(this.graph.history.currentStep);
   }
-});
+}
+
+injectDelayedProperty(Graph, "cursor", Cursor);
 
 // Translate highlight ids from readable names to the internal names
 // used in the css file.
-function translateHighlightIds(id) {
+function translateHighlightIds(id : string) {
   if(id === "active" || id === "player0")
     return 1;
   if(id === "done" || id === "player1")
@@ -73,18 +84,21 @@ function translateHighlightIds(id) {
 
 // Makes a vertex or an edge highlightable.
 class Highlight {
-  constructor(parent) {
+  parent: VertexOrEdge;
+  highlightClass: TimedProperty;
+
+  constructor(parent : VertexOrEdge) {
     this.parent = parent;
     this.highlightClass = new TimedProperty("");
   }
 
-  set(highlightId) {
-    let c = highlightId != null ? c = `highlight${translateHighlightIds(highlightId)}` : "";
+  set(highlightId? : string) {
+    let c = highlightId != null ? `highlight${translateHighlightIds(highlightId)}` : "";
     this.highlightClass.valueAtTime(this.parent.graph.history.currentStep, c);
     return this;
   }
 
-  getCSSClass() {
+  getCSSClass() : string {
     return this.highlightClass.valueAtTime(this.parent.graph.history.currentStep);
   }
 

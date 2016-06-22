@@ -1,3 +1,5 @@
+import Graph, { Vertex, Edge } from "./graph";
+
 const SPEED = 0.005;
 const IDEAL_EDGE_LENGTH = 100;
 const EDGE_STIFFNESS = 1;
@@ -15,12 +17,14 @@ const MAX_FORCE_SQUARED = 10000;
 const MAX_STEP_SIZE_MS = 200;
 
 export default class GraphLayouter {
+  graph: Graph;
+
   constructor(graph) {
     this.graph = graph;
   }
 
   // Returns true if the layouting is finished.
-  step(delta) {
+  step(delta: number) {
     if(delta > MAX_STEP_SIZE_MS)
       delta = MAX_STEP_SIZE_MS;
     const vertexForces = {};
