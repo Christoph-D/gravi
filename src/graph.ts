@@ -131,7 +131,7 @@ function vertexOrEdgeToJSON(v) {
 }
 
 import { History, Cursor } from "./historygraph"
-export default class Graph extends Listenable {
+export default class Graph<V extends Vertex, E extends Edge> extends Listenable {
   get name() { return "Graph"; }
   get version() { return "1.0"; }
 

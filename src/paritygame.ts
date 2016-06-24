@@ -101,7 +101,8 @@ VertexDrawableParity.onStatic("changePlayer", function() {
 });
 VertexDrawableParity.onStatic("changePriority", VertexOrEdge.prototype.queueRedraw);
 
-export default class ParityGame extends Graph {
+export default class ParityGame<V extends VertexDrawableParity, E extends EdgeDrawable>
+  extends Graph<V, E> {
   get name() { return "ParityGame"; }
 
   // The Player enum is exported.  Nonetheless, we add its values as

@@ -1,5 +1,9 @@
-import Graph from "./graph";
-import ParityGame from "./paritygame";
+import Graph, { Edge } from "./graph";
+import ParityGame, { VertexDrawableParity } from "./paritygame";
+
+interface RemovableVertex extends VertexDrawableParity {
+  removed: boolean;
+}
 
 // Based on Jurdziński, 2006:
 // "A deterministic subexponential algorithm for solving parity games"
@@ -8,11 +12,11 @@ import ParityGame from "./paritygame";
 // in this paper, not an implementation of the subexponential
 // algorithm.
 
-function notRemoved(v) { return v.removed !== true; }
+function notRemoved(v: RemovableVertex) { return v.removed !== true; }
 
 export function even(priority) { return priority % 2 === 0; }
 
-export function minPriority(graph) {
+export function minPriority(graph: ParityGame) {
   return Math.min(...graph.getVertices(notRemoved).map(v => v.priority));
 }
 

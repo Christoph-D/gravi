@@ -17,7 +17,7 @@ const MAX_FORCE_SQUARED = 10000;
 const MAX_STEP_SIZE_MS = 200;
 
 export default class GraphLayouter {
-  graph: Graph;
+  graph: Graph<Vertex, Edge>;
 
   constructor(graph) {
     this.graph = graph;

@@ -8,7 +8,7 @@ import injectDelayedProperty from "./delayedproperty";
 // Adds a global timeline to the graph.  Useful in combination with
 // TimedProperty on the vertices/edges.
 export class History {
-  graph: Graph;
+  graph: Graph<Vertex, Edge>;
   totalSteps: number;
   currentStep: number;
 
@@ -55,7 +55,7 @@ injectDelayedProperty(Graph, "history", History);
 // Marks a vertex in the graph.  Useful to show the state of
 // depth-first search and related algorithms.
 export class Cursor {
-  graph: Graph;
+  graph: Graph<Vertex, Edge>;
   cursor: TimedProperty;
 
   constructor(graph) {

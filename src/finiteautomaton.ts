@@ -77,7 +77,8 @@ EdgeDrawableFiniteAutomaton.onStatic(
   "changeLetter",
   VertexOrEdge.prototype.changeGraphStructure);
 
-export default class FiniteAutomaton extends Graph {
+export default class FiniteAutomaton
+extends Graph<VertexDrawableFiniteAutomaton, EdgeDrawableFiniteAutomaton> {
   get name() { return "FiniteAutomaton"; }
 
   constructor(options: any = {}) {

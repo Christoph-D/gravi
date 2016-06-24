@@ -37,7 +37,7 @@ function addHighlightedMarkers(svg) {
 }
 
 export default class GraphEditor {
-  g: Graph;
+  g: Graph<Vertex, Edge>;
   selection: VertexOrEdge;
   oldSelection: VertexOrEdge;
   svg: any;

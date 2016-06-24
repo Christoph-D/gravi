@@ -13,7 +13,7 @@ function prepareGraph(g) {
 }
 
 const state: {
-  g?: Graph,
+  g?: Graph<Vertex, Edge>,
   alg?: any,
   slider?: any,
   editor?: GraphEditor,

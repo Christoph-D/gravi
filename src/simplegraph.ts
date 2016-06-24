@@ -92,7 +92,7 @@ export class EdgeDrawable extends EdgeDrawableDefault {
   }
 }
 
-export default class SimpleGraph extends Graph {
+export default class SimpleGraph extends Graph<VertexDrawableCircular, EdgeDrawable> {
   get name() { return "SimpleGraph"; }
   get version() { return "0.1"; }
 

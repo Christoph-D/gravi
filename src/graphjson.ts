@@ -1,5 +1,6 @@
 // Function to create a graph from its JSON representation.
 
+import Graph, { Vertex, Edge } from "./graph";
 import SimpleGraph from "./simplegraph";
 import FiniteAutomaton from "./finiteautomaton";
 import ParityGame from "./paritygame";
@@ -13,7 +14,7 @@ export default function graphFromJSON(json, validTypes = [SimpleGraph, FiniteAut
   if(typeIndex === -1)
     throw TypeError(`Don't know how to make a graph of type "${raw.type}". Known types: ${typeNames}`);
 
-  const g = new validTypes[typeIndex];
+  const g = <Graph<Vertex, Edge>>new validTypes[typeIndex];
 
   if(raw.vertices != null) {
     for(const [i, v] of raw.vertices.entries()) {
