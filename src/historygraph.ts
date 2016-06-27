@@ -1,14 +1,14 @@
 // This module does not export anything.  Importing it has the side
 // effect that Graph, Vertex and Edge become highlightable.
 
-import Graph, { VertexOrEdge, Vertex, Edge } from "./graph";
+import Graph, { VertexOrEdge, VertexI, EdgeI } from "./graph";
 import TimedProperty from "./timed";
 import injectDelayedProperty from "./delayedproperty";
 
 // Adds a global timeline to the graph.  Useful in combination with
 // TimedProperty on the vertices/edges.
 export class History {
-  graph: Graph<Vertex, Edge>;
+  graph: Graph<any, any>;
   totalSteps: number;
   currentStep: number;
 
@@ -55,7 +55,7 @@ injectDelayedProperty(Graph, "history", History);
 // Marks a vertex in the graph.  Useful to show the state of
 // depth-first search and related algorithms.
 export class Cursor {
-  graph: Graph<Vertex, Edge>;
+  graph: Graph<any, any>;
   cursor: TimedProperty;
 
   constructor(graph) {
@@ -105,5 +105,5 @@ class Highlight {
   reset() { this.highlightClass.reset(); }
 }
 
-injectDelayedProperty(Vertex, "highlight", Highlight);
-injectDelayedProperty(Edge, "highlight", Highlight);
+injectDelayedProperty(VertexI, "highlight", Highlight);
+injectDelayedProperty(EdgeI, "highlight", Highlight);

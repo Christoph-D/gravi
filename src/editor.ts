@@ -173,7 +173,7 @@ export default class GraphEditor {
   // and y are considered separately.  Also reset the scale factor to
   // 1.
   recenter() {
-    const median = (f : (v: Vertex) => number) => {
+    const median = (f: (v: Vertex) => number) => {
       const vertices = this.g.getVertices();
       if(vertices.length === 0)
         return 0;
@@ -203,7 +203,7 @@ export default class GraphEditor {
   totalSteps() {
     return this.g.history.totalSteps;
   }
-  currentStep(step? : number) : number {
+  currentStep(step?: number): number {
     if(arguments.length === 0)
       return this.g.history.currentStep;
     // If the current step changes, every vertex and edge could change

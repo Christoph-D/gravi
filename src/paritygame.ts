@@ -1,5 +1,5 @@
-import Graph, { VertexOrEdge } from "./graph";
-import { circleEdgeAnchor, VertexDrawableDefault, EdgeDrawable } from "./simplegraph";
+import Graph, { VertexOrEdgeI, EdgeI } from "./graph";
+import { circleEdgeAnchor, VertexDrawableDefaultI, EdgeDrawableI } from "./simplegraph";
 import addManagedProperty from "./managed-property";
 
 export enum Player { Even, Odd }
@@ -27,7 +27,8 @@ const priority = {
 
 // Vertex that is either a rectangle (player 1) or a circle (player
 // 0).  Also the priority is drawn inside the vertex.
-export class VertexDrawableParity extends VertexDrawableDefault {
+export class VertexDrawableParityI<V extends VertexDrawableParityI<V,E>, E extends EdgeI<V,E>>
+  extends VertexDrawableDefaultI<V,E> {
   player: Player;
   priority: number;
 
@@ -85,24 +86,26 @@ export class VertexDrawableParity extends VertexDrawableDefault {
     super.drawUpdate(editor, svgGroup);
     svgGroup.attr("transform", `translate(${this.x},${this.y})`);
     svgGroup.select("path.main").attr("d", this.player === Player.Even ? circle : rectangle);
-    const priority = svgGroup.select("text.priority").text(this.priority);
+    const p = svgGroup.select("text.priority").text(this.priority);
     if(this.priority >= 10 || this.priority < 0)
-      priority.attr("font-size", "15");
+      p.attr("font-size", "15");
     else
-      priority.attr("font-size", "20");
+      p.attr("font-size", "20");
   }
 }
-VertexDrawableParity.manageProperties(player, priority);
-VertexDrawableParity.onStatic("changePlayer", function() {
+VertexDrawableParityI.manageProperties(player, priority);
+VertexDrawableParityI.onStatic("changePlayer", function() {
   // Changing the player changes the vertex shape, so we also need to
   // redraw adjacent edges.
   this.markIncidentEdgesModified();
   this.queueRedraw();
 });
-VertexDrawableParity.onStatic("changePriority", VertexOrEdge.prototype.queueRedraw);
+VertexDrawableParityI.onStatic("changePriority", VertexOrEdgeI.prototype.queueRedraw);
+export type VertexDrawableParity = VertexDrawableParityI<any, any>;
 
-export default class ParityGame<V extends VertexDrawableParity, E extends EdgeDrawable>
-  extends Graph<V, E> {
+export default class ParityGame
+  <V extends VertexDrawableParityI<V,E>, E extends EdgeDrawableI<V,E>>
+  extends Graph<V,E> {
   get name() { return "ParityGame"; }
 
   // The Player enum is exported.  Nonetheless, we add its values as
@@ -113,8 +116,8 @@ export default class ParityGame<V extends VertexDrawableParity, E extends EdgeDr
   static get Odd() { return Player.Odd; }
 
   constructor(options: any = {}) {
-    options.VertexType = VertexDrawableParity;
-    options.EdgeType = EdgeDrawable;
+    options.VertexType = VertexDrawableParityI;
+    options.EdgeType = EdgeDrawableI;
     super(options);
   }
 }

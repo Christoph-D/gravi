@@ -1,9 +1,10 @@
 import ManagedPropertiesListenable from "./managed-property";
 import Listenable from "./listenable";
 
-export class VertexOrEdge extends ManagedPropertiesListenable {
+export class VertexOrEdgeI<V extends VertexI<V,E>, E extends EdgeI<V,E>>
+  extends ManagedPropertiesListenable {
   id: number;
-  graph: Graph;
+  graph: Graph<V,E>;
   modified: boolean;
   selected: boolean;
 
@@ -19,8 +20,10 @@ export class VertexOrEdge extends ManagedPropertiesListenable {
       this.graph.dispatch("redrawNeeded");
   }
 }
+export type VertexOrEdge = VertexOrEdgeI<any, any>;
 
-export class Vertex extends VertexOrEdge {
+export class VertexI<V extends VertexI<any, any>, E extends EdgeI<any, any>>
+  extends VertexOrEdgeI<V,E> {
   outE: number[];
   inE: number[];
   label: string;
@@ -44,13 +47,13 @@ export class Vertex extends VertexOrEdge {
 
   // this.outE contains only the ids of outgoing edges.  this.outEdges()
   // returns the corresponding list of Edge objects.
-  outEdges(edgeFilter?): Edge[] {
+  outEdges(edgeFilter?): EdgeI<V,E>[] {
     let edges = this.outE.map(edgeId => this.graph.edges[edgeId]);
     if(edgeFilter != null)
       edges = edges.filter(edgeFilter);
     return edges;
   }
-  inEdges(edgeFilter?): Edge[] {
+  inEdges(edgeFilter?): EdgeI<V,E>[] {
     let edges = this.inE.map(edgeId => this.graph.edges[edgeId]);
     if(edgeFilter != null)
       edges = edges.filter(edgeFilter);
@@ -58,13 +61,13 @@ export class Vertex extends VertexOrEdge {
   }
 
   // Returns a list of Vertex objects.
-  outNeighbors(vertexFilter?, edgeFilter?): Vertex[] {
+  outNeighbors(vertexFilter?, edgeFilter?): VertexI<V,E>[] {
     let vertices = this.outEdges(edgeFilter).map(e => this.graph.vertices[e.head]);
     if(vertexFilter != null)
       vertices = vertices.filter(vertexFilter);
     return vertices;
   }
-  inNeighbors(vertexFilter?, edgeFilter?): Vertex[] {
+  inNeighbors(vertexFilter?, edgeFilter?): VertexI<V,E>[] {
     let vertices = this.inEdges(edgeFilter).map(e => this.graph.vertices[e.tail]);
     if(vertexFilter != null)
       vertices = vertices.filter(vertexFilter);
@@ -79,7 +82,7 @@ export class Vertex extends VertexOrEdge {
     return this;
   }
 }
-Vertex.manageProperties(
+VertexI.manageProperties(
   { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false },
   { name: "id", type: "number", editable: false, shouldBeSaved: false, defaultValue: undefined },
   { name: "outE", type: "array", editable: false, shouldBeSaved: false },
@@ -87,27 +90,30 @@ Vertex.manageProperties(
   { name: "label", type: "string" },
   { name: "x", type: "number", editable: false },
   { name: "y", type: "number", editable: false });
-Vertex.onStatic("changeLabel", VertexOrEdge.prototype.changeGraphStructure);
+VertexI.onStatic("changeLabel", VertexOrEdgeI.prototype.changeGraphStructure);
 // If we move a vertex, then we need to tell the adjacent edges that
 // something happened.
-Vertex.onStatic("changeX", function() {
+VertexI.onStatic("changeX", function() {
   this.markIncidentEdgesModified();
   this.queueRedraw();
 });
-Vertex.onStatic("changeY", function() {
+VertexI.onStatic("changeY", function() {
   this.markIncidentEdgesModified();
   this.queueRedraw();
 });
+export type Vertex = VertexI<any, any>;
 
-export class Edge extends VertexOrEdge {
+export class EdgeI<V extends VertexI<V,E>, E extends EdgeI<V,E>>
+  extends VertexOrEdgeI<V,E> {
   head: number;
   tail: number;
 }
-Edge.manageProperties(
+EdgeI.manageProperties(
   { name: "graph", type: "object", editable: false, shouldBeSaved: false, notify: false },
   { name: "id", type: "number", editable: false, shouldBeSaved: false, defaultValue: undefined },
   { name: "head", type: "number", editable: false, defaultValue: undefined },
   { name: "tail", type: "number", editable: false, defaultValue: undefined });
+export type Edge = EdgeI<any, any>;
 
 // Helper function for Graph.compressIds()
 function idTranslationTable(what: VertexOrEdge[]) {
@@ -118,7 +124,7 @@ function idTranslationTable(what: VertexOrEdge[]) {
 }
 
 // Helper function for Graph.toJSON()
-function vertexOrEdgeToJSON(v) {
+function vertexOrEdgeToJSON(v: VertexOrEdge) {
   if(v === null)
     return null;
   const w = {};
@@ -130,23 +136,24 @@ function vertexOrEdgeToJSON(v) {
   return w;
 }
 
-import { History, Cursor } from "./historygraph"
-export default class Graph<V extends Vertex, E extends Edge> extends Listenable {
+import { History, Cursor } from "./historygraph";
+export default class Graph<V extends VertexI<V,E>, E extends EdgeI<V,E>>
+  extends Listenable {
   get name() { return "Graph"; }
   get version() { return "1.0"; }
 
   VertexType: any;
   EdgeType: any;
-  vertices: Vertex[];
-  edges: Edge[];
+  vertices: VertexI<V,E>[];
+  edges: EdgeI<V,E>[];
   history: History;
   cursor: Cursor;
 
   constructor({
-    VertexType = Vertex,
-    EdgeType = Edge,
+    VertexType = VertexI,
+    EdgeType = EdgeI,
     numVertices = 0,
-    edgeList = []
+    edgeList = [],
   } = {}) {
     super();
 
@@ -156,7 +163,7 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
     this.vertices = [];
     if(numVertices > 0)
       for(let i = 0; i < numVertices; ++i)
-        this.addVertex(new this.VertexType);
+        this.addVertex(new this.VertexType());
 
     this.edges = [];
     edgeList.map(e => this.addEdge(e[0], e[1]));
