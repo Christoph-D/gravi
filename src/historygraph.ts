@@ -1,7 +1,7 @@
 // This module does not export anything.  Importing it has the side
 // effect that Graph, Vertex and Edge become highlightable.
 
-import Graph, { VertexOrEdge, VertexI, EdgeI } from "./graph";
+import Graph, { VertexOrEdge, Vertex, Edge } from "./graph";
 import TimedProperty from "./timed";
 import injectDelayedProperty from "./delayedproperty";
 
@@ -105,5 +105,5 @@ class Highlight {
   reset() { this.highlightClass.reset(); }
 }
 
-injectDelayedProperty(VertexI, "highlight", Highlight);
-injectDelayedProperty(EdgeI, "highlight", Highlight);
+injectDelayedProperty(Vertex, "highlight", Highlight);
+injectDelayedProperty(Edge, "highlight", Highlight);

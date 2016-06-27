@@ -1,13 +1,5 @@
-import { EdgeDrawableI } from "./simplegraph";
-import ParityGame, { VertexDrawableParityI } from "./paritygame";
-
-interface IRemovableVertex
-  <V extends IRemovableVertex<V,E>, E extends EdgeDrawableI<V,E>>
-  extends VertexDrawableParityI<V,E> {
-  removed: boolean;
-}
-type RemovableVertex = IRemovableVertex<any, any>;
-type PG = ParityGame<RemovableVertex, EdgeDrawableI<RemovableVertex, any>>;
+import { EdgeDrawable } from "./simplegraph";
+import ParityGame, { VertexDrawableParity } from "./paritygame";
 
 // Based on Jurdziński, 2006:
 // "A deterministic subexponential algorithm for solving parity games"
@@ -15,6 +7,11 @@ type PG = ParityGame<RemovableVertex, EdgeDrawableI<RemovableVertex, any>>;
 // This is an implementation of the naive recursive algorithm described
 // in this paper, not an implementation of the subexponential
 // algorithm.
+
+interface RemovableVertex extends VertexDrawableParity {
+  removed: boolean;
+}
+type PG = ParityGame<RemovableVertex, EdgeDrawable>;
 
 function notRemoved(v: RemovableVertex) { return v.removed !== true; }
 

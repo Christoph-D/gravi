@@ -1,6 +1,5 @@
-import Graph, { VertexOrEdgeI, VertexI, EdgeI } from "./graph";
-// For H.VertexDrawableCircular and H.EdgeDrawable
-import { VertexDrawableCircularI, EdgeDrawableI } from "./simplegraph";
+import Graph, { VertexOrEdge, Vertex, Edge } from "./graph";
+import { VertexDrawableCircular, EdgeDrawable } from "./simplegraph";
 import addManagedProperty from "./managed-property";
 
 const accepting = {
@@ -9,9 +8,7 @@ const accepting = {
   defaultValue: false
 };
 
-class VertexDrawableFiniteAutomatonI
-  <V extends VertexDrawableCircularI<V,E>, E extends EdgeI<V,E>>
-  extends VertexDrawableCircularI<V,E> {
+class VertexDrawableFiniteAutomaton extends VertexDrawableCircular {
   accepting: boolean;
 
   drawEnter(editor, svgGroup) {
@@ -28,10 +25,10 @@ class VertexDrawableFiniteAutomatonI
       .style("stroke-opacity", opacity);
   }
 }
-VertexDrawableFiniteAutomatonI.manageProperties(accepting);
-VertexDrawableFiniteAutomatonI.onStatic(
+VertexDrawableFiniteAutomaton.manageProperties(accepting);
+VertexDrawableFiniteAutomaton.onStatic(
   "changeAccepting",
-  VertexOrEdgeI.prototype.changeGraphStructure);
+  VertexOrEdge.prototype.changeGraphStructure);
 
 const letter = {
   name: "letter",
@@ -39,9 +36,7 @@ const letter = {
   defaultValue: ""
 };
 
-class EdgeDrawableFiniteAutomatonI
-  <V extends VertexDrawableFiniteAutomatonI<V,E>, E extends EdgeDrawableI<V,E>>
-  extends EdgeDrawableI<V,E> {
+class EdgeDrawableFiniteAutomaton extends EdgeDrawable {
   letter: string;
 
   drawEnter(editor, svgGroup) {
@@ -76,19 +71,19 @@ class EdgeDrawableFiniteAutomatonI
       .attr("height", rectSize);
   }
 }
-EdgeDrawableFiniteAutomatonI.manageProperties(letter);
-EdgeDrawableFiniteAutomatonI.onStatic(
+EdgeDrawableFiniteAutomaton.manageProperties(letter);
+EdgeDrawableFiniteAutomaton.onStatic(
   "changeLetter",
-  VertexOrEdgeI.prototype.changeGraphStructure);
+  VertexOrEdge.prototype.changeGraphStructure);
 
 export default class FiniteAutomaton
-  <V extends VertexDrawableFiniteAutomatonI<V,E>, E extends EdgeDrawableFiniteAutomatonI<V,E>>
-extends Graph<VertexDrawableFiniteAutomatonI<V,E>, EdgeDrawableFiniteAutomatonI<V,E>> {
+  <V extends VertexDrawableFiniteAutomaton, E extends EdgeDrawableFiniteAutomaton>
+  extends Graph<VertexDrawableFiniteAutomaton, EdgeDrawableFiniteAutomaton> {
   get name() { return "FiniteAutomaton"; }
 
   constructor(options: any = {}) {
-    options.VertexType = VertexDrawableFiniteAutomatonI;
-    options.EdgeType = EdgeDrawableFiniteAutomatonI;
+    options.VertexType = VertexDrawableFiniteAutomaton;
+    options.EdgeType = EdgeDrawableFiniteAutomaton;
     super(options);
   }
 }

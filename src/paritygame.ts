@@ -1,5 +1,5 @@
-import Graph, { VertexOrEdgeI, EdgeI } from "./graph";
-import { circleEdgeAnchor, VertexDrawableDefaultI, EdgeDrawableI } from "./simplegraph";
+import Graph, { VertexOrEdge, Edge } from "./graph";
+import { circleEdgeAnchor, VertexDrawableDefault, EdgeDrawable } from "./simplegraph";
 import addManagedProperty from "./managed-property";
 
 export enum Player { Even, Odd }
@@ -27,8 +27,7 @@ const priority = {
 
 // Vertex that is either a rectangle (player 1) or a circle (player
 // 0).  Also the priority is drawn inside the vertex.
-export class VertexDrawableParityI<V extends VertexDrawableParityI<V,E>, E extends EdgeI<V,E>>
-  extends VertexDrawableDefaultI<V,E> {
+export class VertexDrawableParity extends VertexDrawableDefault {
   player: Player;
   priority: number;
 
@@ -93,18 +92,17 @@ export class VertexDrawableParityI<V extends VertexDrawableParityI<V,E>, E exten
       p.attr("font-size", "20");
   }
 }
-VertexDrawableParityI.manageProperties(player, priority);
-VertexDrawableParityI.onStatic("changePlayer", function() {
+VertexDrawableParity.manageProperties(player, priority);
+VertexDrawableParity.onStatic("changePlayer", function() {
   // Changing the player changes the vertex shape, so we also need to
   // redraw adjacent edges.
   this.markIncidentEdgesModified();
   this.queueRedraw();
 });
-VertexDrawableParityI.onStatic("changePriority", VertexOrEdgeI.prototype.queueRedraw);
-export type VertexDrawableParity = VertexDrawableParityI<any, any>;
+VertexDrawableParity.onStatic("changePriority", VertexOrEdge.prototype.queueRedraw);
 
 export default class ParityGame
-  <V extends VertexDrawableParityI<V,E>, E extends EdgeDrawableI<V,E>>
+  <V extends VertexDrawableParity, E extends EdgeDrawable>
   extends Graph<V,E> {
   get name() { return "ParityGame"; }
 
@@ -116,8 +114,8 @@ export default class ParityGame
   static get Odd() { return Player.Odd; }
 
   constructor(options: any = {}) {
-    options.VertexType = VertexDrawableParityI;
-    options.EdgeType = EdgeDrawableI;
+    options.VertexType = VertexDrawableParity;
+    options.EdgeType = EdgeDrawable;
     super(options);
   }
 }
