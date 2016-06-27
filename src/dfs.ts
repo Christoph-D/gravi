@@ -1,4 +1,6 @@
-function dfsStep(graph, visited, v) {
+import Graph, { Vertex, Edge } from "./graph";
+
+function dfsStep(graph: Graph<Vertex, Edge>, visited: boolean[], v: Vertex) {
   graph.cursor.set(v);
   if(visited[v.id]) {
     graph.history.saveStep();
@@ -18,6 +20,6 @@ function dfsStep(graph, visited, v) {
   }
 }
 
-export default function dfs(graph) {
+export default function dfs(graph: Graph<Vertex, Edge>) {
   dfsStep(graph, [], graph.vertices[0]);
 }

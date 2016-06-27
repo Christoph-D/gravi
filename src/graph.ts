@@ -1,22 +1,25 @@
 import ManagedPropertiesListenable from "./managed-property";
 import Listenable from "./listenable";
+import { History, Cursor, Highlight } from "./historygraph";
 
 export class VertexOrEdge extends ManagedPropertiesListenable {
   id: number;
   graph: Graph<any, any>;
-  modified: boolean;
   selected: boolean;
+  highlight: Highlight;
 
   // Notify listeners on the graph that the structure changed.  Also
   // redraws the graph.
   changeGraphStructure() {
     if(this.graph !== undefined)
       this.graph.dispatch("changeGraphStructure");
+    return this;
   }
   // Notify the graph that a redraw is needed.
   queueRedraw() {
     if(this.graph !== undefined)
       this.graph.dispatch("redrawNeeded");
+    return this;
   }
 }
 
@@ -27,11 +30,11 @@ export class Vertex extends VertexOrEdge {
   x: number;
   y: number;
 
-  addOutEdge(edgeId) {
+  addOutEdge(edgeId: number) {
     this.outE.push(edgeId);
     return this;
   }
-  addInEdge(edgeId) {
+  addInEdge(edgeId: number) {
     this.inE.push(edgeId);
     return this;
   }
@@ -111,7 +114,7 @@ Edge.manageProperties(
 
 // Helper function for Graph.compressIds()
 function idTranslationTable(what: VertexOrEdge[]) {
-  const ids = {};
+  const ids: { [id: number]: number; } = {};
   let j = 0;
   what.map((x, i) => { if(x != null) ids[i] = j++; });
   return ids;
@@ -130,17 +133,16 @@ function vertexOrEdgeToJSON(v: VertexOrEdge) {
   return w;
 }
 
-import { History, Cursor } from "./historygraph";
 export default class Graph<V extends Vertex, E extends Edge> extends Listenable {
   get name() { return "Graph"; }
   get version() { return "1.0"; }
 
-  readonly VertexType: any;
-  readonly EdgeType: any;
+  readonly VertexType: { new(v?: any): V; } & typeof Vertex;
+  readonly EdgeType: { new(e?: any): E; } & typeof Edge;
   vertices: V[];
   edges: E[];
-  history: History;
-  cursor: Cursor;
+  readonly history: History;
+  readonly cursor: Cursor;
 
   constructor({
     VertexType = Vertex,
@@ -150,8 +152,8 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
   } = {}) {
     super();
 
-    this.VertexType = VertexType;
-    this.EdgeType = EdgeType;
+    this.VertexType = <any>VertexType;
+    this.EdgeType = <any>EdgeType;
 
     this.vertices = [];
     if(numVertices > 0)
@@ -162,7 +164,7 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
     edgeList.map(e => this.addEdge(e[0], e[1]));
   }
 
-  addVertex(v) {
+  addVertex(v: V) {
     v.id = this.vertices.length;
     v.graph = this;
     this.vertices.push(v);
@@ -170,7 +172,7 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
     return this;
   }
 
-  removeVertex(v) {
+  removeVertex(v: V) {
     for(const [i, w] of this.vertices.entries()) {
       if(w === null)
         continue;
@@ -185,7 +187,7 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
     return this;
   }
 
-  parseEdge(tail, head?) {
+  parseEdge(tail, head?): E {
     let e: E;
     if(head == null)
       e = tail; // assume that tail is already an Edge object

@@ -83,7 +83,7 @@ function translateHighlightIds(id : string) {
 }
 
 // Makes a vertex or an edge highlightable.
-class Highlight {
+export class Highlight {
   parent: VertexOrEdge;
   highlightClass: TimedProperty;
 

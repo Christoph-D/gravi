@@ -48,9 +48,9 @@ function runAlgorithm() {
       break;
     case 46: // delete
       if(g.getVertices().indexOf(<Vertex>state.editor.selection) !== -1)
-        g.removeVertex(state.editor.selection);
+        g.removeVertex(<Vertex>state.editor.selection);
       else if(g.getEdges().indexOf(<Edge>state.editor.selection) !== -1)
-        g.removeEdge(state.editor.selection);
+        g.removeEdge(<Edge>state.editor.selection);
       break;
     }
     state.editor.currentStep(newStep);

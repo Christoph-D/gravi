@@ -111,7 +111,7 @@ function simplifyDeadEnds(graph: PG) {
 }
 
 export default function parityWin(graph: ParityGame<any,any>,
-                                  options: { nohighlights?: boolean } = {}) {
+                                  options: { noHighlights?: boolean } = {}) {
   // We want totalRemoved == graph.vertices.length to mean "all
   // vertices are removed".  For this, we cannot have null entries in
   // the vertex list.
@@ -129,7 +129,7 @@ export default function parityWin(graph: ParityGame<any,any>,
   W[1] = W[1].concat(simpleW[1]);
 
   // Highlight the winning regions.
-  if(!options.nohighlights) {
+  if(!options.noHighlights) {
     W[0].map(v => v.highlight.set("player0"));
     W[1].map(v => v.highlight.set("player1"));
     graph.history.saveStep();

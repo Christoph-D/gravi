@@ -1,10 +1,18 @@
+import Graph, { Vertex, Edge } from "./graph"
+
+export type Algorithm = {
+  (g: Graph<Vertex, Edge>): any;
+  requiredProperties?: string[];
+  checkPreConditions?: (g: Graph<Vertex, Edge>) => boolean;
+};
+
 export default class AlgorithmRunner {
-  algorithm: any;
+  private readonly algorithm: Algorithm;
 
   constructor(algorithm) {
     this.algorithm = algorithm;
   }
-  run(graph) {
+  run(graph: Graph<Vertex, Edge>) {
     const properties = graph.VertexType.propertyDescriptors.map(p => p.name);
     if(this.algorithm.requiredProperties != null) {
       const missing = [];

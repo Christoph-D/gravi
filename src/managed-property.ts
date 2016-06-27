@@ -1,16 +1,16 @@
 import Listenable from "./listenable";
 
-interface PropertyDescriptor {
+export interface PropertyDescriptor {
   editable?: boolean;
   name: string;
   Name?: string; // name with a capitalized first letter
-  type: string;
+  type: "array" | "boolean" | "enum" | "number" | "object" | "string";
   defaultValue?: any;
   values?: any[];
   notify?: boolean;
   enumerable?: boolean;
-  getManagedProperty?: any;
-  setManagedProperty?: any;
+  getManagedProperty?: () => any;
+  setManagedProperty?: (val: any) => any;
   shouldBeSaved?: boolean; 
 }
 
@@ -95,7 +95,7 @@ function appendToDom(dom: JQuery) {
 // this._properties["foo"].
 export default class ManagedPropertiesListenable extends Listenable {
   static propertyDescriptors: PropertyDescriptor[];
-  _properties: { [propName: string]: any };
+  private readonly _properties: { [propName: string]: any };
   appendPropertiesToDom: (JQuery) => void;
   modified: boolean;
 
@@ -108,7 +108,8 @@ export default class ManagedPropertiesListenable extends Listenable {
       writable: true,
       value: {}
     });
-    for(const d of Reflect.getPrototypeOf(this).constructor.propertyDescriptors) {
+    for(const d of (<typeof ManagedPropertiesListenable>
+                    Reflect.getPrototypeOf(this).constructor).propertyDescriptors) {
       // Define and initialize every property.
       Reflect.defineProperty(this, d.name, {
         configurable: true,
@@ -132,7 +133,8 @@ export default class ManagedPropertiesListenable extends Listenable {
   }
 
   propertyDescriptors() {
-    return Reflect.getPrototypeOf(this).constructor.propertyDescriptors;
+    return (<typeof ManagedPropertiesListenable>
+            Reflect.getPrototypeOf(this).constructor).propertyDescriptors;
   }
 
   static manageProperties(...descriptors: PropertyDescriptor[]) {
