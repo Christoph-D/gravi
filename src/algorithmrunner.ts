@@ -15,7 +15,7 @@ export default class AlgorithmRunner {
   run(graph: Graph<Vertex, Edge>) {
     const properties = graph.VertexType.propertyDescriptors.map(p => p.name);
     if(this.algorithm.requiredProperties != null) {
-      const missing = [];
+      const missing: string[] = [];
       for(const p of this.algorithm.requiredProperties)
         if(properties.indexOf(p) === -1)
           missing.push(p);

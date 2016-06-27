@@ -61,7 +61,7 @@ function appendSingleToDom(dom: JQuery, propertyDescriptor: PropertyDescriptor) 
       .on("change", function() { self[name] = this.checked; });
     break;
   case "enum": {
-    for(const n of propertyDescriptor.values) {
+    for(const n of propertyDescriptor.values!) {
       form.append("input")
         .attr("type", "radio")
         .attr("name", `${name}`)
@@ -183,7 +183,7 @@ export default class ManagedPropertiesListenable extends Listenable {
         const typeofValue = typeof value;
         if(typeofValue !== typeToCheck && typeofValue !== "undefined")
           throw TypeError(`Property "${d.name}" received invalid type "${typeofValue}", expected "${d.type}"`);
-        if(isEnum === true && d.values.indexOf(value) === -1)
+        if(isEnum === true && d.values!.indexOf(value) === -1)
           throw TypeError(`Enum property "${d.name}" received invalid value "${value}".  Valid values: ${d.values}`);
 
         const oldValue = this._properties[d.name];

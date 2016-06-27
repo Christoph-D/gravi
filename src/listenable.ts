@@ -62,16 +62,16 @@ export default class Listenable {
 
   dispatch(event: string, ...args: any[]) {
     if(this._listeners.has(event)) {
-      for(const f of this._listeners.get(event))
+      for(const f of this._listeners.get(event)!)
         Reflect.apply(f, this, args);
       this._listeners.delete(event);
     }
     if(this._listenersPerm.has(event))
-      for(const f of this._listenersPerm.get(event))
+      for(const f of this._listenersPerm.get(event)!)
         Reflect.apply(f, this, args);
     if((<typeof Listenable>this.constructor).listenersStaticPerm !== undefined &&
        (<typeof Listenable>this.constructor).listenersStaticPerm.has(event))
-      for(const f of (<typeof Listenable>this.constructor).listenersStaticPerm.get(event))
+      for(const f of (<typeof Listenable>this.constructor).listenersStaticPerm.get(event)!)
         Reflect.apply(f, this, args);
     return this;
   }

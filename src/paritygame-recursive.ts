@@ -33,7 +33,7 @@ export function attractor(graph: PG, player, subset) {
   const visited = {};
   subset.map(u => visited[u.id] = true);
   for(;;) {
-    const addition = [];
+    const addition: RemovableVertex[] = [];
     for(const u of subset) {
       for(const v of u.inNeighbors(notRemoved)) {
         if(visited[v.id])

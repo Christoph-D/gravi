@@ -121,7 +121,7 @@ function idTranslationTable(what: VertexOrEdge[]) {
 }
 
 // Helper function for Graph.toJSON()
-function vertexOrEdgeToJSON(v: VertexOrEdge) {
+function vertexOrEdgeToJSON(v: VertexOrEdge | null) {
   if(v === null)
     return null;
   const w = {};
@@ -139,7 +139,7 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
 
   readonly VertexType: { new(v?: any): V; } & typeof Vertex;
   readonly EdgeType: { new(e?: any): E; } & typeof Edge;
-  vertices: V[];
+  vertices: (V | null)[];
   edges: E[];
   readonly history: History;
   readonly cursor: Cursor;
@@ -272,15 +272,15 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
 
   getVertices(vertexFilter?: (v: Vertex) => boolean): V[] {
     if(vertexFilter != null)
-      return this.vertices.filter(v => v != null && vertexFilter(v));
+      return <V[]>this.vertices.filter(v => v != null && vertexFilter(v));
     else
-      return this.vertices.filter(v => v != null);
+      return <V[]>this.vertices.filter(v => v != null);
   }
   getEdges(edgeFilter?: (e: Edge) => boolean): E[] {
     if(edgeFilter != null)
-      return this.edges.filter(e => e != null && edgeFilter(e));
+      return <E[]>this.edges.filter(e => e != null && edgeFilter(e));
     else
-      return this.edges.filter(e => e != null);
+      return <E[]>this.edges.filter(e => e != null);
   }
 
   toJSON() {
