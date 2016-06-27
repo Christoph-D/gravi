@@ -95,9 +95,10 @@ function appendToDom(dom: JQuery) {
 // this._properties["foo"].
 export default class ManagedPropertiesListenable extends Listenable {
   static propertyDescriptors: PropertyDescriptor[];
-  private readonly _properties: { [propName: string]: any };
   appendPropertiesToDom: (JQuery) => void;
   modified: boolean;
+
+  private readonly _properties: { [propName: string]: any };
 
   constructor(v) {
     super();
