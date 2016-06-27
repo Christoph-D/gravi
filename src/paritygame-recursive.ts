@@ -1,12 +1,13 @@
-import Graph, { Edge, EdgeI } from "./graph";
+import { EdgeDrawableI } from "./simplegraph";
 import ParityGame, { VertexDrawableParityI } from "./paritygame";
 
-interface RemovableVertexI
-  <V extends VertexDrawableParityI<V,E>, E extends EdgeI<V,E>>
+interface IRemovableVertex
+  <V extends IRemovableVertex<V,E>, E extends EdgeDrawableI<V,E>>
   extends VertexDrawableParityI<V,E> {
   removed: boolean;
 }
-type RemovableVertex = RemovableVertexI<any, any>;
+type RemovableVertex = IRemovableVertex<any, any>;
+type PG = ParityGame<RemovableVertex, EdgeDrawableI<RemovableVertex, any>>;
 
 // Based on Jurdziński, 2006:
 // "A deterministic subexponential algorithm for solving parity games"
@@ -17,21 +18,21 @@ type RemovableVertex = RemovableVertexI<any, any>;
 
 function notRemoved(v: RemovableVertex) { return v.removed !== true; }
 
-export function even(priority) { return priority % 2 === 0; }
+export function even(priority: number) { return priority % 2 === 0; }
 
-export function minPriority(graph) {
+export function minPriority(graph: PG) {
   return Math.min(...graph.getVertices(notRemoved).map(v => v.priority));
 }
 
-function verticesOfPriority(graph, priority) {
+function verticesOfPriority(graph: PG, priority: number) {
   return graph.getVertices(notRemoved).filter(v => v.priority === priority);
 }
 
-function allNeighborsVisited(graph, v, visited) {
+function allNeighborsVisited(graph: PG, v: RemovableVertex, visited) {
   return v.outNeighbors(notRemoved).every(w => visited[w.id]);
 }
 
-export function attractor(graph, player, subset) {
+export function attractor(graph: PG, player, subset) {
   const visited = {};
   subset.map(u => visited[u.id] = true);
   for(;;) {
@@ -55,18 +56,18 @@ export function attractor(graph, player, subset) {
 
 let totalRemoved = 0;
 
-function markRemoved(graph, vertices) {
+function markRemoved(graph: PG, vertices: RemovableVertex[]) {
   vertices.map(v => v.removed = true);
   totalRemoved += vertices.length;
 }
 
-function unmarkRemoved(graph, vertices) {
+function unmarkRemoved(graph: PG, vertices: RemovableVertex[]) {
   vertices.map(v => delete v.removed);
   totalRemoved -= vertices.length;
 }
 
 // Assumes no dead-ends.
-function parityWinRecursive(graph) {
+function parityWinRecursive(graph: PG) {
   if(totalRemoved === graph.vertices.length)
     return [[],[]];
   const d = minPriority(graph);
@@ -96,13 +97,13 @@ function parityWinRecursive(graph) {
   return winningRegions;
 }
 
-function findDeadEnds(graph, player) {
+function findDeadEnds(graph: PG, player) {
   return graph.getVertices()
     .filter(v => v.player === player && v.outNeighbors().length === 0);
 }
 
 // Removes dead-ends and their attractors.
-function simplifyDeadEnds(graph) {
+function simplifyDeadEnds(graph: PG) {
   const player0DeadEnds = findDeadEnds(graph, ParityGame.Even);
   const W1 = attractor(graph, ParityGame.Odd, player0DeadEnds);
   const player1DeadEnds = findDeadEnds(graph, ParityGame.Odd);
@@ -112,7 +113,8 @@ function simplifyDeadEnds(graph) {
   return [W0, W1];
 }
 
-export default function parityWin(graph, options: { nohighlights?: boolean } = {}) {
+export default function parityWin(graph: ParityGame<any,any>,
+                                  options: { nohighlights?: boolean } = {}) {
   // We want totalRemoved == graph.vertices.length to mean "all
   // vertices are removed".  For this, we cannot have null entries in
   // the vertex list.

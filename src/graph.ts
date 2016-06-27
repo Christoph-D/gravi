@@ -47,13 +47,13 @@ export class VertexI<V extends VertexI<any, any>, E extends EdgeI<any, any>>
 
   // this.outE contains only the ids of outgoing edges.  this.outEdges()
   // returns the corresponding list of Edge objects.
-  outEdges(edgeFilter?): EdgeI<V,E>[] {
+  outEdges(edgeFilter?): E[] {
     let edges = this.outE.map(edgeId => this.graph.edges[edgeId]);
     if(edgeFilter != null)
       edges = edges.filter(edgeFilter);
     return edges;
   }
-  inEdges(edgeFilter?): EdgeI<V,E>[] {
+  inEdges(edgeFilter?): E[] {
     let edges = this.inE.map(edgeId => this.graph.edges[edgeId]);
     if(edgeFilter != null)
       edges = edges.filter(edgeFilter);
@@ -61,13 +61,13 @@ export class VertexI<V extends VertexI<any, any>, E extends EdgeI<any, any>>
   }
 
   // Returns a list of Vertex objects.
-  outNeighbors(vertexFilter?, edgeFilter?): VertexI<V,E>[] {
+  outNeighbors(vertexFilter?, edgeFilter?): V[] {
     let vertices = this.outEdges(edgeFilter).map(e => this.graph.vertices[e.head]);
     if(vertexFilter != null)
       vertices = vertices.filter(vertexFilter);
     return vertices;
   }
-  inNeighbors(vertexFilter?, edgeFilter?): VertexI<V,E>[] {
+  inNeighbors(vertexFilter?, edgeFilter?): V[] {
     let vertices = this.inEdges(edgeFilter).map(e => this.graph.vertices[e.tail]);
     if(vertexFilter != null)
       vertices = vertices.filter(vertexFilter);
@@ -144,8 +144,8 @@ export default class Graph<V extends VertexI<V,E>, E extends EdgeI<V,E>>
 
   VertexType: any;
   EdgeType: any;
-  vertices: VertexI<V,E>[];
-  edges: EdgeI<V,E>[];
+  vertices: V[];
+  edges: E[];
   history: History;
   cursor: Cursor;
 
