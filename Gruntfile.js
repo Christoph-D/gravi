@@ -104,7 +104,8 @@ module.exports = function(grunt) {
         src: "<%= srcDir %>/*.ts",
         dest: "<%= buildDir %>/js/ts",
         options: {
-          target: "es6"
+          target: "es6",
+          additionalFlags: "--strictNullChecks"
         }
       }
     },
