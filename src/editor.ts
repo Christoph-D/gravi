@@ -66,7 +66,7 @@ export default class GraphEditor {
     // is panning, then we want to keep the selection active,
     // otherwise we want to deselect everything.  this.panLast saves
     // the last translation vector the "zoom" handler received.
-    this.panLast = [null, null];
+    this.panLast = [NaN, NaN];
     this.panHappening = false;
     this.zoom = d3.behavior.zoom()
       .x(x)
@@ -119,12 +119,12 @@ export default class GraphEditor {
       }
     });
     this.svg.on("mousedown", () => {
-      const e = <MouseEvent>d3.event;
-      switch(e.button) {
+      const event = <MouseEvent>d3.event;
+      switch(event.button) {
       case 2: { // right click
         // Create a new vertex on right click.
-        e.stopPropagation();
-        e.preventDefault();
+        event.stopPropagation();
+        event.preventDefault();
         const v = new this.g.VertexType({ x: this.mouse.x, y: this.mouse.y });
         this.g.addVertex(v);
         if(this.drawEdgeMode) {
@@ -135,6 +135,7 @@ export default class GraphEditor {
         this.queueRedraw();
         break;
       }
+      default: break;
       }
     });
 
@@ -204,7 +205,7 @@ export default class GraphEditor {
     return this.g.history.totalSteps;
   }
   currentStep(step?: number): number {
-    if(arguments.length === 0)
+    if(step == null)
       return this.g.history.currentStep;
     // If the current step changes, every vertex and edge could change
     // their highlight.
@@ -252,6 +253,7 @@ export default class GraphEditor {
       this.g.compressIds();
       this.queueRedraw();
       break;
+    default: break;
     }
   }
   onMouseUpKeepSelected() {
@@ -346,6 +348,7 @@ export default class GraphEditor {
       this.g.removeEdge(d);
       this.g.compressIds();
       break;
+    default: break;
     }
     this.queueRedraw();
   }

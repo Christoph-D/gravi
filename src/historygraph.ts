@@ -65,7 +65,7 @@ export class Cursor {
   set(cursor) {
     this.cursor.valueAtTime(this.graph.history.currentStep, cursor);
   }
-  get() : { x: number, y: number } {
+  get(): { x: number, y: number } {
     return this.cursor.valueAtTime(this.graph.history.currentStep);
   }
 }
@@ -74,7 +74,7 @@ injectDelayedProperty(Graph, "cursor", Cursor);
 
 // Translate highlight ids from readable names to the internal names
 // used in the css file.
-function translateHighlightIds(id : string) {
+function translateHighlightIds(id: string) {
   if(id === "active" || id === "player0")
     return 1;
   if(id === "done" || id === "player1")
@@ -87,18 +87,18 @@ export class Highlight {
   parent: VertexOrEdge;
   highlightClass: TimedProperty;
 
-  constructor(parent : VertexOrEdge) {
+  constructor(parent: VertexOrEdge) {
     this.parent = parent;
     this.highlightClass = new TimedProperty("");
   }
 
-  set(highlightId? : string) {
+  set(highlightId?: string) {
     let c = highlightId != null ? `highlight${translateHighlightIds(highlightId)}` : "";
     this.highlightClass.valueAtTime(this.parent.graph.history.currentStep, c);
     return this;
   }
 
-  getCSSClass() : string {
+  getCSSClass(): string {
     return this.highlightClass.valueAtTime(this.parent.graph.history.currentStep);
   }
 

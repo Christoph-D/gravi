@@ -1,4 +1,4 @@
-import Graph, { Vertex, Edge } from "./graph"
+import Graph, { Vertex, Edge } from "./graph";
 
 export type Algorithm = {
   (g: Graph<Vertex, Edge>): any;

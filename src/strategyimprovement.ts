@@ -71,7 +71,7 @@ export const SI = {
     const initialVertex = graph.vertices[0];
     initialVertex.highlight(1);
     graph.setCursor(initialVertex);
-  }
+  },
 };
 
 export default SI.run;

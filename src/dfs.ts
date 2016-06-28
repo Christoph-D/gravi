@@ -11,7 +11,7 @@ function dfsStep(graph: Graph<Vertex, Edge>, visited: boolean[], v: Vertex) {
   graph.history.saveStep();
   v.highlight.set("done");
   for(const e of v.outEdges()) {
-    const w = graph.vertices[e.head]!;
+    const w = graph.getVertex(e.head);
     e.highlight.set("active");
     dfsStep(graph, visited, w);
     graph.cursor.set(v);
@@ -22,5 +22,5 @@ function dfsStep(graph: Graph<Vertex, Edge>, visited: boolean[], v: Vertex) {
 
 export default function dfs(graph: Graph<Vertex, Edge>) {
   if(graph.vertices.length !== 0)
-    dfsStep(graph, [], graph.vertices[0]!);
+    dfsStep(graph, [], graph.getVertex(0));
 }

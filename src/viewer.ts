@@ -12,13 +12,35 @@ function prepareGraph(g) {
   return g.on("changeGraphStructure", runAlgorithm);
 }
 
-const state: {
-  g?: Graph<Vertex, Edge>,
-  alg?: any,
-  slider?: any,
-  editor?: GraphEditor,
-  animating?: boolean
-} = {};
+const dfs = new AlgorithmRunner(dfsAlgo);
+const parity = new AlgorithmRunner(solver);
+
+interface State {
+  g: Graph<Vertex, Edge>;
+  alg: AlgorithmRunner;
+  slider: any;
+  editor: GraphEditor;
+  animating: boolean;
+}
+
+function initialState(): State {
+  const g = new Graph<Vertex, Edge>();
+  const editor = new GraphEditor(g, d3.select("#graph"));
+  const slider = (<any>d3).slider()
+    .on("slide", function(event, value) {
+      stopAnimation();
+      editor.currentStep(value);
+      editor.queueRedraw();
+    });
+  return {
+    g,
+    alg: parity,
+    slider,
+    editor,
+    animating: false,
+  };
+}
+const state: State = initialState();
 function runAlgorithm() {
   const g = state.g;
   d3.select("#loading-message").text("");
@@ -52,6 +74,7 @@ function runAlgorithm() {
       else if(g.getEdges().indexOf(<Edge>state.editor.selection) !== -1)
         g.removeEdge(<Edge>state.editor.selection);
       break;
+    default: break;
     }
     state.editor.currentStep(newStep);
     state.slider.value(newStep);
@@ -65,19 +88,7 @@ function generateGraph() {
   //state.g = graphFromJSON(s);
   state.g = prepareGraph(generators.generateRandomGraph(15, 0.2));
   //state.g = generators.generatePath(10);
-  if(state.editor != null)
-    state.editor.setGraph(state.g);
-  else {
-    state.editor = new GraphEditor(state.g, d3.select("#graph"));
-    if(state.slider == null) {
-      state.slider = (<any>d3).slider()
-        .on("slide", function(event, value) {
-          stopAnimation();
-          state.editor.currentStep(value);
-          state.editor.queueRedraw();
-        });
-    }
-  }
+  state.editor.setGraph(state.g);
   runAlgorithm();
 }
 
@@ -126,10 +137,6 @@ function animateAlgorithm() {
     });
 }
 
-const dfs = new AlgorithmRunner(dfsAlgo);
-const parity = new AlgorithmRunner(solver);
-state.alg = parity;
-
 function chooseAlgorithm() {
   if(this.value === "dfs") {
     state.alg = dfs;
@@ -156,7 +163,7 @@ function runLayout() {
     layoutDone = false;
     const layouter = new GraphLayouter(state.g);
     let lastTime = null;
-    const step = (timestamp) => {
+    const step: any = (timestamp) => {
       if(layoutDone)
         return;
       if(lastTime !== null)

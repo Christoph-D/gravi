@@ -3,7 +3,7 @@ export default class TimedProperty {
   interpolateKeys: any[];
   value: any;
 
-  constructor(initialValue = null, interpolateKeys = []) {
+  constructor(initialValue: string | null = null, interpolateKeys: any[] = []) {
     this.initialValue = initialValue;
     this.interpolateKeys = interpolateKeys;
     this.value = { 0: initialValue };

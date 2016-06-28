@@ -7,11 +7,11 @@ export default {
       compare(actual, expected) {
         const result = { pass: false };
         if(actual.vertices.length !== expected.vertices.length) {
-          result.message = () => "Different number of vertices.  Expected #{expected.vertices.length} but received #{actual.vertices.length}.";
+          result.message = () => `Different number of vertices.  Expected ${expected.vertices.length} but received ${actual.vertices.length}.`;
           return result;
         }
         if(actual.edges.length !== expected.edges.length) {
-          result.message = () => "Different number of edges.  Expected #{expected.edges.length} but received #{actual.edges.length}.";
+          result.message = () => `Different number of edges.  Expected ${expected.edges.length} but received ${actual.edges.length}.`;
           return result;
         }
 

@@ -25,9 +25,23 @@ describe("A graph", function() {
       expect(g.hasEdge(0,1)).toBe(true);
       expect(g.hasEdge(1,0)).toBe(false);
     });
-    it("can access individual edges", function() {
-      expect(g.getEdge(0,1)).toBe(g.edges[0]);
-      expect(g.getEdge(1,0)).toBe(null);
+    it("can find individual edges", function() {
+      expect(g.findEdge(0,1)).toBe(g.edges[0]);
+    });
+    it("cannot find non-existent edges", function() {
+      expect(g.findEdge(1,0)).toBe(null);
+    });
+    it("can get individual vertices", function() {
+      expect(g.getVertex(1)).toBe(g.vertices[1]);
+    });
+    it("cannot get non-existent vertices", function() {
+      expect(() => g.getVertex(4)).toThrow(new Error("Invalid vertex id: 4"));
+    });
+    it("can get individual edges", function() {
+      expect(g.getEdge(1)).toBe(g.edges[1]);
+    });
+    it("cannot get non-existent edges", function() {
+      expect(() => g.getEdge(3)).toThrow(new Error("Invalid edge id: 3"));
     });
     it("can filter vertices", function() {
       expect(g.getVertices(vertexFilter).length).toBe(0);

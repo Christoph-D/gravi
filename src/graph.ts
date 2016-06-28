@@ -113,15 +113,15 @@ Edge.manageProperties(
   { name: "tail", type: "number", editable: false, defaultValue: undefined });
 
 // Helper function for Graph.compressIds()
-function idTranslationTable(what: VertexOrEdge[]) {
+function idTranslationTable(what: (VertexOrEdge | null)[]) {
   const ids: { [id: number]: number; } = {};
   let j = 0;
-  what.map((x, i) => { if(x != null) ids[i] = j++; });
+  what.map((x, i) => { if(x !== null) ids[i] = j++; });
   return ids;
 }
 
 // Helper function for Graph.toJSON()
-function vertexOrEdgeToJSON(v: VertexOrEdge | null) {
+function vertexOrEdgeToJSON(v: VertexOrEdge | null): any {
   if(v === null)
     return null;
   const w = {};
@@ -140,7 +140,7 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
   readonly VertexType: { new(v?: any): V; } & typeof Vertex;
   readonly EdgeType: { new(e?: any): E; } & typeof Edge;
   vertices: (V | null)[];
-  edges: E[];
+  edges: (E | null)[];
   readonly history: History;
   readonly cursor: Cursor;
 
@@ -210,8 +210,8 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
       return this; // no duplicate edges
     e.id = this.edges.length;
     e.graph = this;
-    this.vertices[e.tail].addOutEdge(e.id);
-    this.vertices[e.head].addInEdge(e.id);
+    this.vertices[e.tail]!.addOutEdge(e.id);
+    this.vertices[e.head]!.addInEdge(e.id);
     this.edges.push(e);
     this.dispatch("postAddEdge", e);
     return this;
@@ -224,8 +224,8 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
       if(f == null)
         continue;
       if(e.head === f.head && e.tail === f.tail) {
-        this.vertices[e.tail].removeEdgeId(i);
-        this.vertices[e.head].removeEdgeId(i);
+        this.vertices[e.tail]!.removeEdgeId(i);
+        this.vertices[e.head]!.removeEdgeId(i);
         // We set the entry to null in order to preserve the indices in
         // this.edges.  Removing/adding lots of edges will thus clutter
         // this.edges with null entries.  See this.compressIds().
@@ -245,21 +245,21 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
     // Remove all null entries and then fix all the ids.
     this.vertices = this.getVertices();
     for(const v of this.vertices) {
-      v.id = idsV[v.id];
-      v.outE = v.outE.map(i => idsE[i]);
-      v.inE = v.inE.map(i => idsE[i]);
+      v!.id = idsV[v!.id];
+      v!.outE = v!.outE.map(i => idsE[i]);
+      v!.inE = v!.inE.map(i => idsE[i]);
     }
 
     this.edges = this.getEdges();
     for(const e of this.edges) {
-      e.id = idsE[e.id];
-      e.tail = idsV[e.tail];
-      e.head = idsV[e.head];
+      e!.id = idsE[e!.id];
+      e!.tail = idsV[e!.tail];
+      e!.head = idsV[e!.head];
     }
     return this;
   }
 
-  getEdge(tail, head) {
+  findEdge(tail, head) {
     const e = this.parseEdge(tail, head);
     for(const f of this.getEdges())
       if(e.head === f.head && e.tail === f.tail)
@@ -267,24 +267,49 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
     return null;
   }
   hasEdge(tail, head?) {
-    return this.getEdge(tail, head) !== null;
+    return this.findEdge(tail, head) !== null;
   }
 
+  hasVertex(vertexId: number): boolean {
+    return this.vertices[vertexId] != null;
+  }
+  getVertex(vertexId: number): V {
+    if(this.hasVertex(vertexId))
+      return this.vertices[vertexId]!;
+    else
+      throw Error(`Invalid vertex id: ${vertexId}`);
+  }
   getVertices(vertexFilter?: (v: Vertex) => boolean): V[] {
     if(vertexFilter != null)
-      return <V[]>this.vertices.filter(v => v != null && vertexFilter(v));
+      return <V[]>this.vertices.filter(v => v != null && vertexFilter!(v));
     else
       return <V[]>this.vertices.filter(v => v != null);
   }
+  getEdge(edgeId: number): E {
+    if(this.edges[edgeId] != null)
+      return this.edges[edgeId]!;
+    else
+      throw Error(`Invalid edge id: ${edgeId}`);
+  }
   getEdges(edgeFilter?: (e: Edge) => boolean): E[] {
     if(edgeFilter != null)
-      return <E[]>this.edges.filter(e => e != null && edgeFilter(e));
+      return <E[]>this.edges.filter(e => e != null && edgeFilter!(e));
     else
       return <E[]>this.edges.filter(e => e != null);
   }
 
   toJSON() {
-    const g = { type: this.name, version: this.version, vertices: [], edges: [] };
+    const g: {
+      type: string,
+      version: string,
+      vertices: any[],
+      edges: any[],
+    } = {
+      type: this.name,
+      version: this.version,
+      vertices: [],
+      edges: [],
+    };
     this.vertices.map(v => g.vertices.push(vertexOrEdgeToJSON(v)));
     this.edges.map(e => g.edges.push(vertexOrEdgeToJSON(e)));
     return g;

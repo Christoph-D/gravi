@@ -31,7 +31,7 @@ export default class GraphLayouter {
     for(const v of this.graph.getVertices()) {
       const p = {
         x: -CENTER_PULL * Math.sign(v.x) * Math.sqrt(Math.abs(v.x)),
-        y: -CENTER_PULL * Math.sign(v.y) * Math.sqrt(Math.abs(v.y))
+        y: -CENTER_PULL * Math.sign(v.y) * Math.sqrt(Math.abs(v.y)),
       };
       vertexForces[v.id] = p;
       // Add repulsive force.
@@ -47,8 +47,8 @@ export default class GraphLayouter {
     }
     // Add spring force.
     for(const e of this.graph.getEdges()) {
-      const v = this.graph.vertices[e.tail]!;
-      const w = this.graph.vertices[e.head]!;
+      const v = this.graph.getVertex(e.tail);
+      const w = this.graph.getVertex(e.head);
       const d = { x: v.x - w.x, y: v.y - w.y };
       const edgeLength = Math.sqrt(d.x * d.x + d.y * d.y);
       const springForce = EDGE_STIFFNESS * (IDEAL_EDGE_LENGTH - edgeLength);

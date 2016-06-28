@@ -2,11 +2,11 @@ import Graph from "./graph";
 import ParityGame from "./paritygame";
 
 export function generateRandomGraph(n, p) {
-  const g = new ParityGame;
+  const g = new ParityGame();
   for(let i = 0; i < n; ++i) {
     const v = new g.VertexType({
       x: -150 * Math.cos(2 * Math.PI / n * i),
-      y: 150 * Math.sin(2 * Math.PI / n * i)
+      y: 150 * Math.sin(2 * Math.PI / n * i),
     });
     v.player = Math.random() < 0.5 ? ParityGame.Even : ParityGame.Odd;
     v.priority = Math.round(Math.random() * 6);
@@ -28,11 +28,11 @@ export function generateRandomGraph(n, p) {
 }
 
 export function generatePath(n) {
-  const g = new Graph;
+  const g = new Graph();
   for(let i = 0; i < n; ++i) {
     const v = new g.VertexType({
       x: -200 * Math.cos(Math.PI / (n - 1) * i) + 350,
-      y: 200 * Math.sin(Math.PI / (n - 1) * i) + 100
+      y: 200 * Math.sin(Math.PI / (n - 1) * i) + 100,
     });
     g.addVertex(v);
   }

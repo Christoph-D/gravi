@@ -26,8 +26,15 @@ function initializeStaticListeners(self: typeof Listenable) {
 
 export default class Listenable {
   static listenersStaticPerm: Map<string, Listener[]>;
-  _listeners: Map<string, Listener[]>;
-  _listenersPerm: Map<string, Listener[]>;
+
+  static onStatic(event: string, listener: Listener | string) {
+    initializeStaticListeners(this);
+    addListener(this.listenersStaticPerm, event, listener);
+    return this;
+  }
+
+  private _listeners: Map<string, Listener[]>;
+  private _listenersPerm: Map<string, Listener[]>;
 
   constructor() {
     // These internal variables should not be enumerable.
@@ -36,7 +43,7 @@ export default class Listenable {
         configurable: true,
         writable: true,
         enumerable: false,
-        value: new Map<string, Listener>()
+        value: new Map<string, Listener>(),
       });
     }
   }
@@ -46,12 +53,6 @@ export default class Listenable {
       addListener(this._listeners, event, listener);
     else
       addListener(this._listenersPerm, event, listener);
-    return this;
-  }
-
-  static onStatic(event: string, listener: Listener | string) {
-    initializeStaticListeners(this);
-    addListener(this.listenersStaticPerm, event, listener);
     return this;
   }
 
