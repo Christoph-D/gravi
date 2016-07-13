@@ -109,10 +109,15 @@ module.exports = function(grunt) {
         }
       }
     },
-    eslint: {
+    tslint: {
       gravi: {
-        src: ["<%= srcDir %>/*.js"]
-      },
+        options: {
+          configuration: "<%= srcDir %>/tslint.json"
+        },
+        src: [ "<%= srcDir %>/*.ts", "!<%= srcDir %>/*.d.ts" ]
+      }
+    },
+    eslint: {
       test: {
         src: ["spec/*.js"]
       }
@@ -130,8 +135,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-karma");
   grunt.loadNpmTasks("grunt-babel");
   grunt.loadNpmTasks("grunt-ts");
+  grunt.loadNpmTasks("grunt-tslint");
 
-  grunt.registerTask("compile", [ "ts:gravi", "babel:gravi", "eslint:gravi" ]);
+  grunt.registerTask("compile", [ "ts:gravi", "babel:gravi", "tslint:gravi" ]);
   grunt.registerTask("build-site", [ "less", "postcss", "copy" ]);
   grunt.registerTask("build", [ "compile", "build-site" ]);
   grunt.registerTask("minify", [ "compile", "requirejs:gravi" ]);
