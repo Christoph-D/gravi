@@ -41,9 +41,9 @@ export default class Listenable {
     for(const p of ["_listeners", "_listenersPerm"]) {
       Reflect.defineProperty(this, p, {
         configurable: true,
-        writable: true,
         enumerable: false,
         value: new Map<string, Listener>(),
+        writable: true,
       });
     }
   }

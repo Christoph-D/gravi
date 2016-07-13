@@ -1,6 +1,6 @@
-import Graph, { VertexOrEdge, Vertex, Edge } from "./graph";
-import { circleEdgeAnchor, VertexDrawableDefault } from "./simplegraph";
+import Graph, { Edge, Vertex, VertexOrEdge } from "./graph";
 import "./historygraph";
+import { VertexDrawableDefault, circleEdgeAnchor } from "./simplegraph";
 
 // A GraphEditor expects vertices and edges to offer the methods
 // drawEnter() and drawUpdate().  It calls drawEnter() once on every
@@ -128,7 +128,7 @@ export default class GraphEditor {
         const v = new this.g.VertexType({ x: this.mouse.x, y: this.mouse.y });
         this.g.addVertex(v);
         if(this.drawEdgeMode) {
-          const e = new this.g.EdgeType({ tail: this.selection.id, head: v.id });
+          const e = new this.g.EdgeType({ head: v.id, tail: this.selection.id });
           this.g.addEdge(e);
           this.drawEdgeMode = false;
         }
@@ -269,7 +269,7 @@ export default class GraphEditor {
   }
   onMouseOverVertex(d) {
     if(this.drawEdgeMode && this.selection !== d) {
-      const e = new this.g.EdgeType({ tail: this.selection.id, head: d.id });
+      const e = new this.g.EdgeType({ head: d.id, tail: this.selection.id });
       if(this.g.hasEdge(e)) {
         this.g.removeEdge(e);
         this.g.compressIds();

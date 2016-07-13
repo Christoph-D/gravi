@@ -37,6 +37,6 @@ export function generatePath(n) {
     g.addVertex(v);
   }
   for(let i = 0; i < n - 1; ++i)
-    g.addEdge(new g.EdgeType({ tail: i, head: i + 1 }));
+    g.addEdge(new g.EdgeType({ head: i + 1, tail: i }));
   return g;
 }

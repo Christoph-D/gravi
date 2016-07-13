@@ -21,8 +21,8 @@ export default function injectDelayedProperty<T, U>(
       Reflect.defineProperty(this, propName, {
         configurable: true,
         enumerable: true,
-        writable: true,
         value: new template(this),
+        writable: true,
       });
       return this[propName];
     },

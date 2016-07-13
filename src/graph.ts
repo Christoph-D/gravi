@@ -1,6 +1,6 @@
-import ManagedPropertiesListenable from "./managed-property";
+import { Cursor, Highlight, History } from "./historygraph";
 import Listenable from "./listenable";
-import { History, Cursor, Highlight } from "./historygraph";
+import ManagedPropertiesListenable from "./managed-property";
 
 export class VertexOrEdge extends ManagedPropertiesListenable {
   id: number;

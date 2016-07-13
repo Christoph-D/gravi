@@ -1,9 +1,9 @@
 // This module does not export anything.  Importing it has the side
 // effect that Graph, Vertex and Edge become highlightable.
 
-import Graph, { VertexOrEdge, Vertex, Edge } from "./graph";
-import TimedProperty from "./timed";
 import injectDelayedProperty from "./delayedproperty";
+import Graph, { Edge, Vertex, VertexOrEdge } from "./graph";
+import TimedProperty from "./timed";
 
 // Adds a global timeline to the graph.  Useful in combination with
 // TimedProperty on the vertices/edges.

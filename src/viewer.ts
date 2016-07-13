@@ -1,12 +1,12 @@
-import * as generators from "./generators";
-import dfsAlgo from "./dfs";
-import examples from "./examples";
-import solver from "./paritygame-recursive";
 import AlgorithmRunner from "./algorithmrunner";
-import Graph, { Vertex, Edge } from "./graph";
-import graphFromJSON from "./graphjson";
+import dfsAlgo from "./dfs";
 import GraphEditor from "./editor";
+import examples from "./examples";
+import * as generators from "./generators";
+import Graph, { Edge, Vertex } from "./graph";
+import graphFromJSON from "./graphjson";
 import GraphLayouter from "./layout";
+import solver from "./paritygame-recursive";
 
 function prepareGraph(g) {
   return g.on("changeGraphStructure", runAlgorithm);

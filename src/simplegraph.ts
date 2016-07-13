@@ -1,4 +1,4 @@
-import Graph, { Vertex, Edge } from "./graph";
+import Graph, { Edge, Vertex } from "./graph";
 
 export function circleEdgeAnchor(s, t, distance: number): { x: number, y: number } {
   const result = { x: s.x, y: s.y };

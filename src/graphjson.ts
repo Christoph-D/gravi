@@ -1,9 +1,9 @@
 // Function to create a graph from its JSON representation.
 
-import Graph, { Vertex, Edge } from "./graph";
-import SimpleGraph from "./simplegraph";
 import FiniteAutomaton from "./finiteautomaton";
+import Graph, { Edge, Vertex } from "./graph";
 import ParityGame from "./paritygame";
+import SimpleGraph from "./simplegraph";
 
 export default function graphFromJSON(json, validTypes = [SimpleGraph, FiniteAutomaton, ParityGame]) {
   const raw = JSON.parse(json);

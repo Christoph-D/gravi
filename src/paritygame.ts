@@ -1,6 +1,6 @@
 import Graph, { VertexOrEdge } from "./graph";
-import { circleEdgeAnchor, VertexDrawableDefault, EdgeDrawable } from "./simplegraph";
 import { PropertyDescriptor } from "./managed-property";
+import { EdgeDrawable, VertexDrawableDefault, circleEdgeAnchor } from "./simplegraph";
 
 export enum Player { Even, Odd }
 
@@ -13,16 +13,16 @@ const rectangle = `M -${radiusR},-${radiusR} v ${radiusR*2} h ${radiusR*2} v -${
 const circle = `M ${radiusC},0 A ${radiusC},${radiusC} 0 1,0 ${radiusC},0.00001 z`;
 
 const player: PropertyDescriptor = {
+  defaultValue: Player.Even,
   name: "player",
   type: "enum",
   values: [Player.Even, Player.Odd],
-  defaultValue: Player.Even,
 };
 
 const priority: PropertyDescriptor = {
+  defaultValue: 0,
   name: "priority",
   type: "number",
-  defaultValue: 0,
 };
 
 // Vertex that is either a rectangle (player 1) or a circle (player

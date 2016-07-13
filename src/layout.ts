@@ -1,4 +1,4 @@
-import Graph, { Vertex, Edge } from "./graph";
+import Graph, { Edge, Vertex } from "./graph";
 
 const SPEED = 0.005;
 const IDEAL_EDGE_LENGTH = 100;

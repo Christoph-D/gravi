@@ -1,5 +1,5 @@
-import { EdgeDrawable } from "./simplegraph";
 import ParityGame, { VertexDrawableParity } from "./paritygame";
+import { EdgeDrawable } from "./simplegraph";
 
 // Based on Jurdziński, 2006:
 // "A deterministic subexponential algorithm for solving parity games"

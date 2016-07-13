@@ -1,4 +1,4 @@
-import Graph, { Vertex, Edge } from "./graph";
+import Graph, { Edge, Vertex } from "./graph";
 
 function dfsStep(graph: Graph<Vertex, Edge>, visited: boolean[], v: Vertex) {
   graph.cursor.set(v);

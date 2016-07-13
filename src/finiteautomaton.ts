@@ -1,11 +1,11 @@
 import Graph, { VertexOrEdge } from "./graph";
-import { VertexDrawableCircular, EdgeDrawable } from "./simplegraph";
 import { PropertyDescriptor } from "./managed-property";
+import { EdgeDrawable, VertexDrawableCircular } from "./simplegraph";
 
 const accepting: PropertyDescriptor = {
+  defaultValue: false,
   name: "accepting",
   type: "boolean",
-  defaultValue: false,
 };
 
 class VertexDrawableFiniteAutomaton extends VertexDrawableCircular {
@@ -31,9 +31,9 @@ VertexDrawableFiniteAutomaton.onStatic(
   VertexOrEdge.prototype.changeGraphStructure);
 
 const letter: PropertyDescriptor = {
+  defaultValue: "",
   name: "letter",
   type: "string",
-  defaultValue: "",
 };
 
 class EdgeDrawableFiniteAutomaton extends EdgeDrawable {
