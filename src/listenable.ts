@@ -25,9 +25,9 @@ function initializeStaticListeners(self: typeof Listenable) {
 }
 
 export default class Listenable {
-  static listenersStaticPerm: Map<string, Listener[]>;
+  public static listenersStaticPerm: Map<string, Listener[]>;
 
-  static onStatic(event: string, listener: Listener | string) {
+  public static onStatic(event: string, listener: Listener | string) {
     initializeStaticListeners(this);
     addListener(this.listenersStaticPerm, event, listener);
     return this;
@@ -48,7 +48,7 @@ export default class Listenable {
     }
   }
 
-  on(event: string, listener: Listener | string, options: any = {}) {
+  public on(event: string, listener: Listener | string, options: any = {}) {
     if(options.once)
       addListener(this._listeners, event, listener);
     else
@@ -56,12 +56,12 @@ export default class Listenable {
     return this;
   }
 
-  removePermanentListeners(event: string) {
+  public removePermanentListeners(event: string) {
     this._listenersPerm.delete(event);
     return this;
   }
 
-  dispatch(event: string, ...args: any[]) {
+  public dispatch(event: string, ...args: any[]) {
     if(this._listeners.has(event)) {
       for(const f of this._listeners.get(event)!)
         Reflect.apply(f, this, args);

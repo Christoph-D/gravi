@@ -9,14 +9,14 @@ const accepting: PropertyDescriptor = {
 };
 
 class VertexDrawableFiniteAutomaton extends VertexDrawableCircular {
-  accepting: boolean;
+  public accepting: boolean;
 
-  drawEnter(editor, svgGroup) {
+  public drawEnter(editor, svgGroup) {
     super.drawEnter(editor, svgGroup);
     svgGroup.append("circle").attr("class", "accepting accepting1").attr("r", this.radius - 1);
     svgGroup.append("circle").attr("class", "accepting accepting2").attr("r", this.radius - 4);
   }
-  drawUpdate(editor, svgGroup) {
+  public drawUpdate(editor, svgGroup) {
     super.drawUpdate(editor, svgGroup);
     const opacity = this.accepting ? 1 : 0;
     svgGroup.selectAll("circle.accepting")
@@ -37,9 +37,9 @@ const letter: PropertyDescriptor = {
 };
 
 class EdgeDrawableFiniteAutomaton extends EdgeDrawable {
-  letter: string;
+  public letter: string;
 
-  drawEnter(editor, svgGroup) {
+  public drawEnter(editor, svgGroup) {
     super.drawEnter(editor, svgGroup);
     svgGroup.append("rect").attr("class", "letter")
       .attr("fill", "#FFFFFF")
@@ -50,7 +50,7 @@ class EdgeDrawableFiniteAutomaton extends EdgeDrawable {
       .attr("text-anchor", "middle")
       .attr("dominant-baseline", "central");
   }
-  drawUpdate(editor, svgGroup) {
+  public drawUpdate(editor, svgGroup) {
     super.drawUpdate(editor, svgGroup);
     if(this.letter === "") {
       svgGroup.selectAll(".letter").attr("visibility", "hidden");

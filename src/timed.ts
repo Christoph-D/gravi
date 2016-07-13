@@ -1,7 +1,7 @@
 export default class TimedProperty {
-  initialValue: any;
-  interpolateKeys: any[];
-  value: any;
+  private initialValue: any;
+  private interpolateKeys: any[];
+  private value: any;
 
   constructor(initialValue: string | null = null, interpolateKeys: any[] = []) {
     this.initialValue = initialValue;
@@ -9,7 +9,7 @@ export default class TimedProperty {
     this.value = { 0: initialValue };
   }
 
-  interpolate(x, y, t) {
+  public interpolate(x, y, t) {
     const result = {};
     for(const key of this.interpolateKeys) {
       if(!(key in x && key in y))
@@ -19,7 +19,7 @@ export default class TimedProperty {
     return result;
   }
 
-  valueAtTime(time, value?) {
+  public valueAtTime(time, value?) {
     if(arguments.length === 2) {
       this.value[time] = value;
       return this;
@@ -36,7 +36,7 @@ export default class TimedProperty {
     return this.interpolate(this.value[lastTime], this.value[nextTime], normedDiff);
   }
 
-  reset() {
+  public reset() {
     this.value = { 0: this.initialValue };
     return this;
   }

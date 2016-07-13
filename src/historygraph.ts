@@ -8,9 +8,9 @@ import TimedProperty from "./timed";
 // Adds a global timeline to the graph.  Useful in combination with
 // TimedProperty on the vertices/edges.
 export class History {
-  graph: Graph<any, any>;
-  totalSteps: number;
-  currentStep: number;
+  public graph: Graph<any, any>;
+  public totalSteps: number;
+  public currentStep: number;
 
   constructor(graph) {
     this.graph = graph;
@@ -18,13 +18,13 @@ export class History {
     this.currentStep = 0;
   }
 
-  saveStep() {
+  public saveStep() {
     ++this.totalSteps;
     ++this.currentStep;
     return this;
   }
 
-  reset() {
+  public reset() {
     // Blindly reset all properties.
     for(const v of this.graph.getVertices()) {
       for(const key in v) {
@@ -55,17 +55,17 @@ injectDelayedProperty(Graph, "history", History);
 // Marks a vertex in the graph.  Useful to show the state of
 // depth-first search and related algorithms.
 export class Cursor {
-  graph: Graph<any, any>;
-  cursor: TimedProperty;
+  public graph: Graph<any, any>;
+  public cursor: TimedProperty;
 
   constructor(graph) {
     this.graph = graph;
     this.cursor = new TimedProperty(null, ["x", "y"]);
   }
-  set(cursor) {
+  public set(cursor) {
     this.cursor.valueAtTime(this.graph.history.currentStep, cursor);
   }
-  get(): { x: number, y: number } {
+  public get(): { x: number, y: number } {
     return this.cursor.valueAtTime(this.graph.history.currentStep);
   }
 }
@@ -84,25 +84,25 @@ function translateHighlightIds(id: string) {
 
 // Makes a vertex or an edge highlightable.
 export class Highlight {
-  parent: VertexOrEdge;
-  highlightClass: TimedProperty;
+  private parent: VertexOrEdge;
+  private highlightClass: TimedProperty;
 
   constructor(parent: VertexOrEdge) {
     this.parent = parent;
     this.highlightClass = new TimedProperty("");
   }
 
-  set(highlightId?: string) {
+  public set(highlightId?: string) {
     let c = highlightId != null ? `highlight${translateHighlightIds(highlightId)}` : "";
     this.highlightClass.valueAtTime(this.parent.graph.history.currentStep, c);
     return this;
   }
 
-  getCSSClass(): string {
+  public getCSSClass(): string {
     return this.highlightClass.valueAtTime(this.parent.graph.history.currentStep);
   }
 
-  reset() { this.highlightClass.reset(); }
+  public reset() { this.highlightClass.reset(); }
 }
 
 injectDelayedProperty(Vertex, "highlight", Highlight);

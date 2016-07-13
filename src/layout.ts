@@ -17,14 +17,14 @@ const MAX_FORCE_SQUARED = 10000;
 const MAX_STEP_SIZE_MS = 200;
 
 export default class GraphLayouter {
-  graph: Graph<Vertex, Edge>;
+  public graph: Graph<Vertex, Edge>;
 
   constructor(graph) {
     this.graph = graph;
   }
 
   // Returns true if the layouting is finished.
-  step(delta: number) {
+  public step(delta: number) {
     if(delta > MAX_STEP_SIZE_MS)
       delta = MAX_STEP_SIZE_MS;
     const vertexForces = {};

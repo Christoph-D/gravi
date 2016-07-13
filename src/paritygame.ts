@@ -28,10 +28,10 @@ const priority: PropertyDescriptor = {
 // Vertex that is either a rectangle (player 1) or a circle (player
 // 0).  Also the priority is drawn inside the vertex.
 export class VertexDrawableParity extends VertexDrawableDefault {
-  player: Player;
-  priority: number;
+  public player: Player;
+  public priority: number;
 
-  edgeAnchor(otherNode, distanceOffset = 0) {
+  public edgeAnchor(otherNode, distanceOffset = 0) {
     if(this.x === otherNode.x && this.y === otherNode.y)
       return { x: this.x, y: this.y };
     if(this.player === Player.Even)
@@ -70,7 +70,7 @@ export class VertexDrawableParity extends VertexDrawableDefault {
     }
     return result;
   }
-  drawEnter(editor, svgGroup) {
+  public drawEnter(editor, svgGroup) {
     super.drawEnter(editor, svgGroup);
     svgGroup.append("path").attr("class", "main");
     svgGroup.append("text").attr("class", "priority")
@@ -81,7 +81,7 @@ export class VertexDrawableParity extends VertexDrawableDefault {
       .style("fill", "#FFFFFF")
       .style("stroke", "none");
   }
-  drawUpdate(editor, svgGroup) {
+  public drawUpdate(editor, svgGroup) {
     super.drawUpdate(editor, svgGroup);
     svgGroup.attr("transform", `translate(${this.x},${this.y})`);
     svgGroup.select("path.main").attr("d", this.player === Player.Even ? circle : rectangle);
@@ -104,14 +104,14 @@ VertexDrawableParity.onStatic("changePriority", VertexOrEdge.prototype.queueRedr
 export default class ParityGame
   <V extends VertexDrawableParity, E extends EdgeDrawable>
   extends Graph<V,E> {
-  get name() { return "ParityGame"; }
+  public get name() { return "ParityGame"; }
 
   // The Player enum is exported.  Nonetheless, we add its values as
   // static properties so that they are always available as
   // ParityGame.Even and ParityGame.Odd without explicitly importing
   // the enum.
-  static get Even() { return Player.Even; }
-  static get Odd() { return Player.Odd; }
+  public static get Even() { return Player.Even; }
+  public static get Odd() { return Player.Odd; }
 
   constructor(options: any = {}) {
     options.VertexType = VertexDrawableParity;

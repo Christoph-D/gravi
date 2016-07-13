@@ -2,16 +2,16 @@ import { VertexDrawableParity } from "./paritygame";
 
 // A play profile contains l, B, k.
 export class PlayProfile {
-  l: number;
-  B: VertexDrawableParity[];
-  k: number;
+  public l: number;
+  public B: VertexDrawableParity[];
+  public k: number;
 
   constructor({ l, B, k }) {
     this.l = l;
     this.B = B;
     this.k = k;
   }
-  lessThanOrEqual(other: PlayProfile) {
+  public lessThanOrEqual(other: PlayProfile) {
     if(this.l !== other.l)
       return SI.rewardLess(this.l, other.l);
     else {

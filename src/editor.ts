@@ -37,19 +37,19 @@ function addHighlightedMarkers(svg) {
 }
 
 export default class GraphEditor {
-  g: Graph<Vertex, Edge>;
-  selection: VertexOrEdge;
-  oldSelection: VertexOrEdge;
-  svg: any;
-  mouse: { x: number, y: number };
-  panLast: [number, number];
-  panHappening: boolean;
-  drawEdgeMode: boolean;
-  redrawQueued: boolean;
-  zoom: any;
-  graphGroup: any;
-  drag: any;
-  times: number[];
+  public g: Graph<Vertex, Edge>;
+  public selection: VertexOrEdge;
+  private oldSelection: VertexOrEdge;
+  private svg: any;
+  private mouse: { x: number, y: number };
+  private panLast: [number, number];
+  private panHappening: boolean;
+  private drawEdgeMode: boolean;
+  private redrawQueued: boolean;
+  private zoom: any;
+  private graphGroup: any;
+  private drag: any;
+  private times: number[];
 
   constructor(g, svg) {
     this.svg = svg;
@@ -153,7 +153,7 @@ export default class GraphEditor {
 
   // Sets the underlying graph of this editor instance and establishes
   // itself as the only listener to the "redrawNeeded" event.
-  setGraph(g) {
+  public setGraph(g) {
     if(this.g === g)
       return;
     this.g = g;
@@ -173,7 +173,7 @@ export default class GraphEditor {
   // Translate the view port so that the median vertex is centered.  x
   // and y are considered separately.  Also reset the scale factor to
   // 1.
-  recenter() {
+  public recenter() {
     const median = (f: (v: Vertex) => number) => {
       const vertices = this.g.getVertices();
       if(vertices.length === 0)
@@ -187,7 +187,7 @@ export default class GraphEditor {
       .event(this.svg);
   }
 
-  select(vertexOrEdge) {
+  public select(vertexOrEdge) {
     // Mark the previous selection as modified so that we redraw it
     // without the selection marker.
     if(this.selection != null) {
@@ -201,10 +201,10 @@ export default class GraphEditor {
     }
   }
 
-  totalSteps() {
+  public totalSteps() {
     return this.g.history.totalSteps;
   }
-  currentStep(step?: number): number {
+  public currentStep(step?: number): number {
     if(step == null)
       return this.g.history.currentStep;
     // If the current step changes, every vertex and edge could change
@@ -217,7 +217,14 @@ export default class GraphEditor {
     return step;
   }
 
-  onZoom() {
+  public queueRedraw() {
+    if(this.redrawQueued)
+      return;
+    this.redrawQueued = true;
+    window.requestAnimationFrame(() => this.draw());
+  }
+
+  private onZoom() {
     const e = <d3.ZoomEvent>d3.event;
     this.graphGroup
       .attr("transform",
@@ -229,13 +236,13 @@ export default class GraphEditor {
     this.panLast = e.translate;
   }
 
-  onDoubleClickVertex(d) {
+  private onDoubleClickVertex(d) {
     (<MouseEvent>d3.event).stopPropagation();
     this.select(d);
     this.drawEdgeMode = true;
     this.queueRedraw();
   }
-  onMouseDownVertex(d) {
+  private onMouseDownVertex(d) {
     const e = <MouseEvent>d3.event;
     switch(e.button) {
     case 0:
@@ -256,7 +263,7 @@ export default class GraphEditor {
     default: break;
     }
   }
-  onMouseUpKeepSelected() {
+  private onMouseUpKeepSelected() {
     const e = <MouseEvent>d3.event;
     if(e.button === 0) { // left click
       // We want to keep this vertex/edge selected after "mouseup".
@@ -267,7 +274,7 @@ export default class GraphEditor {
       // "dragend" to fire.  Otherwise dragging would never end.
     }
   }
-  onMouseOverVertex(d) {
+  private onMouseOverVertex(d) {
     if(this.drawEdgeMode && this.selection !== d) {
       const e = new this.g.EdgeType({ head: d.id, tail: this.selection.id });
       if(this.g.hasEdge(e)) {
@@ -281,7 +288,7 @@ export default class GraphEditor {
       this.queueRedraw();
     }
   }
-  drawVertices() {
+  private drawVertices() {
     const vertices = this.graphGroup.select("#vertices")
             .selectAll(".vertex").data(this.g.getVertices());
     const editor = this;
@@ -319,7 +326,7 @@ export default class GraphEditor {
     this.oldSelection = this.selection;
   }
 
-  drawCursor() {
+  private drawCursor() {
     if(this.g.cursor.get() === null) {
       this.graphGroup.selectAll("#cursor").data([]).exit().remove();
       return;
@@ -334,7 +341,7 @@ export default class GraphEditor {
       .attr("cy", (d) => d.y);
   }
 
-  onMouseDownEdge(d) {
+  private onMouseDownEdge(d) {
     const e = <MouseEvent>d3.event;
     switch(e.button) {
     case 0: // left click
@@ -352,7 +359,7 @@ export default class GraphEditor {
     }
     this.queueRedraw();
   }
-  drawEdges() {
+  private drawEdges() {
     const edges = this.graphGroup.select("#edges")
             .selectAll(".edge").data(this.g.getEdges());
     const editor = this;
@@ -371,7 +378,7 @@ export default class GraphEditor {
     return this;
   }
 
-  drawPointer() {
+  private drawPointer() {
     // Draw an edge from the selected node to the mouse cursor.
     if(this.drawEdgeMode) {
       const pointer = this.graphGroup.selectAll("#pointer").data([null]);
@@ -384,12 +391,13 @@ export default class GraphEditor {
         .attr("x2", edgeAnchorT.x)
         .attr("y2", edgeAnchorT.y);
     }
-    else
+    else {
       this.graphGroup.selectAll("#pointer").remove();
+    }
     return this;
   }
 
-  draw() {
+  private draw() {
     this.redrawQueued = false;
     if(this.times == null)
       this.times = [];
@@ -406,12 +414,5 @@ export default class GraphEditor {
     //const median = this.times.slice().sort()[Math.floor(this.times.length / 2)];
     //d3.select("#performance").text("#{median} ms");
     return this;
-  }
-
-  queueRedraw() {
-    if(this.redrawQueued)
-      return;
-    this.redrawQueued = true;
-    window.requestAnimationFrame(() => this.draw());
   }
 }

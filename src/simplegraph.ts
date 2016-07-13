@@ -24,23 +24,23 @@ function setCSSClass(editor, svgGroup) {
 // A vertex with basic draw functionality.
 export class VertexDrawableDefault extends Vertex {
   get defaultCSSClass() { return "vertex"; }
-  drawEnter(editor?, svgGroup?) {}
-  drawUpdate(editor?, svgGroup?) {};
-  edgeAnchor(otherNode, distanceOffset = 0) { return { x: 0, y: 0 }; }
+  public drawEnter(editor?, svgGroup?) {}
+  public drawUpdate(editor?, svgGroup?) {};
+  public edgeAnchor(otherNode, distanceOffset = 0) { return { x: 0, y: 0 }; }
 }
 VertexDrawableDefault.prototype.drawUpdate = setCSSClass;
 
 // A vertex with a circular shape.
 export class VertexDrawableCircular extends VertexDrawableDefault {
   get radius() { return 10; }
-  edgeAnchor(otherNode, distanceOffset = 0) {
+  public edgeAnchor(otherNode, distanceOffset = 0) {
     return circleEdgeAnchor(this, otherNode, distanceOffset + this.radius);
   }
-  drawEnter(editor, svgGroup) {
+  public drawEnter(editor, svgGroup) {
     super.drawEnter(editor, svgGroup);
     svgGroup.append("circle").attr("class", "main").attr("r", this.radius);
   }
-  drawUpdate(editor, svgGroup) {
+  public drawUpdate(editor, svgGroup) {
     super.drawUpdate(editor, svgGroup);
     svgGroup.selectAll("circle.main")
       .attr("cx", this.x)
@@ -50,8 +50,8 @@ export class VertexDrawableCircular extends VertexDrawableDefault {
 
 export class EdgeDrawableDefault extends Edge {
   get defaultCSSClass() { return "edge"; }
-  drawEnter(editor?, svgGroup?) {}
-  drawUpdate(editor?, svgGroup?) {};
+  public drawEnter(editor?, svgGroup?) {}
+  public drawUpdate(editor?, svgGroup?) {};
 }
 EdgeDrawableDefault.prototype.drawUpdate = setCSSClass;
 // Same behavior as default vertices.
@@ -61,12 +61,12 @@ EdgeDrawableDefault.prototype.drawUpdate = setCSSClass;
 
 // An edge with an arrow at its head.
 export class EdgeDrawable extends EdgeDrawableDefault {
-  drawEnter(editor, svgGroup) {
+  public drawEnter(editor, svgGroup) {
     super.drawEnter(editor, svgGroup);
     svgGroup.append("line").attr("class", "main");
     svgGroup.append("line").attr("class", "click-target");
   }
-  drawUpdate(editor, svgGroup) {
+  public drawUpdate(editor, svgGroup) {
     super.drawUpdate(editor, svgGroup);
     const s = this.graph.vertices[this.tail];
     const t = this.graph.vertices[this.head];
@@ -94,8 +94,8 @@ export class EdgeDrawable extends EdgeDrawableDefault {
 export default class SimpleGraph
   <V extends VertexDrawableCircular, E extends EdgeDrawable>
   extends Graph<V,E> {
-  get name() { return "SimpleGraph"; }
-  get version() { return "0.1"; }
+  public get name() { return "SimpleGraph"; }
+  public get version() { return "0.1"; }
 
   constructor(options: any = {}) {
     options.VertexType = VertexDrawableCircular;

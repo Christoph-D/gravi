@@ -95,8 +95,8 @@ function appendToDom(dom: d3.Selection<any>) {
 // value of a property named "foo" is stored in
 // this._properties["foo"].
 export default class ManagedPropertiesListenable extends Listenable {
-  static propertyDescriptors: PropertyDescriptor[];
-  static manageProperties(...descriptors: PropertyDescriptor[]) {
+  public static propertyDescriptors: PropertyDescriptor[];
+  public static manageProperties(...descriptors: PropertyDescriptor[]) {
     // Check preconditions (no duplicates).
     for(const [i, d] of descriptors.entries()) {
       if(this.propertyDescriptors != null &&
@@ -161,8 +161,8 @@ export default class ManagedPropertiesListenable extends Listenable {
     this.propertyDescriptors.push(...descriptors);
   }
 
-  appendPropertiesToDom: (dom: d3.Selection<any>) => void;
-  modified: boolean;
+  public appendPropertiesToDom: (dom: d3.Selection<any>) => void;
+  public modified: boolean;
 
   private readonly _properties: { [propName: string]: any };
 
@@ -199,7 +199,7 @@ export default class ManagedPropertiesListenable extends Listenable {
     }
   }
 
-  propertyDescriptors() {
+  public propertyDescriptors() {
     return (<typeof ManagedPropertiesListenable>
             Reflect.getPrototypeOf(this).constructor).propertyDescriptors;
   }
