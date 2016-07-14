@@ -86,7 +86,7 @@ module.exports = function(grunt) {
       gravi: {
         expand: true,
         flatten: true,
-        src: [ "<%= srcDir %>/*.js", "<%= buildDir %>/js/ts/*.js" ],
+        src: [ "<%= srcDir %>/*.js", "<%= buildDir %>/ts/*.js" ],
         dest: "<%= buildDir %>/js"
       },
       test: {
@@ -102,10 +102,12 @@ module.exports = function(grunt) {
     ts: {
       gravi: {
         src: "<%= srcDir %>/*.ts",
-        dest: "<%= buildDir %>/js/ts",
+        dest: "<%= buildDir %>/ts",
         options: {
           target: "es6",
-          additionalFlags: "--strictNullChecks"
+          additionalFlags: "--strictNullChecks",
+          inlineSourceMap: true,
+          inlineSources: true
         }
       }
     },
