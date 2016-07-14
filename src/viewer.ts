@@ -48,7 +48,7 @@ function runAlgorithm() {
     state.alg.run(g);
     state.slider.min(0).max(state.editor.totalSteps() - 1)
       .value(0)
-      .axis(d3.svg.axis().ticks(state.editor.totalSteps() - 1));
+      .axis(d3.axisBottom().ticks(state.editor.totalSteps() - 1));
     d3.select("#slider").call(state.slider);
   }
   catch(error) {
@@ -124,7 +124,7 @@ function animateAlgorithm() {
   runAlgorithm();
   state.animating = true;
   d3.select("#slider").transition().duration(state.slider.max() * 500)
-    .ease(d3.ease("linear"))
+    .ease(d3.easeLinear)
     .tween("dummy-name", function() {
       return function(t) {
         if(!state.animating)

@@ -14,7 +14,7 @@ export interface PropertyDescriptor {
   values?: any[];
 }
 
-function appendSingleToDom(dom: d3.Selection<any>, propertyDescriptor: PropertyDescriptor) {
+function appendSingleToDom(dom: any, propertyDescriptor: PropertyDescriptor) {
   if(propertyDescriptor.editable === false)
     return;
 
@@ -50,7 +50,7 @@ function appendSingleToDom(dom: d3.Selection<any>, propertyDescriptor: PropertyD
             .attr("maxlength", "6")
             .property("value", this[name])
             .on("change", onChange);
-    (<any>$(elem)).spinner({ stop: onChange });
+    (<any>$(elem.node())).spinner({ stop: onChange });
     break;
   }
   case "boolean":
@@ -72,7 +72,7 @@ function appendSingleToDom(dom: d3.Selection<any>, propertyDescriptor: PropertyD
       form.append("label")
         .attr("for", `${name}-${n}`)
         .text(n);
-      (<any>$(form)).buttonset();
+      (<any>$(form.node())).buttonset();
     }
     break;
   }
@@ -80,7 +80,7 @@ function appendSingleToDom(dom: d3.Selection<any>, propertyDescriptor: PropertyD
   }
 }
 
-function appendToDom(dom: d3.Selection<any>) {
+function appendToDom(dom: any) {
   this.propertyDescriptors().map(p => Reflect.apply(appendSingleToDom, this, [dom, p]));
 }
 
@@ -161,7 +161,7 @@ export default class ManagedPropertiesListenable extends Listenable {
     this.propertyDescriptors.push(...descriptors);
   }
 
-  public appendPropertiesToDom: (dom: d3.Selection<any>) => void;
+  public appendPropertiesToDom: (dom: any) => void;
   public modified: boolean;
 
   private readonly _properties: { [propName: string]: any };

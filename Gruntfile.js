@@ -59,7 +59,7 @@ module.exports = function(grunt) {
       lib: {
         expand: true,
         dest: "<%= buildDir %>/lib/",
-        src: [ "require.js", "d3/d3.min.js", "d3.slider/*.{js,css}",
+        src: [ "require.js", "d3v4/d3.min.js", "d3.slider/*.{js,css}",
                "jquery-2.*.min.js", "jquery-ui/**/*",
                "babel-polyfill.min.js" ],
         cwd: "lib"
