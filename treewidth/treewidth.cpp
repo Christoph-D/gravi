@@ -142,9 +142,10 @@ public:
       dup2(out[1], 1);
       close(in[1]);
       close(out[0]);
-      if(execl("/usr/bin/timelimit",
-               "/usr/bin/timelimit", "-q", "-t" Z3_TIMEOUT_SECONDS, "-T1",
-               Z3_PATH, "-smt2", "-in", nullptr) == -1) {
+      char* empty_env[] = { nullptr };
+      if(execle("/usr/bin/timelimit",
+                "/usr/bin/timelimit", "-q", "-t" Z3_TIMEOUT_SECONDS, "-T1",
+                Z3_PATH, "-smt2", "-in", nullptr, empty_env) == -1) {
         cout << "Error: Could not spawn the z3 process.\n";
         return;
       }
