@@ -12,9 +12,9 @@ So far it implements the following algorithms:
 Example
 -------
 
-http://christoph-d.github.io/gravi/
+http://yozora.eu/gravi/
 
-[Documentation](http://christoph-d.github.io/gravi/doc/graph.html)
+[Documentation](http://yozora.eu/gravi/doc/graph.html)
 
 Dependencies
 ------------
