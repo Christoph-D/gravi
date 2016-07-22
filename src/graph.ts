@@ -317,6 +317,6 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
 }
 Graph.onStatic("postAddVertex", "changeGraphStructure");
 Graph.onStatic("postRemoveVertex", "changeGraphStructure");
-Graph.onStatic("postAddVertex", "changeGraphStructure");
+Graph.onStatic("postAddEdge", "changeGraphStructure");
 Graph.onStatic("postRemoveEdge", "changeGraphStructure");
 Graph.onStatic("changeGraphStructure", "redrawNeeded");
