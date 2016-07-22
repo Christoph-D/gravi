@@ -209,7 +209,7 @@ function treewidthUpdateBounds() {
 }
 
 function improveTreewidthBound() {
-  if(treewidthUpperBound === treewidthLowerBound)
+  if(treewidthUpperBound === treewidthLowerBound || treewidthRequest)
     return; // Nothing to improve
 
   const bound = Math.floor((treewidthUpperBound + treewidthLowerBound) / 2);
