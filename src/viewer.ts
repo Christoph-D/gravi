@@ -6,6 +6,7 @@ import * as generators from "./generators";
 import Graph, { Edge, Vertex } from "./graph";
 import graphFromJSON from "./graphjson";
 import GraphLayouter from "./layout";
+import ParityGame from "./paritygame";
 import solver from "./paritygame-recursive";
 
 function prepareGraph(g) {
@@ -85,10 +86,10 @@ function runAlgorithm() {
   state.editor.queueRedraw();
 }
 
-function generateGraph() {
+function generateGraph(g: Graph<any, any>) {
   stopAnimation();
   //state.g = graphFromJSON(s);
-  state.g = prepareGraph(generators.generateRandomGraph(15, 0.2));
+  state.g = prepareGraph(g);
   //state.g = generators.generatePath(10);
   state.editor.setGraph(state.g);
   cancelTreewidthRequest();
@@ -256,18 +257,22 @@ d3.select("#load").on("click", loadGraph);
 d3.select("#save").on("click", saveGraph);
 d3.select("#clear")
   .on("click", () => (<HTMLTextAreaElement>document.getElementById("dump")).value = "");
+d3.select("#example1").on("click", () => {
+  (<HTMLTextAreaElement>document.getElementById("dump")).value =
+    examples[0]; });
 
 d3.select("#layout").on("change", runLayout);
 d3.select("#dfs").on("change", chooseAlgorithm);
 d3.select("#parity").on("change", chooseAlgorithm);
 
 d3.select("#run").on("click", animateAlgorithm);
-d3.select("#generate").on("click", generateGraph);
+d3.select("#genClear").on("click", () => generateGraph(new ParityGame()));
+d3.select("#genRandom").on("click", () => generateGraph(generators.generateRandomGraph(15, 0.2)));
+d3.select("#genGrid").on("click", () => generateGraph(generators.generateGrid()));
 d3.select("#load-save-choice").on("change", showHideLoadSaveBox);
-d3.select("#example1").on("click", () => loadGraph(examples[0]));
 d3.select("#treewidth").on("click", computeTreewidth);
 
-generateGraph();
+generateGraph(new Graph());
 loadGraph(examples[0]);
 
 if(d3.select("#dfs").property("checked"))
