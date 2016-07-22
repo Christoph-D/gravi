@@ -9,7 +9,9 @@ import GraphLayouter from "./layout";
 import solver from "./paritygame-recursive";
 
 function prepareGraph(g) {
-  return g.on("changeGraphStructure", runAlgorithm);
+  return g
+    .on("changeGraphStructure", runAlgorithm)
+    .on("changeGraphStructure", cancelTreewidthRequest);
 }
 
 const dfs = new AlgorithmRunner(dfsAlgo);
@@ -89,6 +91,7 @@ function generateGraph() {
   state.g = prepareGraph(generators.generateRandomGraph(15, 0.2));
   //state.g = generators.generatePath(10);
   state.editor.setGraph(state.g);
+  cancelTreewidthRequest();
   runAlgorithm();
 }
 
@@ -101,6 +104,7 @@ function loadGraph(json) {
     state.g = prepareGraph(graphFromJSON(json));
     state.g.compressIds();
     state.editor.setGraph(state.g);
+    cancelTreewidthRequest();
     runAlgorithm();
   }
   catch(e) {
@@ -186,6 +190,68 @@ function showHideLoadSaveBox() {
     f.style("display", "none");
 }
 
+let treewidthLowerBound = 1;
+let treewidthUpperBound = 999;
+let treewidthRequest: any = undefined;
+
+function cancelTreewidthRequest() {
+  if(treewidthRequest)
+    treewidthRequest.abort();
+  // Reset the bounds.
+  treewidthLowerBound = 1;
+  treewidthUpperBound = Math.max(state.g.getVertices().length - 1, 1);
+  treewidthUpdateBounds();
+}
+
+function treewidthUpdateBounds() {
+  const button = (<HTMLButtonElement>document.getElementById("treewidth"));
+  button.value = `Treewidth: ${treewidthLowerBound}-${treewidthUpperBound}`;
+}
+
+function improveTreewidthBound() {
+  if(treewidthUpperBound === treewidthLowerBound)
+    return; // Nothing to improve
+
+  const bound = Math.floor((treewidthUpperBound + treewidthLowerBound) / 2);
+
+  // Convert the graph into the format expected by the treewidth
+  // server.
+  let result = `${state.g.vertices.length} ${state.g.edges.length} ${bound}\n`;
+  for(const e of state.g.getEdges())
+    result += `${e.tail} ${e.head}\n`;
+
+  treewidthRequest = d3
+    .text("/treewidth")
+    .post(result, function(error, text: string) {
+      treewidthRequest = undefined;
+      if(!error) {
+        if(text.startsWith("Treewidth is larger.")) {
+          treewidthLowerBound = bound + 1;
+        }
+        else if(text.startsWith("Treewidth is smaller or equal.")) {
+          treewidthUpperBound = bound;
+          // TODO: Parse and visualize the tree decomposition that the
+          // server is kind enough to send.
+        }
+        else {
+          // Abort because an error occurred and we don't want to
+          // hammer the treewidth server.
+          return;
+        }
+        treewidthUpdateBounds();
+        // Try to improve more.
+        improveTreewidthBound();
+      }
+    });
+}
+
+function computeTreewidth() {
+  // compressIds is essential here because the treewidth server
+  // expects that the set of vertices is of the form 0,1,...,n-1.
+  state.g.compressIds();
+  improveTreewidthBound();
+}
+
 d3.select("#load").on("click", loadGraph);
 d3.select("#save").on("click", saveGraph);
 d3.select("#clear")
@@ -199,6 +265,8 @@ d3.select("#run").on("click", animateAlgorithm);
 d3.select("#generate").on("click", generateGraph);
 d3.select("#load-save-choice").on("change", showHideLoadSaveBox);
 d3.select("#example1").on("click", () => loadGraph(examples[0]));
+d3.select("#treewidth").on("click", computeTreewidth);
+
 generateGraph();
 loadGraph(examples[0]);
 
