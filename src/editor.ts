@@ -146,7 +146,7 @@ export default class GraphEditor {
     // This is true when the user is drawing a new edge.
     this.drawEdgeMode = false;
     this.select(null);
-    this.g.removePermanentListeners("redrawNeeded");
+    this.g.removeListeners("redrawNeeded");
     this.g.on("redrawNeeded", () => this.queueRedraw());
 
     // Rid the svg of previous clutter (keep the <defs>).
