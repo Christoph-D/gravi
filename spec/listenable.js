@@ -23,7 +23,7 @@ describe("A listenable object", function() {
     });
 
     it("does not allow removing the handler", function() {
-      a.removePermanentListeners("foo");
+      a.removeListeners("foo");
       a.foo();
       expect(seen).toEqual(1);
     });
@@ -57,7 +57,7 @@ describe("A listenable object", function() {
     });
 
     it("allows removing the handler", function() {
-      a.removePermanentListeners("foo");
+      a.removeListeners("foo");
       a.foo();
       expect(seen).toEqual(0);
     });
