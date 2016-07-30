@@ -47,8 +47,8 @@ export default class GraphLayouter {
     }
     // Add spring force.
     for(const e of this.graph.getEdges()) {
-      const v = this.graph.getVertex(e.tail);
-      const w = this.graph.getVertex(e.head);
+      const v = this.graph.findVertex({ id: e.tail });
+      const w = this.graph.findVertex({ id: e.head });
       const d = { x: v.x - w.x, y: v.y - w.y };
       const edgeLength = Math.sqrt(d.x * d.x + d.y * d.y);
       const springForce = EDGE_STIFFNESS * (IDEAL_EDGE_LENGTH - edgeLength);

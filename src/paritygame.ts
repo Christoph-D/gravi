@@ -1,5 +1,5 @@
 import Graph, { VertexOrEdge } from "./graph";
-import { PropertyDescriptor } from "./managed-property";
+import { ManagedPropertyDescriptor } from "./managed-property";
 import { EdgeDrawable, VertexDrawableDefault, circleEdgeAnchor } from "./simplegraph";
 
 export enum Player { Even, Odd }
@@ -12,14 +12,14 @@ const radiusC = Math.round(radiusR * 100 * Math.sqrt(4 / Math.PI)) / 100;
 const rectangle = `M -${radiusR},-${radiusR} v ${radiusR*2} h ${radiusR*2} v -${radiusR*2} z`;
 const circle = `M ${radiusC},0 A ${radiusC},${radiusC} 0 1,0 ${radiusC},0.00001 z`;
 
-const player: PropertyDescriptor = {
+const player: ManagedPropertyDescriptor = {
   defaultValue: Player.Even,
   name: "player",
   type: "enum",
   values: [Player.Even, Player.Odd],
 };
 
-const priority: PropertyDescriptor = {
+const priority: ManagedPropertyDescriptor = {
   defaultValue: 0,
   name: "priority",
   type: "number",

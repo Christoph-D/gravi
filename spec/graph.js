@@ -1,4 +1,4 @@
-import Graph, { Vertex, Edge } from "gravi/graph";
+import Graph from "gravi/graph";
 import graphMatcher from "./graphmatcher";
 
 describe("A graph", function() {
@@ -22,26 +22,22 @@ describe("A graph", function() {
       expect(g.getEdges().length).toBe(2);
     });
     it("can check individual edges", function() {
-      expect(g.hasEdge(0,1)).toBe(true);
-      expect(g.hasEdge(1,0)).toBe(false);
+      expect(g.hasEdge({ head: 1, tail: 0 })).toBe(true);
+      expect(g.hasEdge({ head: 0, tail: 1 })).toBe(false);
     });
     it("can find individual edges", function() {
-      expect(g.findEdge(0,1)).toBe(g.edges[0]);
+      expect(g.findEdge({ head: 1, tail: 0 })).toBe(g.edges[0]);
     });
     it("cannot find non-existent edges", function() {
-      expect(g.findEdge(1,0)).toBe(null);
+      expect(() => g.findEdge({ head: 0, tail: 1 }))
+        .toThrow(new Error("Not an edge: 1 -> 0"));
     });
     it("can get individual vertices", function() {
-      expect(g.getVertex(1)).toBe(g.vertices[1]);
+      expect(g.findVertex({ id: 1 })).toBe(g.vertices[1]);
     });
     it("cannot get non-existent vertices", function() {
-      expect(() => g.getVertex(4)).toThrow(new Error("Invalid vertex id: 4"));
-    });
-    it("can get individual edges", function() {
-      expect(g.getEdge(1)).toBe(g.edges[1]);
-    });
-    it("cannot get non-existent edges", function() {
-      expect(() => g.getEdge(3)).toThrow(new Error("Invalid edge id: 3"));
+      expect(() => g.findVertex({ id: 4 }))
+        .toThrow(new Error("Invalid vertex id: 4"));
     });
     it("can filter vertices", function() {
       expect(g.getVertices(vertexFilter).length).toBe(0);
@@ -105,14 +101,14 @@ describe("A graph", function() {
       it("allows removing edges", function() {
         const g = new Graph({ numVertices: 4, edgeList: [[0,1], [1,2]] });
         const h = new Graph({ numVertices: 4, edgeList: [[1,2]] });
-        g.removeEdge(0, 1);
+        g.removeEdge({ head: 1, tail: 0 });
         g.compressIds();
         expect(g).toBeGraphEquivalent(h);
       });
       it("allows adding edges", function() {
         const g = new Graph({ numVertices: 4, edgeList: [[0,1], [1,2]] });
         const h = new Graph({ numVertices: 4, edgeList: [[0,1], [1,2], [0,3]] });
-        g.addEdge(0, 3);
+        g.addEdge({ head: 3, tail: 0 });
         expect(g).toBeGraphEquivalent(h);
       });
       it("allows removing vertices", function() {
@@ -125,7 +121,7 @@ describe("A graph", function() {
       it("allows adding vertices", function() {
         const g = new Graph({ numVertices: 4, edgeList: [[0,1], [1,2]] });
         const h = new Graph({ numVertices: 5, edgeList: [[0,1], [1,2]] });
-        g.addVertex(new Vertex);
+        g.addVertex();
         expect(g).toBeGraphEquivalent(h);
       });
       it("checks head/tail ids of edges in the constructor", function() {
@@ -134,15 +130,15 @@ describe("A graph", function() {
         expect(() => new Graph({ numVertices: 2, edgeList: [[0,-1]] }))
           .toThrow(new Error('Invalid property "head". Not a vertex id: -1'));
         expect(() => new Graph({ numVertices: 3, edgeList: [[0]] }))
-          .toThrow(new Error('Missing property "tail"'));
+          .toThrow(new Error('Missing property "head"'));
       });
       it("checks head/tail ids of added edges", function() {
         const g = new Graph({ numVertices: 2 });
-        expect(() => g.addEdge({ tail: 0, head: 2 }))
+        expect(() => g.addEdge({ head: 2, tail: 0 }))
           .toThrow(new Error('Invalid property "head". Not a vertex id: 2'));
-        expect(() => g.addEdge(new Edge({ tail: 0, head: 2 })))
+        expect(() => g.addEdge({ head: 2, tail: 0 }))
           .toThrow(new Error('Invalid property "head". Not a vertex id: 2'));
-        expect(() => g.addEdge(new Edge({ tail: 0, head: 1 })))
+        expect(() => g.addEdge({ head: 1, tail: 0 }))
           .not.toThrow();
         const h = new Graph({ numVertices: 2, edgeList: [[0,1]] });
         expect(g).toBeGraphEquivalent(h);

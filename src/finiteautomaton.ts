@@ -1,8 +1,8 @@
 import Graph, { VertexOrEdge } from "./graph";
-import { PropertyDescriptor } from "./managed-property";
+import { ManagedPropertyDescriptor } from "./managed-property";
 import { EdgeDrawable, VertexDrawableCircular } from "./simplegraph";
 
-const accepting: PropertyDescriptor = {
+const accepting: ManagedPropertyDescriptor = {
   defaultValue: false,
   name: "accepting",
   type: "boolean",
@@ -30,7 +30,7 @@ VertexDrawableFiniteAutomaton.onStatic(
   "changeAccepting",
   VertexOrEdge.prototype.changeGraphStructure);
 
-const letter: PropertyDescriptor = {
+const letter: ManagedPropertyDescriptor = {
   defaultValue: "",
   name: "letter",
   type: "string",

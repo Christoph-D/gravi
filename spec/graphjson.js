@@ -1,4 +1,4 @@
-import Graph, { Vertex } from "gravi/graph";
+import Graph from "gravi/graph";
 import graphFromJSON from "gravi/graphjson";
 import graphMatcher from "./graphmatcher";
 
@@ -30,17 +30,17 @@ describe("The graph JSON converter", function() {
   });
 
   it("leaves the graph intact after adding a vertex", function() {
-    g.addVertex(new Vertex);
+    g.addVertex();
     expect(graphFromJSON(JSON.stringify(g), [Graph])).toBeGraphEquivalent(g);
   });
 
   it("leaves the graph intact after removing an edge", function() {
-    g.removeEdge(0, 2);
+    g.removeEdge({ head: 2, tail: 0 });
     expect(graphFromJSON(JSON.stringify(g), [Graph])).toBeGraphEquivalent(g);
   });
 
   it("leaves the graph intact after adding an edge", function() {
-    g.addEdge(2,1);
+    g.addEdge({ head: 1, tail: 2 });
     expect(graphFromJSON(JSON.stringify(g), [Graph])).toBeGraphEquivalent(g);
   });
 
@@ -60,7 +60,7 @@ describe("The graph JSON converter", function() {
 
   it("refuses to load graphs with an empty edge", function() {
     expect(() => graphFromJSON('{"type":"Graph","edges":[{}]}', [Graph]))
-      .toThrow(Error('Missing property "tail" on edge #0: {}'));
+      .toThrow(Error('Missing property "head" on edge #0: {}'));
   });
 
   it("refuses to load graphs with an edge missing a head", function() {

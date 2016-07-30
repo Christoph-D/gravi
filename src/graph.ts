@@ -1,6 +1,7 @@
 import { Cursor, Highlight, History } from "./historygraph";
 import Listenable from "./listenable";
-import ManagedPropertiesListenable from "./managed-property";
+import ManagedPropertiesListenable, { ManagedPropertyDescriptor }
+  from "./managed-property";
 
 export class VertexOrEdge extends ManagedPropertiesListenable {
   public id: number;
@@ -121,7 +122,7 @@ function idTranslationTable(what: (VertexOrEdge | null)[]) {
 }
 
 // Helper function for Graph.toJSON()
-function vertexOrEdgeToJSON(v: VertexOrEdge | null): any {
+function vertexOrEdgeToJSON(v: VertexOrEdge | null) {
   if(v === null)
     return null;
   const w = {};
@@ -133,16 +134,22 @@ function vertexOrEdgeToJSON(v: VertexOrEdge | null): any {
   return w;
 }
 
+// Types that are sufficient to uniquely identify vertices/edges in
+// simple directed graphs.
+type VertexDescriptor = { id: number };
+type EdgeDescriptor = { tail: number, head: number };
+
 export default class Graph<V extends Vertex, E extends Edge> extends Listenable {
   public get name() { return "Graph"; }
   public get version() { return "1.0"; }
 
-  public readonly VertexType: { new(v?: any): V; } & typeof Vertex;
-  public readonly EdgeType: { new(e?: any): E; } & typeof Edge;
   public vertices: (V | null)[];
   public edges: (E | null)[];
   public readonly history: History;
   public readonly cursor: Cursor;
+
+  private readonly VertexType: { new(v?: any): V; } & typeof Vertex;
+  private readonly EdgeType: { new(e?: any): E; } & typeof Edge;
 
   constructor({
     VertexType = Vertex,
@@ -158,86 +165,107 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
     this.vertices = [];
     if(numVertices > 0)
       for(let i = 0; i < numVertices; ++i)
-        this.addVertex(new this.VertexType());
+        this.addVertex();
 
     this.edges = [];
-    edgeList.map(e => this.addEdge(e[0], e[1]));
+    edgeList.map(e => this.addEdge({ head: e[1], tail: e[0] }));
   }
 
-  public addVertex(v: V) {
+  public vertexPropertyDescriptors(): ManagedPropertyDescriptor[] {
+    return this.VertexType.propertyDescriptors;
+  }
+  public EdgePropertyDescriptors(): ManagedPropertyDescriptor[] {
+    return this.EdgeType.propertyDescriptors;
+  }
+
+  // Throws an Error if the edge does not exist.
+  public findEdge(e: EdgeDescriptor): E {
+    for(const f of this.getEdges())
+      if(e.head === f.head && e.tail === f.tail)
+        return f;
+    throw Error(`Not an edge: ${e.tail} -> ${e.head}`);
+  }
+  public hasEdge(e: EdgeDescriptor): boolean {
+    for(const f of this.getEdges())
+      if(e.head === f.head && e.tail === f.tail)
+        return true;
+    return false;
+  }
+
+  // Throws an Error if the vertex does not exist.
+  public findVertex(v: VertexDescriptor): V {
+    if(this.vertices[v.id] != null)
+      return this.vertices[v.id]!;
+    else
+      throw Error(`Invalid vertex id: ${v.id}`);
+  }
+  public hasVertex(v: VertexDescriptor): boolean {
+    return this.vertices[v.id] != null;
+  }
+
+  public getVertices(vertexFilter?: (v: Vertex) => boolean): V[] {
+    if(vertexFilter != null)
+      return <V[]>this.vertices.filter(v => v != null && vertexFilter!(v));
+    else
+      return <V[]>this.vertices.filter(v => v != null);
+  }
+
+  public getEdges(edgeFilter?: (e: Edge) => boolean): E[] {
+    if(edgeFilter != null)
+      return <E[]>this.edges.filter(e => e != null && edgeFilter!(e));
+    else
+      return <E[]>this.edges.filter(e => e != null);
+  }
+
+  public addVertex(vertexArguments?: any): V {
+    const v = new this.VertexType(vertexArguments);
     v.id = this.vertices.length;
     v.graph = this;
     this.vertices.push(v);
     this.dispatch("postAddVertex", v);
+    return v;
+  }
+
+  public removeVertex(v: VertexDescriptor) {
+    const v2 = this.findVertex(v);
+    v2.inEdges().map(e => this.removeEdge(e));
+    v2.outEdges().map(e => this.removeEdge(e));
+    this.vertices[v2.id] = null;
+    this.dispatch("postRemoveVertex", v2);
     return this;
   }
 
-  public removeVertex(v: V) {
-    for(const [i, w] of this.vertices.entries()) {
-      if(w === null)
-        continue;
-      if(v === w) {
-        v.inEdges().map(e => this.removeEdge(e));
-        v.outEdges().map(e => this.removeEdge(e));
-        this.vertices[i] = null;
-        this.dispatch("postRemoveVertex");
-        return this;
-      }
-    }
-    return this;
-  }
-
-  public parseEdge(tail, head?): E {
-    let e: E;
-    if(head == null)
-      e = tail; // assume that tail is already an Edge object
-    else
-      e = new this.EdgeType({ tail: tail, head: head });
-    if(e.tail == null)
-      throw new Error("Missing property \"tail\"");
-    if(this.vertices[e.tail] == null)
-      throw new Error(`Invalid property \"tail\". Not a vertex id: ${e.tail}`);
-    if(e.head == null)
-      throw new Error("Missing property \"head\"");
-    if(this.vertices[e.head] == null)
-      throw new Error(`Invalid property \"head\". Not a vertex id: ${e.head}`);
-    return e;
-  }
-
-  public addEdge(tail, head?) {
-    const e = this.parseEdge(tail, head);
+  public addEdge(e: EdgeDescriptor) {
+    // Check that we have a valid edge.  Throws for invalid edges.
+    this.validateEdge(e);
+    // Ignore duplicate edges.
     if(this.hasEdge(e))
-      return this; // no duplicate edges
-    e.id = this.edges.length;
-    e.graph = this;
-    this.vertices[e.tail]!.addOutEdge(e.id);
-    this.vertices[e.head]!.addInEdge(e.id);
-    this.edges.push(e);
-    this.dispatch("postAddEdge", e);
+      return this;
+    const e2 = new this.EdgeType(e);
+    e2.id = this.edges.length;
+    e2.graph = this;
+    this.vertices[e2.tail]!.addOutEdge(e2.id);
+    this.vertices[e2.head]!.addInEdge(e2.id);
+    this.edges.push(e2);
+    this.dispatch("postAddEdge", e2);
     return this;
   }
 
-  // Accepts a single Edge object or tail, head.  Ignores the edge id.
-  public removeEdge(tail, head?) {
-    const e = this.parseEdge(tail, head);
-    for(const [i, f] of this.edges.entries()) {
-      if(f == null)
-        continue;
-      if(e.head === f.head && e.tail === f.tail) {
-        this.vertices[e.tail]!.removeEdgeId(i);
-        this.vertices[e.head]!.removeEdgeId(i);
-        // We set the entry to null in order to preserve the indices in
-        // this.edges.  Removing/adding lots of edges will thus clutter
-        // this.edges with null entries.  See this.compressIds().
-        this.edges[i] = null;
-        this.dispatch("postRemoveEdge", f);
-        return this;
-      }
-    }
+  public removeEdge(e: EdgeDescriptor) {
+    const e2 = this.findEdge(e);
+    this.vertices[e2.tail]!.removeEdgeId(e2.id);
+    this.vertices[e2.head]!.removeEdgeId(e2.id);
+    // We set the entry to null in order to preserve the indices in
+    // this.edges.  Removing/adding lots of edges will thus clutter
+    // this.edges with null entries.  See this.compressIds().
+    this.edges[e2.id] = null;
+    this.dispatch("postRemoveEdge", e2);
     return this;
   }
 
-  // Removes null vertices and edges by reassigning all ids.
+  // Remove null vertices and edges by reassigning all ids.
+  // Postcondition: this.edges and this.vertices will not contain null
+  // entries.
   public compressIds() {
     const idsV = idTranslationTable(this.vertices);
     const idsE = idTranslationTable(this.edges);
@@ -259,45 +287,6 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
     return this;
   }
 
-  public findEdge(tail, head) {
-    const e = this.parseEdge(tail, head);
-    for(const f of this.getEdges())
-      if(e.head === f.head && e.tail === f.tail)
-        return f;
-    return null;
-  }
-  public hasEdge(tail, head?) {
-    return this.findEdge(tail, head) !== null;
-  }
-
-  public hasVertex(vertexId: number): boolean {
-    return this.vertices[vertexId] != null;
-  }
-  public getVertex(vertexId: number): V {
-    if(this.hasVertex(vertexId))
-      return this.vertices[vertexId]!;
-    else
-      throw Error(`Invalid vertex id: ${vertexId}`);
-  }
-  public getVertices(vertexFilter?: (v: Vertex) => boolean): V[] {
-    if(vertexFilter != null)
-      return <V[]>this.vertices.filter(v => v != null && vertexFilter!(v));
-    else
-      return <V[]>this.vertices.filter(v => v != null);
-  }
-  public getEdge(edgeId: number): E {
-    if(this.edges[edgeId] != null)
-      return this.edges[edgeId]!;
-    else
-      throw Error(`Invalid edge id: ${edgeId}`);
-  }
-  public getEdges(edgeFilter?: (e: Edge) => boolean): E[] {
-    if(edgeFilter != null)
-      return <E[]>this.edges.filter(e => e != null && edgeFilter!(e));
-    else
-      return <E[]>this.edges.filter(e => e != null);
-  }
-
   public toJSON() {
     const g: {
       type: string,
@@ -313,6 +302,19 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
     this.vertices.map(v => g.vertices.push(vertexOrEdgeToJSON(v)));
     this.edges.map(e => g.edges.push(vertexOrEdgeToJSON(e)));
     return g;
+  }
+
+  // Throws an error if tail/head could not possibly describe a valid
+  // edge.
+  private validateEdge(e: { head?: number, tail?: number }): void {
+    if(e.head === undefined || e.head === null)
+      throw new Error("Missing property \"head\"");
+    if(this.vertices[e.head!] == null)
+      throw new Error(`Invalid property \"head\". Not a vertex id: ${e.head}`);
+    if(e.tail === undefined || e.tail === null)
+      throw new Error("Missing property \"tail\"");
+    if(this.vertices[e.tail!] == null)
+      throw new Error(`Invalid property \"tail\". Not a vertex id: ${e.tail}`);
   }
 }
 Graph.onStatic("postAddVertex", "changeGraphStructure");

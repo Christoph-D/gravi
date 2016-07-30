@@ -1,6 +1,6 @@
 import Listenable from "./listenable";
 
-export interface PropertyDescriptor {
+export interface ManagedPropertyDescriptor {
   defaultValue?: any;
   editable?: boolean;
   enumerable?: boolean;
@@ -14,7 +14,7 @@ export interface PropertyDescriptor {
   values?: any[];
 }
 
-function appendSingleToDom(dom: any, propertyDescriptor: PropertyDescriptor) {
+function appendSingleToDom(dom: any, propertyDescriptor: ManagedPropertyDescriptor) {
   if(propertyDescriptor.editable === false)
     return;
 
@@ -95,8 +95,8 @@ function appendToDom(dom: any) {
 // value of a property named "foo" is stored in
 // this._properties["foo"].
 export default class ManagedPropertiesListenable extends Listenable {
-  public static propertyDescriptors: PropertyDescriptor[];
-  public static manageProperties(...descriptors: PropertyDescriptor[]) {
+  public static propertyDescriptors: ManagedPropertyDescriptor[];
+  public static manageProperties(...descriptors: ManagedPropertyDescriptor[]) {
     // Check preconditions (no duplicates).
     for(const [i, d] of descriptors.entries()) {
       if(this.propertyDescriptors != null &&

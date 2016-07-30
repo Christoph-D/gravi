@@ -115,11 +115,9 @@ export default class GraphEditor {
       // Create a new vertex on right click.
       event.stopPropagation();
       event.preventDefault();
-      const v = new this.g.VertexType({ x: this.mouse.x, y: this.mouse.y });
-      this.g.addVertex(v);
+      const v = this.g.addVertex({ x: this.mouse.x, y: this.mouse.y });
       if(this.drawEdgeMode) {
-        const e = new this.g.EdgeType({ head: v.id, tail: this.selection.id });
-        this.g.addEdge(e);
+        this.g.addEdge({ head: v.id, tail: this.selection.id });
         this.drawEdgeMode = false;
       }
       this.queueRedraw();
@@ -261,7 +259,7 @@ export default class GraphEditor {
   }
   private onMouseOverVertex(d) {
     if(this.drawEdgeMode && this.selection !== d) {
-      const e = new this.g.EdgeType({ head: d.id, tail: this.selection.id });
+      const e = { head: (<Vertex>d).id, tail: this.selection.id };
       if(this.g.hasEdge(e)) {
         this.g.removeEdge(e);
         this.g.compressIds();

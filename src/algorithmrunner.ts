@@ -13,7 +13,7 @@ export default class AlgorithmRunner {
     this.algorithm = algorithm;
   }
   public run(graph: Graph<Vertex, Edge>) {
-    const properties = graph.VertexType.propertyDescriptors.map(p => p.name);
+    const properties = graph.vertexPropertyDescriptors().map(p => p.name);
     if(this.algorithm.requiredProperties != null) {
       const missing: string[] = [];
       for(const p of this.algorithm.requiredProperties)

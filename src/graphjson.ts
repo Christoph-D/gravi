@@ -23,7 +23,7 @@ export default function graphFromJSON(json, validTypes = [SimpleGraph, FiniteAut
         g.vertices.push(null);
       else {
         try {
-          g.addVertex(new g.VertexType(v));
+          g.addVertex(v);
         }
         catch(error) {
           error.message += ` on vertex #${i}: ${JSON.stringify(v)}`;
@@ -39,7 +39,7 @@ export default function graphFromJSON(json, validTypes = [SimpleGraph, FiniteAut
         g.edges.push(null);
       else {
         try {
-          g.addEdge(new g.EdgeType(e));
+          g.addEdge(e);
         }
         catch(error) {
           error.message += ` on edge #${i}: ${JSON.stringify(e)}`;
