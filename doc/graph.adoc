@@ -5,60 +5,93 @@
 :author: Christoph Dittmann
 :email: github@christoph-d.de
 :source-highlighter: pygments
-:language: javascript
+:language: typescript
 
 == Graph
 
 .Create a simple graph
 [source]
-g = new G.Graph({ numVertices: 4, edgeList: [[0,1], [1,2]] });
+g = new G.Graph<Vertex, Edge>({ numVertices: 4, edgeList: [[0,1], [1,2]] });
 
 If you need more than a plain graph, then instead of `G.Graph` you may
 want to use `G.graphFromJSON()` or specific subclasses such as
 `G.ParityGame`.
 
+=== General Concepts
+
+Every `Graph` method that works on existing vertices expects an
+argument of type `VertexDescriptor`.  A `VertexDescriptor` is simply
+an object with one required property called `id: number` identifying a
+vertex.  Every `Vertex` object in the graph has this property, so it
+is compatible to `VertexDescriptor`.
+
+Similarly, methods working on existing edges expect a `EdgeDescriptor`
+object, which contains two mandatory fields `head: number` and `tail:
+number`, identifying the endpoints of an edge.  Because we work with
+simple graphs, the endpoints uniquely identify an edge.
+
+Internally, edges also have ids.  However, `Graph` offers no methods
+to work with these ids, so you must use `EdgeDescriptor` objects.
+
+Note that `VertexDescriptor` and `EdgeDescriptor` objects may have
+many more fields.  These will be passed on to the Vertex or Edge
+constructor whenever possible.
+
 === Graph Methods
 
-Graph::addVertex(v):: Adds the `Vertex` object `v`.  Precondition: `v`
-must not be an element of `Graph::getVertices()`.  Overwrites `v.id`.
-Dispatches the event `postAddVertex` to the graph.
+Graph<V,E>::addVertex(vertexArguments?: any): V:: Adds a new vertex to
+the graph.  The `vertexArguments` are passed on to the `V`
+constructor.  Dispatches the event `postAddVertex` to the graph with
+the new `V` object as an argument.  Returns the new vertex.
 
-Graph::removeVertex(v):: Removes the vertex `v`.  Precondition: `v`
-must be an element of `Graph::getVertices()`.  You may want to call
-`Graph::compressIds()` afterwards to remove `null` entries from the
-vertex list.  Dispatches the event `postRemoveVertex` to the graph.
+Graph<V,E>::findVertex(v: VertexDescriptor): V:: Returns the vertex
+identified by `v`.  Throws an error if such a vertex does not exist.
 
-Graph::addEdge(tail, head)::
-Graph::addEdge(e):: Adds an edge.  Dispatches the event
-`postAddEdge` to the graph.
+Graph<V,E>::hasVertex(v: VertexDescriptor): boolean:: Return `true` if
+`v` identifies an existing vertex.
 
-Graph::removeEdge(tail, head)::
-Graph::removeEdge(e):: Removes an edge.  If called with `e`, only uses
-`e.head` and `e.tail` to find the edge to be removed.  Dispatches the
-event `postRemoveEdge` to the graph.
+Graph<V,E>::removeVertex(v: VertexDescriptor):: Removes the vertex
+identified by `v`.  Precondition: `v` must be an element of
+`Graph<V,E>::getVertices()`.  You may want to call
+`Graph<V,E>::compressIds()` afterwards to remove `null` entries from
+the vertex list.  Dispatches the event `postRemoveVertex` to the
+graph.
 
-Graph::compressIds():: Reassigns all vertex and edge ids in order to
-remove `null` entries.
+Graph<V,E>::addEdge(e: EdgeDescriptor): E:: Adds a new edge to the
+graph.  Dispatches the event `postAddEdge` to the graph with the new
+`E` object as an argument.  Throws an error if head/tail on `e` are
+missing or invalid.  Returns the new edge.
 
-Graph::hasEdge(tail, head)::
-Graph::hasEdge(e):: Return `true` if the given edge exists.  If called
-with `e`, then it uses only `e.head` and `e.tail` to find the edge
-(not the identity of the object `e`).
+Graph<V,E>::findEdge(e: EdgeDescriptor): E:: Returns the edge
+identified by `e`.  Throws an error if such an edge does not exist.
 
-Graph::getVertices():: Returns the list of vertices without `null`
-entries.
-Graph::getVertices(vertexFilter):: Like `Graph::getVertices()`, but
-only returns vertices `v` where `vertexFilter(v)` returns `true`.
+Graph<V,E>::hasEdge(e: EdgeDescriptor): boolean:: Return `true` if `e`
+identifies an existing edge.
 
-Graph::getEdges()::
-Graph::getEdges(edgeFilter):: Like `Graph::getVertices()`, but for edges.
+Graph<V,E>::removeEdge(e: EdgeDescriptor):: Removes the edge
+identified by `e`.  Dispatches the event `postRemoveEdge` to the
+graph.
 
-Graph::vertices:: The internal list of vertices.  May contain `null`
-entries.  `tail`/`head` of the edges refer to indices in this array.
-If a vertex with id `i` exists, then it will be in position `i` in the
-array `Graph::vertices`.
-Graph::edges:: The internal list of edges.  May contain `null`
-entries.  The order of the edges is unspecified.
+Graph<V,E>::compressIds():: Reassigns all vertex and edge ids in order
+to remove `null` entries from the internal list of vertices and the
+internal list of edges.
+
+Graph<V,E>::getVertices(): V[]:: Returns the list of vertices without
+`null` entries.
+Graph<V,E>::getVertices(vertexFilter): V[]:: Like
+`Graph<V,E>::getVertices()`, but returns only vertices `v` where
+`vertexFilter(v)` returns `true`.
+
+Graph<V,E>::getEdges(): E[]::
+Graph<V,E>::getEdges(edgeFilter): E[]:: Like
+`Graph<V,E>::getVertices()`, but for edges.
+
+Graph<V,E>::vertices: (V | null)[]:: The internal list of vertices.
+May contain `null` entries.  `tail`/`head` of the edges refer to
+indices in this array.  If a vertex with id `i` exists, then it will
+be in position `i` in the array `Graph<V,E>::vertices`.
+Graph<V,E>::edges: (E | null)[]:: The internal list of edges.  May
+contain `null` entries.  The order of the edges is unspecified.
 
 === Helper Methods
 
@@ -80,7 +113,7 @@ will receive the arguments provided to `dispatch`.
 
 You can also register permanent listeners with `x.on("eventname",
 someFunction)`.  You can remove all listeners with
-`x.removePermanentListeners("eventname")`.
+`x.removeListeners("eventname")`.
 
 You can also register listeners directly on a class instead of an
 instance with `ClassName.onStatic("eventname", someFunction)`.  This
@@ -126,6 +159,6 @@ is a vertex or an edge, you can call
 
 .Example
 [source]
-g = new G.Graph({ numVertices: 4, edgeList: [[0,1], [1,2]] });
+g = new G.Graph<Vertex, Edge>({ numVertices: 4, edgeList: [[0,1], [1,2]] });
 g.on("postAddVertex", (v) => console.log(`Added vertex ${v.id}!`));
-g.addVertex(new G.Vertex) // Prints "Added vertex 4!";
+g.addVertex() // Prints "Added vertex 4!";
