@@ -1,4 +1,4 @@
-import Graph, { VertexOrEdge } from "./graph";
+import Graph from "./graph";
 import { ManagedPropertyDescriptor } from "./managed-property";
 import { EdgeDrawable, VertexDrawableDefault, circleEdgeAnchor } from "./simplegraph";
 
@@ -98,8 +98,14 @@ VertexDrawableParity.onStatic("changePlayer", function() {
   // redraw adjacent edges.
   this.markIncidentEdgesModified();
   this.queueRedraw();
+  if(this.graph !== undefined)
+    this.graph.dispatch("changePlayer", this);
 });
-VertexDrawableParity.onStatic("changePriority", VertexOrEdge.prototype.queueRedraw);
+VertexDrawableParity.onStatic("changePriority", function() {
+  this.queueRedraw();
+  if(this.graph !== undefined)
+    this.graph.dispatch("changePriority", this);
+});
 
 export default class ParityGame
   <V extends VertexDrawableParity, E extends EdgeDrawable>

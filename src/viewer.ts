@@ -12,6 +12,8 @@ import solver from "./paritygame-recursive";
 function prepareGraph(g) {
   return g
     .on("changeGraphStructure", runAlgorithm)
+    .on("changePlayer", runAlgorithm)
+    .on("changePriority", runAlgorithm)
     .on("changeGraphStructure", cancelTreewidthRequest);
 }
 
