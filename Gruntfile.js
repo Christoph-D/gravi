@@ -1,4 +1,5 @@
 /*eslint-env commonjs*/
+"use strict";
 
 module.exports = function(grunt) {
   grunt.initConfig({
@@ -123,6 +124,19 @@ module.exports = function(grunt) {
       test: {
         src: ["spec/*.js"]
       }
+    },
+    connect: {
+      options: {
+        port: 8000,
+        base: "<%= buildDir %>",
+        livereload: true,
+        middleware: function(connect, options, middlewares) {
+          const cgi = require("cgi");
+          middlewares.unshift(cgi("./treewidth/treewidth", { mountPoint: "/treewidth" }));
+          return middlewares;
+        }
+      },
+      gravi: {}
     }
   });
 
@@ -131,6 +145,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-clean");
   grunt.loadNpmTasks("grunt-contrib-less");
   grunt.loadNpmTasks("grunt-contrib-copy");
+  grunt.loadNpmTasks("grunt-contrib-connect");
   grunt.loadNpmTasks("gruntify-eslint");
   grunt.loadNpmTasks("grunt-postcss");
   grunt.loadNpmTasks("grunt-shell");
@@ -149,4 +164,5 @@ module.exports = function(grunt) {
   grunt.registerTask("test", [ "babel:test", "karma:single-test", "eslint:test" ]);
 
   grunt.registerTask("default", [ "build", "doc", "test" ]);
+  grunt.registerTask("serve", ["connect", "watch"]);
 };
