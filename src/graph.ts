@@ -22,6 +22,20 @@ export class VertexOrEdge extends ManagedPropertiesListenable {
       this.graph.dispatch("redrawNeeded");
     return this;
   }
+
+  public toJSON() {
+    const w = {};
+    for(const p of this.propertyDescriptors != null ? this.propertyDescriptors(): []) {
+      // Save only properties different from the default value.
+      if(p.shouldBeSaved !== false && this[p.name] !== p.defaultValue)
+        w[p.name] = this[p.name];
+    }
+    return w;
+  }
+
+  public toString(): string {
+    return `${this.constructor.name}(${JSON.stringify(this)})`;
+  }
 }
 
 type VertexFilter = (v: Vertex) => boolean;
@@ -133,19 +147,6 @@ function idTranslationTable(what: (VertexOrEdge | null)[]) {
   let j = 0;
   what.map((x, i) => { if(x !== null) ids[i] = j++; });
   return ids;
-}
-
-// Helper function for Graph.toJSON()
-function vertexOrEdgeToJSON(v: VertexOrEdge | null) {
-  if(v === null)
-    return null;
-  const w = {};
-  for(const p of v.propertyDescriptors != null ? v.propertyDescriptors(): []) {
-    // Save only properties different from the default value.
-    if(p.shouldBeSaved !== false && v[p.name] !== p.defaultValue)
-      w[p.name] = v[p.name];
-  }
-  return w;
 }
 
 // Types that are sufficient to uniquely identify vertices/edges in
@@ -313,8 +314,8 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
       vertices: [],
       edges: [],
     };
-    this.vertices.map(v => g.vertices.push(vertexOrEdgeToJSON(v)));
-    this.edges.map(e => g.edges.push(vertexOrEdgeToJSON(e)));
+    this.vertices.map(v => g.vertices.push(v ? v.toJSON() : null));
+    this.edges.map(e => g.edges.push(e ? e.toJSON() : null));
     return g;
   }
 
