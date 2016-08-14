@@ -24,6 +24,10 @@ export class VertexOrEdge extends ManagedPropertiesListenable {
   }
 }
 
+type VertexFilter = (v: Vertex) => boolean;
+type EdgeFilter = (e: Edge) => boolean;
+type EdgeIdFilter = (e: number) => boolean;
+
 export class Vertex extends VertexOrEdge {
   public outE: number[];
   public inE: number[];
@@ -31,44 +35,41 @@ export class Vertex extends VertexOrEdge {
   public x: number;
   public y: number;
 
-  public addOutEdge(edgeId: number) {
-    this.outE.push(edgeId);
-    return this;
-  }
-  public addInEdge(edgeId: number) {
-    this.inE.push(edgeId);
-    return this;
+  public outEdgeIds(edgeIdFilter?: EdgeIdFilter): number[] {
+    if(edgeIdFilter != null)
+      return this.outE.filter(edgeIdFilter);
+    return this.outE;
   }
 
-  public removeEdgeId(edgeId) {
-    this.outE = this.outE.filter(e => e !== edgeId);
-    this.inE = this.inE.filter(e => e !== edgeId);
-    return this;
-  }
-
-  // this.outE contains only the ids of outgoing edges.  this.outEdges()
-  // returns the corresponding list of Edge objects.
-  public outEdges(edgeFilter?): Edge[] {
+  public outEdges(edgeFilter?: EdgeFilter): Edge[] {
     let edges = this.outE.map(edgeId => this.graph.edges[edgeId]);
     if(edgeFilter != null)
       edges = edges.filter(edgeFilter);
     return edges;
   }
-  public inEdges(edgeFilter?): Edge[] {
+
+  public outNeighbors(vertexFilter?: VertexFilter, edgeFilter?: EdgeFilter): this[] {
+    let vertices = this.outEdges(edgeFilter).map(e => this.graph.vertices[e.head]);
+    if(vertexFilter != null)
+      vertices = vertices.filter(vertexFilter);
+    return vertices;
+  }
+
+  public inEdgeIds(edgeIdFilter?: EdgeIdFilter): number[] {
+    if(edgeIdFilter != null)
+      return this.inE.filter(edgeIdFilter);
+    return this.inE;
+
+  }
+
+  public inEdges(edgeFilter?: EdgeFilter): Edge[] {
     let edges = this.inE.map(edgeId => this.graph.edges[edgeId]);
     if(edgeFilter != null)
       edges = edges.filter(edgeFilter);
     return edges;
   }
 
-  // Returns a list of Vertex objects.
-  public outNeighbors(vertexFilter?, edgeFilter?): this[] {
-    let vertices = this.outEdges(edgeFilter).map(e => this.graph.vertices[e.head]);
-    if(vertexFilter != null)
-      vertices = vertices.filter(vertexFilter);
-    return vertices;
-  }
-  public inNeighbors(vertexFilter?, edgeFilter?): this[] {
+  public inNeighbors(vertexFilter?: VertexFilter, edgeFilter?: EdgeFilter): this[] {
     let vertices = this.inEdges(edgeFilter).map(e => this.graph.vertices[e.tail]);
     if(vertexFilter != null)
       vertices = vertices.filter(vertexFilter);
@@ -102,6 +103,19 @@ Vertex.onStatic("changeY", function() {
   this.markIncidentEdgesModified();
   this.queueRedraw();
 });
+
+// Some internal helper functions for vertices, not exported.
+function vertexAddOutEdgeId(v: Vertex, edgeId: number) {
+  v.outE.push(edgeId);
+}
+function vertexAddInEdgeId(v: Vertex, edgeId: number) {
+  v.inE.push(edgeId);
+}
+
+function vertexRemoveEdgeId(v: Vertex, edgeId: number) {
+  v.outE = v.outE.filter(e => e !== edgeId);
+  v.inE = v.inE.filter(e => e !== edgeId);
+}
 
 export class Edge extends VertexOrEdge {
   public head: number;
@@ -180,14 +194,14 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
 
   // Throws an Error if the edge does not exist.
   public findEdge(e: EdgeDescriptor): E {
-    for(const f of this.getEdges())
-      if(e.head === f.head && e.tail === f.tail)
+    for(const f of this.edges)
+      if(f !== null && e.head === f.head && e.tail === f.tail)
         return f;
     throw Error(`Not an edge: ${e.tail} -> ${e.head}`);
   }
   public hasEdge(e: EdgeDescriptor): boolean {
-    for(const f of this.getEdges())
-      if(e.head === f.head && e.tail === f.tail)
+    for(const f of this.edges)
+      if(f !== null && e.head === f.head && e.tail === f.tail)
         return true;
     return false;
   }
@@ -203,21 +217,21 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
     return this.vertices[v.id] != null;
   }
 
-  public getVertices(vertexFilter?: (v: Vertex) => boolean): V[] {
+  public getVertices(vertexFilter?: VertexFilter): V[] {
     if(vertexFilter != null)
       return <V[]>this.vertices.filter(v => v != null && vertexFilter!(v));
     else
       return <V[]>this.vertices.filter(v => v != null);
   }
 
-  public getEdges(edgeFilter?: (e: Edge) => boolean): E[] {
+  public getEdges(edgeFilter?: EdgeFilter): E[] {
     if(edgeFilter != null)
-      return <E[]>this.edges.filter(e => e != null && edgeFilter!(e));
+      return <E[]>this.edges.filter(e => e !== null && edgeFilter!(e));
     else
-      return <E[]>this.edges.filter(e => e != null);
+      return <E[]>this.edges.filter(e => e !== null);
   }
 
-  public addVertex(vertexArguments?: any): V {
+  public addVertex(vertexArguments?: {}): V {
     const v = new this.VertexType(vertexArguments);
     v.id = this.vertices.length;
     v.graph = this;
@@ -244,8 +258,8 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
     const e2 = new this.EdgeType(e);
     e2.id = this.edges.length;
     e2.graph = this;
-    this.vertices[e2.tail]!.addOutEdge(e2.id);
-    this.vertices[e2.head]!.addInEdge(e2.id);
+    vertexAddOutEdgeId(this.vertices[e2.tail]!, e2.id);
+    vertexAddInEdgeId(this.vertices[e2.head]!, e2.id);
     this.edges.push(e2);
     this.dispatch("postAddEdge", e2);
     return this;
@@ -253,8 +267,8 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
 
   public removeEdge(e: EdgeDescriptor) {
     const e2 = this.findEdge(e);
-    this.vertices[e2.tail]!.removeEdgeId(e2.id);
-    this.vertices[e2.head]!.removeEdgeId(e2.id);
+    vertexRemoveEdgeId(this.vertices[e2.tail]!, e2.id);
+    vertexRemoveEdgeId(this.vertices[e2.head]!, e2.id);
     // We set the entry to null in order to preserve the indices in
     // this.edges.  Removing/adding lots of edges will thus clutter
     // this.edges with null entries.  See this.compressIds().
