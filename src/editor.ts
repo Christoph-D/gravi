@@ -3,8 +3,8 @@ import "./historygraph";
 import { GraphView, makeView } from "./graphview";
 
 export default class GraphEditor {
-  public g: Graph<Vertex, Edge>;
-  public view: GraphView<Vertex, Edge>;
+  private g: Graph<Vertex, Edge>;
+  private view: GraphView<Vertex, Edge>;
   private svg;
 
   constructor(g: Graph<Vertex, Edge>, svg, view = makeView(g, svg)) {
@@ -20,6 +20,10 @@ export default class GraphEditor {
 
   public queueRedraw() {
     this.view.queueRedraw();
+  }
+
+  public getSelection(): VertexOrEdge {
+    return this.view.selection;
   }
 
   public totalSteps() {
