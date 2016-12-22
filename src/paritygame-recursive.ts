@@ -1,5 +1,5 @@
-import ParityGame, { VertexDrawableParity } from "./paritygame";
-import { EdgeDrawable } from "./simplegraph";
+import ParityGame, { ParityGameVertex } from "./paritygame";
+import { Edge } from "./graph";
 
 // Based on Jurdziński, 2006:
 // "A deterministic subexponential algorithm for solving parity games"
@@ -8,10 +8,10 @@ import { EdgeDrawable } from "./simplegraph";
 // in this paper, not an implementation of the subexponential
 // algorithm.
 
-interface RemovableVertex extends VertexDrawableParity {
+interface RemovableVertex extends ParityGameVertex {
   removed: boolean;
 }
-type PG = ParityGame<RemovableVertex, EdgeDrawable>;
+type PG = ParityGame<RemovableVertex, Edge>;
 
 function notRemoved(v: RemovableVertex) { return v.removed !== true; }
 

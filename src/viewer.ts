@@ -74,10 +74,10 @@ function runAlgorithm() {
         ++newStep;
       break;
     case 46: // delete
-      if(g.getVertices().indexOf(<Vertex>state.editor.selection) !== -1)
-        g.removeVertex(<Vertex>state.editor.selection);
-      else if(g.getEdges().indexOf(<Edge>state.editor.selection) !== -1)
-        g.removeEdge(<Edge>state.editor.selection);
+      if(g.getVertices().indexOf(<Vertex>state.editor.view.selection) !== -1)
+        g.removeVertex(<Vertex>state.editor.view.selection);
+      else if(g.getEdges().indexOf(<Edge>state.editor.view.selection) !== -1)
+        g.removeEdge(<Edge>state.editor.view.selection);
       break;
     default: break;
     }

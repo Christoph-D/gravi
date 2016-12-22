@@ -182,6 +182,14 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
     return this.vertices[e.tail]!;
   }
 
+  public getEdgeById(edgeId: number): E {
+    return this.edges[edgeId]!;
+  }
+
+  public getVertexById(vertexId: number): V {
+    return this.vertices[vertexId]!;
+  }
+
   public outEdges(v: V, edgeFilter?: EdgeFilter): E[] {
     let edges = v.outE.map(edgeId => this.edges[edgeId]!);
     if(edgeFilter != null)

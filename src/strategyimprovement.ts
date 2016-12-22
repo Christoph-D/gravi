@@ -1,9 +1,9 @@
-import { VertexDrawableParity } from "./paritygame";
+import { ParityGameVertex } from "./paritygame";
 
 // A play profile contains l, B, k.
 export class PlayProfile {
   public l: number;
-  public B: VertexDrawableParity[];
+  public B: ParityGameVertex[];
   public k: number;
 
   constructor({ l, B, k }) {
@@ -31,7 +31,7 @@ export class PlayProfile {
 }
 
 export const SI = {
-  reward(v: VertexDrawableParity | number) {
+  reward(v: ParityGameVertex | number) {
     const p = typeof v === "number" ? v : v.priority;
     if(p < 0)
       throw Error("A priority cannot be negative");
@@ -39,7 +39,7 @@ export const SI = {
   },
   rewardLessOrEqual(v, w) { return SI.reward(v) <= SI.reward(w); },
   rewardLess(v, w) { return SI.reward(v) < SI.reward(w); },
-  maxDiffLessOrEqual(B: VertexDrawableParity[], C: VertexDrawableParity[]) {
+  maxDiffLessOrEqual(B: ParityGameVertex[], C: ParityGameVertex[]) {
     const B1 = B.map(v => v.priority);
     const C1 = C.map(v => v.priority);
     if(B1.length === C1.length) {
@@ -55,7 +55,7 @@ export const SI = {
     const d = Math.max(...B2.concat(C2));
     return (B2.indexOf(d) !== -1 && d % 2 === 1) || (C2.indexOf(d) !== -1 && d % 2 === 0);
   },
-  maxDiffLessOrEqualL(B: VertexDrawableParity[], C: VertexDrawableParity[], l: number) {
+  maxDiffLessOrEqualL(B: ParityGameVertex[], C: ParityGameVertex[], l: number) {
     const B1 = B.filter((v) => v.priority > l);
     const C1 = C.filter((v) => v.priority > l);
     return SI.maxDiffLessOrEqual(B1, C1);

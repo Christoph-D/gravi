@@ -1,6 +1,6 @@
-import Graph from "./graph";
+import Graph, { Vertex, Edge } from "./graph";
 import { ManagedPropertyDescriptor } from "./managed-property";
-import { EdgeDrawable, VertexDrawableDefault, circleEdgeAnchor } from "./simplegraph";
+import { ArrowEdgeView, circleEdgeAnchor, GraphView, registerView, VertexView } from "./graphview";
 
 export enum Player { Even, Odd }
 
@@ -27,39 +27,56 @@ const priority: ManagedPropertyDescriptor = {
 
 // Vertex that is either a rectangle (player 1) or a circle (player
 // 0).  Also the priority is drawn inside the vertex.
-export class VertexDrawableParity extends VertexDrawableDefault {
+export class ParityGameVertex extends Vertex {
   public player: Player;
   public priority: number;
+}
+ParityGameVertex.manageProperties(player, priority);
+ParityGameVertex.onStatic("changePlayer", function() {
+  // Changing the player changes the vertex shape, so we also need to
+  // redraw adjacent edges.
+  this.markIncidentEdgesModified();
+  this.queueRedraw();
+  if(this.graph !== undefined)
+    this.graph.dispatch("changePlayer", this);
+});
+ParityGameVertex.onStatic("changePriority", function() {
+  this.queueRedraw();
+  if(this.graph !== undefined)
+    this.graph.dispatch("changePriority", this);
+});
 
-  public edgeAnchor(otherNode, distanceOffset = 0) {
-    if(this.x === otherNode.x && this.y === otherNode.y)
-      return { x: this.x, y: this.y };
-    if(this.player === Player.Even)
-      return circleEdgeAnchor(this, otherNode, distanceOffset + radiusC);
+class ParityGameVertexView
+  <V extends ParityGameVertex, E extends Edge> extends VertexView<V, E> {
+  public edgeAnchor(thisNode, otherNode, distanceOffset = 0) {
+    if(thisNode.x === otherNode.x && thisNode.y === otherNode.y)
+      return { x: thisNode.x, y: thisNode.y };
+    if(thisNode.player === Player.Even)
+      return circleEdgeAnchor(thisNode, otherNode, distanceOffset + radiusC);
     // Calculate the intersection between the line this -> otherNode
     // and a square of width 2*radiusR centered at otherNode.
-    const dx = otherNode.x - this.x;
-    const dy = otherNode.y - this.y;
+    const dx = otherNode.x - thisNode.x;
+    const dy = otherNode.y - thisNode.y;
     const s = dy / dx;
     const result = { x: 0, y: 0 };
     if(s <= -1 || s >= 1) {
-      if(otherNode.y < this.y) { // top edge
-        result.x = this.x - radiusR / s;
-        result.y = this.y - radiusR;
+      if(otherNode.y < thisNode.y) { // top edge
+        result.x = thisNode.x - radiusR / s;
+        result.y = thisNode.y - radiusR;
       }
       else { // bottom edge
-        result.x = this.x + radiusR / s;
-        result.y = this.y + radiusR;
+        result.x = thisNode.x + radiusR / s;
+        result.y = thisNode.y + radiusR;
       }
     }
     else {
-      if(otherNode.x < this.x) { // left edge
-        result.x = this.x - radiusR;
-        result.y = this.y - radiusR * s;
+      if(otherNode.x < thisNode.x) { // left edge
+        result.x = thisNode.x - radiusR;
+        result.y = thisNode.y - radiusR * s;
       }
       else { // right edge
-        result.x = this.x + radiusR;
-        result.y = this.y + radiusR * s;
+        result.x = thisNode.x + radiusR;
+        result.y = thisNode.y + radiusR * s;
       }
     }
     // If requested, set back the endpoint a little.
@@ -70,8 +87,8 @@ export class VertexDrawableParity extends VertexDrawableDefault {
     }
     return result;
   }
-  public drawEnter(editor, svgGroup) {
-    super.drawEnter(editor, svgGroup);
+  public drawEnter(v: V, svgGroup) {
+    super.drawEnter(v, svgGroup);
     svgGroup.append("path").attr("class", "main");
     svgGroup.append("text").attr("class", "priority")
       .attr("font-family", "sans-serif")
@@ -81,35 +98,20 @@ export class VertexDrawableParity extends VertexDrawableDefault {
       .style("fill", "#FFFFFF")
       .style("stroke", "none");
   }
-  public drawUpdate(editor, svgGroup) {
-    super.drawUpdate(editor, svgGroup);
-    svgGroup.attr("transform", `translate(${this.x},${this.y})`);
-    svgGroup.select("path.main").attr("d", this.player === Player.Even ? circle : rectangle);
-    const p = svgGroup.select("text.priority").text(this.priority);
-    if(this.priority >= 10 || this.priority < 0)
+  public drawUpdate(v: V, svgGroup) {
+    super.drawUpdate(v, svgGroup);
+    svgGroup.attr("transform", `translate(${v.x},${v.y})`);
+    svgGroup.select("path.main").attr("d", v.player === Player.Even ? circle : rectangle);
+    const p = svgGroup.select("text.priority").text(v.priority);
+    if(v.priority >= 10 || v.priority < 0)
       p.attr("font-size", "15");
     else
       p.attr("font-size", "20");
   }
 }
-VertexDrawableParity.manageProperties(player, priority);
-VertexDrawableParity.onStatic("changePlayer", function() {
-  // Changing the player changes the vertex shape, so we also need to
-  // redraw adjacent edges.
-  this.markIncidentEdgesModified();
-  this.queueRedraw();
-  if(this.graph !== undefined)
-    this.graph.dispatch("changePlayer", this);
-});
-VertexDrawableParity.onStatic("changePriority", function() {
-  this.queueRedraw();
-  if(this.graph !== undefined)
-    this.graph.dispatch("changePriority", this);
-});
 
 export default class ParityGame
-  <V extends VertexDrawableParity, E extends EdgeDrawable>
-  extends Graph<V,E> {
+  <V extends ParityGameVertex, E extends Edge> extends Graph<V, E> {
   public get name() { return "ParityGame"; }
 
   // The Player enum is exported.  Nonetheless, we add its values as
@@ -120,8 +122,14 @@ export default class ParityGame
   public static get Odd() { return Player.Odd; }
 
   constructor(options: any = {}) {
-    options.VertexType = VertexDrawableParity;
-    options.EdgeType = EdgeDrawable;
+    options.VertexType = ParityGameVertex;
+    options.EdgeType = Edge;
     super(options);
   }
 }
+
+registerView("ParityGame", class extends GraphView<ParityGameVertex, Edge> {
+  constructor(g, svg) {
+    super(g, svg, ParityGameVertexView, ArrowEdgeView);
+  }
+});

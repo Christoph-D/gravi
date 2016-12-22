@@ -3,9 +3,8 @@
 import FiniteAutomaton from "./finiteautomaton";
 import Graph, { Edge, Vertex } from "./graph";
 import ParityGame from "./paritygame";
-import SimpleGraph from "./simplegraph";
 
-export default function graphFromJSON(json, validTypes = [SimpleGraph, FiniteAutomaton, ParityGame]) {
+export default function graphFromJSON(json, validTypes = [Graph, FiniteAutomaton, ParityGame]) {
   const raw = JSON.parse(json);
   if(raw.type == null)
     throw TypeError("Missing property: \"type\"");
