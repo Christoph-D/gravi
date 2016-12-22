@@ -51,9 +51,12 @@ function runAlgorithm() {
   d3.select("#loading-message").text("");
   try {
     state.alg.run(g);
+    const axisScale = d3.scaleLinear()
+      .domain([0, state.editor.totalSteps() - 1])
+      .range([0, state.editor.totalSteps() - 1]);
     state.slider.min(0).max(state.editor.totalSteps() - 1)
       .value(0)
-      .axis(d3.axisBottom().ticks(state.editor.totalSteps() - 1));
+      .axis(d3.axisBottom(axisScale).ticks(state.editor.totalSteps() - 1));
     d3.select("#slider").call(state.slider);
   }
   catch(error) {
