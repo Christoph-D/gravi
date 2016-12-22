@@ -9,6 +9,9 @@ module.exports = function(grunt) {
     siteDir: "site",
     srcDir: "src",
 
+    bower: {
+      gravi: {}
+    },
     watch: {
       options: {
         atBegin: true
@@ -59,10 +62,17 @@ module.exports = function(grunt) {
       },
       lib: {
         expand: true,
+        flatten: true,
         dest: "<%= buildDir %>/lib/",
-        src: [ "require.js", "d3v4/d3.min.js", "d3.slider/*.{js,css}",
-               "jquery-2.*.min.js", "jquery-ui/**/*",
-               "babel-polyfill.min.js" ],
+        src: [ "js/requirejs/require.js", "js/d3/d3.min.js",
+               "js/jquery/jquery.min.js",
+               "../node_modules/babel-polyfill/dist/polyfill.min.js" ],
+        cwd: "lib"
+      },
+      morelib: {
+        expand: true,
+        dest: "<%= buildDir %>/lib/",
+        src: [ "d3.slider/*.{js,css}", "jquery-ui/**/*" ],
         cwd: "lib"
       }
     },
@@ -140,6 +150,7 @@ module.exports = function(grunt) {
     }
   });
 
+  grunt.loadNpmTasks('grunt-bower-task');
   grunt.loadNpmTasks("grunt-contrib-watch");
   grunt.loadNpmTasks("grunt-contrib-requirejs");
   grunt.loadNpmTasks("grunt-contrib-clean");
@@ -155,7 +166,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-tslint");
 
   grunt.registerTask("compile", [ "ts:gravi", "babel:gravi", "tslint:gravi" ]);
-  grunt.registerTask("build-site", [ "less", "postcss", "copy" ]);
+  grunt.registerTask("build-site", [ "less", "postcss", "bower", "copy" ]);
   grunt.registerTask("build", [ "compile", "build-site" ]);
   grunt.registerTask("minify", [ "compile", "requirejs:gravi" ]);
 
