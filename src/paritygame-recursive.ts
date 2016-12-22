@@ -29,7 +29,8 @@ function allNeighborsVisited(graph: PG, v: RemovableVertex, visited) {
   return graph.outNeighbors(v, notRemoved).every(w => visited[w.id]);
 }
 
-export function attractor(graph: PG, player, subset) {
+export function attractor(
+  graph: PG, player, subset: RemovableVertex[]) {
   const visited = {};
   subset.map(u => visited[u.id] = true);
   for(;;) {
@@ -64,7 +65,7 @@ function unmarkRemoved(graph: PG, vertices: RemovableVertex[]) {
 }
 
 // Assumes no dead-ends.
-function parityWinRecursive(graph: PG) {
+function parityWinRecursive(graph: PG): [RemovableVertex[], RemovableVertex[]] {
   if(totalRemoved === graph.numberOfVertices())
     return [[],[]];
   const d = minPriority(graph);
@@ -100,7 +101,7 @@ function findDeadEnds(graph: PG, player) {
 }
 
 // Removes dead-ends and their attractors.
-function simplifyDeadEnds(graph: PG) {
+function simplifyDeadEnds(graph: PG): [RemovableVertex[], RemovableVertex[]] {
   const player0DeadEnds = findDeadEnds(graph, ParityGame.Even);
   const W1 = attractor(graph, ParityGame.Odd, player0DeadEnds);
   const player1DeadEnds = findDeadEnds(graph, ParityGame.Odd);
@@ -110,8 +111,8 @@ function simplifyDeadEnds(graph: PG) {
   return [W0, W1];
 }
 
-export default function parityWin(graph: ParityGame<any,any>,
-                                  options: { noHighlights?: boolean } = {}) {
+function parityWin(graph: PG, options: { noHighlights?: boolean } = {}):
+                   [RemovableVertex[], RemovableVertex[]] {
   // We want totalRemoved == graph.vertices.length to mean "all
   // vertices are removed".  For this, we cannot have null entries in
   // the vertex list.
@@ -139,3 +140,6 @@ export default function parityWin(graph: ParityGame<any,any>,
 }
 
 (<any>parityWin).requiredProperties = ["player", "priority"];
+
+import { Algorithm } from "./algorithmrunner";
+export default (<Algorithm>parityWin);

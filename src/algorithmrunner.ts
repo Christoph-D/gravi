@@ -9,7 +9,7 @@ export type Algorithm = {
 export default class AlgorithmRunner {
   private readonly algorithm: Algorithm;
 
-  constructor(algorithm) {
+  constructor(algorithm: Algorithm) {
     this.algorithm = algorithm;
   }
   public run(graph: Graph<Vertex, Edge>) {
