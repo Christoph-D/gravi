@@ -4,14 +4,6 @@ import { ArrowEdgeView, circleEdgeAnchor, GraphView, registerView, VertexView } 
 
 export enum Player { Even, Odd }
 
-// The radius for circles is a little larger than for rectangles so
-// that the area of the shape is the same.
-const radiusR = 11;
-const radiusC = Math.round(radiusR * 100 * Math.sqrt(4 / Math.PI)) / 100;
-// SVG paths.
-const rectangle = `M -${radiusR},-${radiusR} v ${radiusR*2} h ${radiusR*2} v -${radiusR*2} z`;
-const circle = `M ${radiusC},0 A ${radiusC},${radiusC} 0 1,0 ${radiusC},0.00001 z`;
-
 const player: ManagedPropertyDescriptor = {
   defaultValue: Player.Even,
   name: "player",
@@ -45,6 +37,14 @@ ParityGameVertex.onStatic("changePriority", function() {
   if(this.graph !== undefined)
     this.graph.dispatch("changePriority", this);
 });
+
+// The radius for circles is a little larger than for rectangles so
+// that the area of the shape is the same.
+const radiusR = 11;
+const radiusC = Math.round(radiusR * 100 * Math.sqrt(4 / Math.PI)) / 100;
+// SVG paths.
+const rectangle = `M -${radiusR},-${radiusR} v ${radiusR*2} h ${radiusR*2} v -${radiusR*2} z`;
+const circle = `M ${radiusC},0 A ${radiusC},${radiusC} 0 1,0 ${radiusC},0.00001 z`;
 
 class ParityGameVertexView
   <V extends ParityGameVertex, E extends Edge> extends VertexView<V, E> {

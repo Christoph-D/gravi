@@ -16,6 +16,20 @@ AutomatonVertex.onStatic(
   "changeAccepting",
   VertexOrEdge.prototype.changeGraphStructure);
 
+const letter: ManagedPropertyDescriptor = {
+  defaultValue: "",
+  name: "letter",
+  type: "string",
+};
+
+export class AutomatonEdge extends Edge {
+  public letter: string;
+}
+AutomatonEdge.manageProperties(letter);
+AutomatonEdge.onStatic(
+  "changeLetter",
+  VertexOrEdge.prototype.changeGraphStructure);
+
 class AutomatonVertexView
   <V extends AutomatonVertex, E extends Edge> extends CircleVertexView<V, E> {
   public drawEnter(v: V, svgGroup) {
@@ -32,20 +46,6 @@ class AutomatonVertexView
       .style("stroke-opacity", opacity);
   }
 }
-
-const letter: ManagedPropertyDescriptor = {
-  defaultValue: "",
-  name: "letter",
-  type: "string",
-};
-
-export class AutomatonEdge extends Edge {
-  public letter: string;
-}
-AutomatonEdge.manageProperties(letter);
-AutomatonEdge.onStatic(
-  "changeLetter",
-  VertexOrEdge.prototype.changeGraphStructure);
 
 class AutomatonEdgeView
   <V extends AutomatonVertex, E extends AutomatonEdge> extends ArrowEdgeView<V, E> {
