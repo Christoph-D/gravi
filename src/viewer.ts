@@ -219,7 +219,7 @@ function improveTreewidthBound() {
 
   // Convert the graph into the format expected by the treewidth
   // server.
-  let result = `${state.g.vertices.length} ${state.g.edges.length} ${bound}\n`;
+  let result = `${state.g.numberOfVertices()} ${state.g.numberOfEdges()} ${bound}\n`;
   for(const e of state.g.getEdges())
     result += `${e.tail} ${e.head}\n`;
 

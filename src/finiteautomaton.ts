@@ -57,8 +57,8 @@ class EdgeDrawableFiniteAutomaton extends EdgeDrawable {
       return;
     }
     svgGroup.selectAll(".letter").attr("visibility", "visible");
-    const s = this.graph.vertices[this.tail];
-    const t = this.graph.vertices[this.head];
+    const s = this.graph.getTail(this);
+    const t = this.graph.getHead(this);
     svgGroup.selectAll("text.letter")
       .text(this.letter)
       .attr("x", (s.x + t.x) / 2)

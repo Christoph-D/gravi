@@ -20,7 +20,7 @@ export default function graphFromJSON(json, validTypes = [SimpleGraph, FiniteAut
     for(const [i, v] of raw.vertices.entries()) {
       // Also insert null vertices to preserve the vertex ids.
       if(v === null)
-        g.vertices.push(null);
+        g.addNullVertex();
       else {
         try {
           g.addVertex(v);
@@ -36,7 +36,7 @@ export default function graphFromJSON(json, validTypes = [SimpleGraph, FiniteAut
   if(raw.edges != null) {
     for(const [i, e] of raw.edges.entries()) {
       if(e === null)
-        g.edges.push(null);
+        g.addNullEdge();
       else {
         try {
           g.addEdge(e);

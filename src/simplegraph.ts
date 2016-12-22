@@ -68,8 +68,8 @@ export class EdgeDrawable extends EdgeDrawableDefault {
   }
   public drawUpdate(editor, svgGroup) {
     super.drawUpdate(editor, svgGroup);
-    const s = this.graph.vertices[this.tail];
-    const t = this.graph.vertices[this.head];
+    const s = this.graph.getTail(this);
+    const t = this.graph.getHead(this);
     const anchorS = (<any>s).edgeAnchor(t);
     const anchorT = (<any>t).edgeAnchor(s, 10);
     // Don't draw edges pointing in the inverse direction.

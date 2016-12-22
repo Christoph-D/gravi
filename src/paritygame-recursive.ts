@@ -26,7 +26,7 @@ function verticesOfPriority(graph: PG, priority: number) {
 }
 
 function allNeighborsVisited(graph: PG, v: RemovableVertex, visited) {
-  return v.outNeighbors(notRemoved).every(w => visited[w.id]);
+  return graph.outNeighbors(v, notRemoved).every(w => visited[w.id]);
 }
 
 export function attractor(graph: PG, player, subset) {
@@ -35,7 +35,7 @@ export function attractor(graph: PG, player, subset) {
   for(;;) {
     const addition: RemovableVertex[] = [];
     for(const u of subset) {
-      for(const v of u.inNeighbors(notRemoved)) {
+      for(const v of graph.inNeighbors(u, notRemoved)) {
         if(visited[v.id])
           continue;
         if(v.player === player || allNeighborsVisited(graph, v, visited)) {
@@ -65,7 +65,7 @@ function unmarkRemoved(graph: PG, vertices: RemovableVertex[]) {
 
 // Assumes no dead-ends.
 function parityWinRecursive(graph: PG) {
-  if(totalRemoved === graph.vertices.length)
+  if(totalRemoved === graph.numberOfVertices())
     return [[],[]];
   const d = minPriority(graph);
   const A = verticesOfPriority(graph, d);
@@ -96,7 +96,7 @@ function parityWinRecursive(graph: PG) {
 
 function findDeadEnds(graph: PG, player) {
   return graph.getVertices()
-    .filter(v => v.player === player && v.outNeighbors().length === 0);
+    .filter(v => v.player === player && graph.outNeighbors(v).length === 0);
 }
 
 // Removes dead-ends and their attractors.

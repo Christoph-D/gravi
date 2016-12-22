@@ -55,46 +55,19 @@ export class Vertex extends VertexOrEdge {
     return this.outE;
   }
 
-  public outEdges(edgeFilter?: EdgeFilter): Edge[] {
-    let edges = this.outE.map(edgeId => this.graph.edges[edgeId]);
-    if(edgeFilter != null)
-      edges = edges.filter(edgeFilter);
-    return edges;
-  }
-
-  public outNeighbors(vertexFilter?: VertexFilter, edgeFilter?: EdgeFilter): this[] {
-    let vertices = this.outEdges(edgeFilter).map(e => this.graph.vertices[e.head]);
-    if(vertexFilter != null)
-      vertices = vertices.filter(vertexFilter);
-    return vertices;
-  }
-
   public inEdgeIds(edgeIdFilter?: EdgeIdFilter): number[] {
     if(edgeIdFilter != null)
       return this.inE.filter(edgeIdFilter);
     return this.inE;
-
-  }
-
-  public inEdges(edgeFilter?: EdgeFilter): Edge[] {
-    let edges = this.inE.map(edgeId => this.graph.edges[edgeId]);
-    if(edgeFilter != null)
-      edges = edges.filter(edgeFilter);
-    return edges;
-  }
-
-  public inNeighbors(vertexFilter?: VertexFilter, edgeFilter?: EdgeFilter): this[] {
-    let vertices = this.inEdges(edgeFilter).map(e => this.graph.vertices[e.tail]);
-    if(vertexFilter != null)
-      vertices = vertices.filter(vertexFilter);
-    return vertices;
   }
 
   // Marks all incident edges as modified.  Useful if the vertex shape
   // changes and the edges need to be redrawn.
   public markIncidentEdgesModified() {
-    this.outEdges().map(e => e.modified = true);
-    this.inEdges().map(e => e.modified = true);
+    if(this.graph !== undefined) {
+      this.graph.outEdges(this).map(e => e.modified = true);
+      this.graph.inEdges(this).map(e => e.modified = true);
+    }
     return this;
   }
 }
@@ -158,10 +131,16 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
   public get name() { return "Graph"; }
   public get version() { return "1.0"; }
 
-  public vertices: (V | null)[];
-  public edges: (E | null)[];
   public readonly history: History;
   public readonly cursor: Cursor;
+
+  private vertices: (V | null)[];
+  private edges: (E | null)[];
+
+  // Cache the number of vertices and edges because this.vertices and this.edges
+  // might contain null values.
+  private numVertices: number;
+  private numEdges: number;
 
   private readonly VertexType: { new(v?: any): V; } & typeof Vertex;
   private readonly EdgeType: { new(e?: any): E; } & typeof Edge;
@@ -178,19 +157,57 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
     this.EdgeType = <any>EdgeType;
 
     this.vertices = [];
-    if(numVertices > 0)
-      for(let i = 0; i < numVertices; ++i)
-        this.addVertex();
+    this.numVertices = 0;
+    for(let i = 0; i < numVertices; ++i)
+      this.addVertex();
 
     this.edges = [];
+    this.numEdges = 0;
     edgeList.map(e => this.addEdge({ head: e[1], tail: e[0] }));
   }
 
   public vertexPropertyDescriptors(): ManagedPropertyDescriptor[] {
     return this.VertexType.propertyDescriptors;
   }
+
   public EdgePropertyDescriptors(): ManagedPropertyDescriptor[] {
     return this.EdgeType.propertyDescriptors;
+  }
+
+  public getHead(e: E): V {
+    return this.vertices[e.head]!;
+  }
+
+  public getTail(e: E): V{
+    return this.vertices[e.tail]!;
+  }
+
+  public outEdges(v: V, edgeFilter?: EdgeFilter): E[] {
+    let edges = v.outE.map(edgeId => this.edges[edgeId]!);
+    if(edgeFilter != null)
+      edges = edges.filter(edgeFilter);
+    return edges;
+  }
+
+  public outNeighbors(v: V, vertexFilter?: VertexFilter, edgeFilter?: EdgeFilter): V[] {
+    let vertices = this.outEdges(v, edgeFilter).map(e => this.vertices[e.head]!);
+    if(vertexFilter != null)
+      vertices = vertices.filter(vertexFilter);
+    return vertices;
+  }
+
+  public inEdges(v: V, edgeFilter?: EdgeFilter): E[] {
+    let edges = v.inE.map(edgeId => this.edges[edgeId]!);
+    if(edgeFilter != null)
+      edges = edges.filter(edgeFilter);
+    return edges;
+  }
+
+  public inNeighbors(v: V, vertexFilter?: VertexFilter, edgeFilter?: EdgeFilter): V[] {
+    let vertices = this.inEdges(v, edgeFilter).map(e => this.vertices[e.tail]!);
+    if(vertexFilter != null)
+      vertices = vertices.filter(vertexFilter);
+    return vertices;
   }
 
   // Throws an Error if the edge does not exist.
@@ -200,6 +217,7 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
         return f;
     throw Error(`Not an edge: ${e.tail} -> ${e.head}`);
   }
+
   public hasEdge(e: EdgeDescriptor): boolean {
     for(const f of this.edges)
       if(f !== null && e.head === f.head && e.tail === f.tail)
@@ -214,10 +232,12 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
     else
       throw Error(`Invalid vertex id: ${v.id}`);
   }
+
   public hasVertex(v: VertexDescriptor): boolean {
     return this.vertices[v.id] != null;
   }
 
+  // Runtime: O(n).
   public getVertices(vertexFilter?: VertexFilter): V[] {
     if(vertexFilter != null)
       return <V[]>this.vertices.filter(v => v != null && vertexFilter!(v));
@@ -225,6 +245,7 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
       return <V[]>this.vertices.filter(v => v != null);
   }
 
+  // Runtime: O(m).
   public getEdges(edgeFilter?: EdgeFilter): E[] {
     if(edgeFilter != null)
       return <E[]>this.edges.filter(e => e !== null && edgeFilter!(e));
@@ -232,22 +253,46 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
       return <E[]>this.edges.filter(e => e !== null);
   }
 
+  // Equivalent to this.getVertices().length, but in time O(1).
+  public numberOfVertices(): number {
+    return this.numVertices;
+  }
+
+  // Equivalent to this.getEdges().length, but in time O(1).
+  public numberOfEdges(): number {
+    return this.numEdges;
+  }
+
+  // Adds a null vertex to the graph.  The observable effect is that the next
+  // free vertex id (used for the next new vertex) will be one higher.
+  public addNullVertex(): void {
+    this.vertices.push(null);
+  }
+
   public addVertex(vertexArguments?: {}): V {
     const v = new this.VertexType(vertexArguments);
     v.id = this.vertices.length;
     v.graph = this;
     this.vertices.push(v);
+    ++this.numVertices;
     this.dispatch("postAddVertex", v);
     return v;
   }
 
   public removeVertex(v: VertexDescriptor) {
     const v2 = this.findVertex(v);
-    v2.inEdges().map(e => this.removeEdge(e));
-    v2.outEdges().map(e => this.removeEdge(e));
+    this.inEdges(v2).map(e => this.removeEdge(e));
+    this.outEdges(v2).map(e => this.removeEdge(e));
     this.vertices[v2.id] = null;
+    --this.numVertices;
     this.dispatch("postRemoveVertex", v2);
     return this;
+  }
+
+  // Adds a null edge to the graph.  The observable effect is that the next free
+  // edge id (used for the next new edge) will be one higher.
+  public addNullEdge(): void {
+    this.edges.push(null);
   }
 
   public addEdge(e: EdgeDescriptor) {
@@ -262,6 +307,7 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
     vertexAddOutEdgeId(this.vertices[e2.tail]!, e2.id);
     vertexAddInEdgeId(this.vertices[e2.head]!, e2.id);
     this.edges.push(e2);
+    ++this.numEdges;
     this.dispatch("postAddEdge", e2);
     return this;
   }
@@ -274,6 +320,7 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
     // this.edges.  Removing/adding lots of edges will thus clutter
     // this.edges with null entries.  See this.compressIds().
     this.edges[e2.id] = null;
+    --this.numEdges;
     this.dispatch("postRemoveEdge", e2);
     return this;
   }

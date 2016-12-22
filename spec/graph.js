@@ -15,10 +15,12 @@ describe("A graph", function() {
 
     it("can access vertices", function() {
       expect(g.vertices.length).toBe(4);
+      expect(g.numberOfVertices()).toBe(4);
       expect(g.getVertices().length).toBe(4);
     });
     it("can access edges", function() {
       expect(g.edges.length).toBe(2);
+      expect(g.numberOfEdges()).toBe(2);
       expect(g.getEdges().length).toBe(2);
     });
     it("can check individual edges", function() {
@@ -50,40 +52,40 @@ describe("A graph", function() {
       expect(g.getEdges(edgeFilter).length).toBe(1);
     });
     it("can access out-edges", function() {
-      expect(g.vertices[1].outEdges()).toEqual([g.edges[1]]);
+      expect(g.outEdges(g.vertices[1])).toEqual([g.edges[1]]);
     });
     it("can access in-edges", function() {
-      expect(g.vertices[1].inEdges()).toEqual([g.edges[0]]);
+      expect(g.inEdges(g.vertices[1])).toEqual([g.edges[0]]);
     });
     it("can filter out-edges", function() {
-      expect(g.vertices[1].outEdges(edgeFilter)).toEqual([]);
+      expect(g.outEdges(g.vertices[1], edgeFilter)).toEqual([]);
       g.edges[1].activeE = true;
-      expect(g.vertices[1].outEdges(edgeFilter)).toEqual([g.edges[1]]);
+      expect(g.outEdges(g.vertices[1], edgeFilter)).toEqual([g.edges[1]]);
     });
     it("can filter in-edges", function() {
-      expect(g.vertices[1].inEdges(edgeFilter)).toEqual([]);
+      expect(g.inEdges(g.vertices[1], edgeFilter)).toEqual([]);
       g.edges[0].activeE = true;
-      expect(g.vertices[1].inEdges(edgeFilter)).toEqual([g.edges[0]]);
+      expect(g.inEdges(g.vertices[1], edgeFilter)).toEqual([g.edges[0]]);
     });
     it("can access out-neighbors", function() {
-      expect(g.vertices[1].outNeighbors()).toEqual([g.vertices[2]]);
+      expect(g.outNeighbors(g.vertices[1])).toEqual([g.vertices[2]]);
     });
     it("can access in-neighbors", function() {
-      expect(g.vertices[1].inNeighbors()).toEqual([g.vertices[0]]);
+      expect(g.inNeighbors(g.vertices[1])).toEqual([g.vertices[0]]);
     });
     it("can filter out-neighbors", function() {
-      expect(g.vertices[1].outNeighbors(vertexFilter, edgeFilter)).toEqual([]);
+      expect(g.outNeighbors(g.vertices[1], vertexFilter, edgeFilter)).toEqual([]);
       g.edges[1].activeE = true;
-      expect(g.vertices[1].outNeighbors(vertexFilter, edgeFilter)).toEqual([]);
+      expect(g.outNeighbors(g.vertices[1], vertexFilter, edgeFilter)).toEqual([]);
       g.vertices[2].activeV = true;
-      expect(g.vertices[1].outNeighbors(vertexFilter, edgeFilter)).toEqual([g.vertices[2]]);
+      expect(g.outNeighbors(g.vertices[1], vertexFilter, edgeFilter)).toEqual([g.vertices[2]]);
     });
     it("can filter in-neighbors", function() {
-      expect(g.vertices[1].inNeighbors(vertexFilter, edgeFilter)).toEqual([]);
+      expect(g.inNeighbors(g.vertices[1], vertexFilter, edgeFilter)).toEqual([]);
       g.edges[0].activeE = true;
-      expect(g.vertices[1].inNeighbors(vertexFilter, edgeFilter)).toEqual([]);
+      expect(g.inNeighbors(g.vertices[1], vertexFilter, edgeFilter)).toEqual([]);
       g.vertices[0].activeV = true;
-      expect(g.vertices[1].inNeighbors(vertexFilter, edgeFilter)).toEqual([g.vertices[0]]);
+      expect(g.inNeighbors(g.vertices[1], vertexFilter, edgeFilter)).toEqual([g.vertices[0]]);
     });
 
     it("updates outgoing edges when moving a vertex", function() {
