@@ -1,0 +1,33 @@
+= Treewidth Approximation
+:toc:
+:icons:
+:data-uri:
+:author: Christoph Dittmann
+:email: github@christoph-d.de
+:source-highlighter: pygments
+:language: typescript
+
+== Development
+
+1. Install `libboost-dev`, `timelimit`, and `z3`.
+2. Compile the treewidth executable in `treewidth/` with `make`.
+3. Link z3 (usually `/usr/bin/z3`) to `../z3` relative to the gravi
+   project root.  For example, if your gravi working copy is in
+   `/home/foo/gravi`, you need to link z3 to `/home/foo/z3`.
+4. Run `grunt serve`.  Computing the treewidth should now work.
+
+== Deployment
+
+The deployment instructions are the same as the development
+instructions, except that you need to run the treewidth executable as
+a cgi script through your webserver.  Please refer to the
+documentation of your http server on how to do this.
+
+For example, with Apache you can use `ScriptAlias`:
+
+.CGI with Apache
+[source,language=apache]
+ScriptAlias /treewidth /home/www/treewidth/treewidth
+
+For this to work, z3 needs to be available at `/home/www/treewidth/z3`
+(note that this differs slightly from the development instructions).
