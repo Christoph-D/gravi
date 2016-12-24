@@ -8,6 +8,7 @@
         "forin": false,
         "interface-name": false,
         "max-classes-per-file": false,
+        "no-console": false,
         "no-empty": false,
         "object-literal-sort-keys": false,
         "one-line": false,
