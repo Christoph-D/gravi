@@ -85,7 +85,7 @@ export default class GraphLayouter implements ImprovingAlgorithm {
     // on each vertex.
     let maxForce2 = 0;
     // We do not apply force to the selected vertex.
-    for(const v of this.graph.getVertices((v) => !v.selected)) {
+    for(const v of this.graph.getVertices((w) => !w.selected)) {
       const f = vertexForces[v.id];
       const f2 = f.x * f.x + f.y * f.y;
       if(f2 > maxForce2)
@@ -100,7 +100,7 @@ export default class GraphLayouter implements ImprovingAlgorithm {
     if(maxForce2 < MIN_FORCE_SQUARED)
       return;
     // If we have a sufficiently large force, apply all of them.
-    for(const v of this.graph.getVertices((v) => !v.selected)) {
+    for(const v of this.graph.getVertices((w) => !w.selected)) {
       v.x += SPEED * delta * vertexForces[v.id].x;
       v.y += SPEED * delta * vertexForces[v.id].y;
     }
