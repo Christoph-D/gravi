@@ -447,6 +447,8 @@ export class GraphView<V extends Vertex, E extends Edge> {
     const cursor = this.graphGroup.selectAll("#cursor").data([this.g.cursor.get()]);
     cursor.enter().append("circle").attr("id", "cursor")
       .attr("r", "5")
+      .attr("cx", (d) => d.x)
+      .attr("cy", (d) => d.y)
       // Make the cursor transparent to mouse clicks.
       .style("pointer-events", "none");
     cursor
