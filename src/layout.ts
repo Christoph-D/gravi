@@ -16,15 +16,39 @@ const MAX_FORCE_SQUARED = 10000;
 // The maximum time delta.
 const MAX_STEP_SIZE_MS = 200;
 
-export default class GraphLayouter {
-  public graph: Graph<Vertex, Edge>;
+import { ImprovingAlgorithm } from "algorithm";
+export default class GraphLayouter implements ImprovingAlgorithm {
 
-  constructor(graph) {
-    this.graph = graph;
+  private graph: Graph<Vertex, Edge>;
+  private animationRequestHandle: number | null;
+
+  // Ignores the callback function that is part of the signature of
+  // ImprovingAlgorithm.initialize. We do this because the layout
+  // algorithm directly changes the graph (more specifically, it
+  // changes the x and y attributes of the vertices and nothing more),
+  // so there is no need to call back.
+  public initialize(g: Graph<Vertex, Edge>) {
+    this.graph = g;
+  };
+
+  public run() {
+    let lastTime: number | null = null;
+    const step = (timestamp: number) => {
+      if(lastTime !== null)
+        this.step(timestamp - lastTime);
+      lastTime = timestamp;
+      this.animationRequestHandle = window.requestAnimationFrame(step);
+    };
+    this.animationRequestHandle = window.requestAnimationFrame(step);
   }
 
-  // Returns true if the layouting is finished.
-  public step(delta: number) {
+  public cancel() {
+    if(this.animationRequestHandle !== null && window.cancelAnimationFrame)
+      window.cancelAnimationFrame(this.animationRequestHandle);
+    this.animationRequestHandle = null;
+  }
+
+  private step(delta: number) {
     if(delta > MAX_STEP_SIZE_MS)
       delta = MAX_STEP_SIZE_MS;
     const vertexForces = {};
@@ -74,12 +98,11 @@ export default class GraphLayouter {
     }
     // If all forces are tiny, we do nothing.
     if(maxForce2 < MIN_FORCE_SQUARED)
-      return true;
+      return;
     // If we have a sufficiently large force, apply all of them.
     for(const v of this.graph.getVertices((v) => !v.selected)) {
       v.x += SPEED * delta * vertexForces[v.id].x;
       v.y += SPEED * delta * vertexForces[v.id].y;
     }
-    return false;
   }
 }

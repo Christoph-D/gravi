@@ -14,15 +14,15 @@ import TreewidthImprover from "./treewidth";
 export default class GraphEditor {
   private g: Graph<Vertex, Edge>;
   private view: GraphView<Vertex, Edge>;
-  private svg;
+  private readonly svg;
   private alg: AlgorithmRunner;
   private slider: any;
   private animating: boolean;
-  private layoutDone = false;
 
   private readonly dfs = new AlgorithmRunner(dfsAlgo);
   private readonly parity = new AlgorithmRunner(solver);
   private readonly treewidth = new TreewidthImprover();
+  private readonly layouter = new GraphLayouter();
 
   constructor() {
     d3.select("#load").on("click", () => {
@@ -56,7 +56,6 @@ export default class GraphEditor {
         this.queueRedraw();
       });
     this.alg = this.parity;
-    this.animating = false;
 
     this.loadGraph(examples[0]);
 
@@ -150,6 +149,7 @@ export default class GraphEditor {
     this.g = this.prepareGraph(g);
     this.view = makeView(g, this.svg);
     this.treewidth.initialize(this.g, (s) => this.updateTreewidthBounds(s));
+    this.layouter.initialize(this.g);
     this.runAlgorithm();
   }
 
@@ -210,27 +210,14 @@ export default class GraphEditor {
   }
 
   private stopLayout() {
-    this.layoutDone = true;
-    (<any>$("#layout")).attr("checked", false).button("refresh");
+    this.layouter.cancel();
+    (<any>$("#layout")).prop("checked", false).button("refresh");
   }
   private runLayout() {
-    if((<HTMLInputElement>document.getElementById("layout")).checked) {
-      this.layoutDone = false;
-      const layouter = new GraphLayouter(this.g);
-      let lastTime = null;
-      const step: any = (timestamp) => {
-        if(this.layoutDone)
-          return;
-        if(lastTime !== null)
-          layouter.step(timestamp - lastTime);
-        lastTime = timestamp;
-        window.requestAnimationFrame(step);
-      };
-      window.requestAnimationFrame(step);
-    }
-    else {
-      this.stopLayout();
-    }
+    if((<HTMLInputElement>document.getElementById("layout")).checked)
+      this.layouter.run();
+    else
+      this.layouter.cancel();
   }
 
   private showHideLoadSaveBox() {
