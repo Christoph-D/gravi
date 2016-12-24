@@ -139,7 +139,8 @@ function parityWin(graph: PG, options: { noHighlights?: boolean } = {}):
   return W;
 }
 
-(<any>parityWin).requiredProperties = ["player", "priority"];
-
-import { Algorithm } from "./algorithmrunner";
-export default (<Algorithm>parityWin);
+import { Algorithm } from "./algorithm";
+export default <Algorithm>{
+  run: parityWin,
+  requiredProperties: ["player", "priority"],
+};

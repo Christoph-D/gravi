@@ -1,10 +1,5 @@
 import Graph, { Edge, Vertex } from "./graph";
-
-export type Algorithm = {
-  (g: Graph<Vertex, Edge>): any;
-  requiredProperties?: string[];
-  checkPreConditions?: (g: Graph<Vertex, Edge>) => boolean;
-};
+import { Algorithm } from "./algorithm";
 
 export default class AlgorithmRunner {
   private readonly algorithm: Algorithm;
@@ -25,7 +20,7 @@ export default class AlgorithmRunner {
     graph.history.reset();
     if(this.algorithm.checkPreConditions != null)
       this.algorithm.checkPreConditions(graph);
-    const result = this.algorithm(graph);
+    const result = this.algorithm.run(graph);
     graph.history.currentStep = 0;
     return result;
   }

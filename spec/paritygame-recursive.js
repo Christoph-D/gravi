@@ -53,12 +53,12 @@ describe("The recursive parity game solver", function() {
     g.vertices[2].priority = 1;
     g.vertices[3].priority = 1;
 
-    let W = parityWin(g, { noHighlights: true });
+    let W = parityWin.run(g, { noHighlights: true });
     expect(ids(W[0])).toEqual([0, 1]);
     expect(ids(W[1])).toEqual([2, 3]);
 
     g.vertices[0].player = ParityGame.Odd;
-    W = parityWin(g, { noHighlights: true });
+    W = parityWin.run(g, { noHighlights: true });
     expect(ids(W[0])).toEqual([]);
     expect(ids(W[1])).toEqual([0, 1, 2, 3]);
   });

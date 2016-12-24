@@ -20,7 +20,10 @@ function dfsStep(graph: Graph<Vertex, Edge>, visited: boolean[], v: Vertex) {
   }
 }
 
-export default function dfs(graph: Graph<Vertex, Edge>) {
-  if(graph.numberOfVertices() !== 0)
-    dfsStep(graph, [], graph.findVertex({ id: 0 }));
-}
+import { Algorithm } from "./algorithm";
+export default <Algorithm>{
+  run(graph: Graph<Vertex, Edge>) {
+    if(graph.numberOfVertices() !== 0)
+      dfsStep(graph, [], graph.findVertex({ id: 0 }));
+  },
+};
