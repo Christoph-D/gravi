@@ -8,17 +8,18 @@ import graphFromJSON from "./graphjson";
 import GraphLayouter from "./layout";
 import ParityGame from "./paritygame";
 import solver from "./paritygame-recursive";
+import TreewidthImprover from "./treewidth";
 
 function prepareGraph(g) {
   return g
     .on("changeGraphStructure", runAlgorithm)
     .on("changePlayer", runAlgorithm)
-    .on("changePriority", runAlgorithm)
-    .on("changeGraphStructure", cancelTreewidthRequest);
+    .on("changePriority", runAlgorithm);
 }
 
 const dfs = new AlgorithmRunner(dfsAlgo);
 const parity = new AlgorithmRunner(solver);
+const treewidth = new TreewidthImprover();
 
 interface State {
   g: Graph<Vertex, Edge>;
@@ -26,6 +27,11 @@ interface State {
   slider: any;
   editor: GraphEditor;
   animating: boolean;
+}
+
+function updateTreewidthBounds(value: string) {
+  const button = (<HTMLButtonElement>document.getElementById("treewidth"));
+  button.value = `Treewidth: ${value}`;
 }
 
 function initialState(): State {
@@ -97,7 +103,7 @@ function generateGraph(g: Graph<any, any>) {
   state.g = prepareGraph(g);
   //state.g = generators.generatePath(10);
   state.editor.setGraph(state.g);
-  cancelTreewidthRequest();
+  treewidth.initialize(state.g, updateTreewidthBounds);
   runAlgorithm();
 }
 
@@ -110,7 +116,7 @@ function loadGraph(json) {
     state.g = prepareGraph(graphFromJSON(json));
     state.g.compressIds();
     state.editor.setGraph(state.g);
-    cancelTreewidthRequest();
+    treewidth.initialize(state.g, updateTreewidthBounds);
     runAlgorithm();
   }
   catch(e) {
@@ -196,68 +202,6 @@ function showHideLoadSaveBox() {
     f.style("display", "none");
 }
 
-let treewidthLowerBound = 1;
-let treewidthUpperBound = 999;
-let treewidthRequest: any = undefined;
-
-function cancelTreewidthRequest() {
-  if(treewidthRequest)
-    treewidthRequest.abort();
-  // Reset the bounds.
-  treewidthLowerBound = 1;
-  treewidthUpperBound = Math.max(state.g.getVertices().length - 1, 1);
-  treewidthUpdateBounds();
-}
-
-function treewidthUpdateBounds() {
-  const button = (<HTMLButtonElement>document.getElementById("treewidth"));
-  button.value = `Treewidth: ${treewidthLowerBound}-${treewidthUpperBound}`;
-}
-
-function improveTreewidthBound() {
-  if(treewidthUpperBound === treewidthLowerBound || treewidthRequest)
-    return; // Nothing to improve
-
-  const bound = Math.floor((treewidthUpperBound + treewidthLowerBound) / 2);
-
-  // Convert the graph into the format expected by the treewidth
-  // server.
-  let result = `${state.g.numberOfVertices()} ${state.g.numberOfEdges()} ${bound}\n`;
-  for(const e of state.g.getEdges())
-    result += `${e.tail} ${e.head}\n`;
-
-  treewidthRequest = d3
-    .text("/treewidth")
-    .post(result, function(error, text: string) {
-      treewidthRequest = undefined;
-      if(!error) {
-        if(text.startsWith("Treewidth is larger.")) {
-          treewidthLowerBound = bound + 1;
-        }
-        else if(text.startsWith("Treewidth is smaller or equal.")) {
-          treewidthUpperBound = bound;
-          // TODO: Parse and visualize the tree decomposition that the
-          // server is kind enough to send.
-        }
-        else {
-          // Abort because an error occurred and we don't want to
-          // hammer the treewidth server.
-          return;
-        }
-        treewidthUpdateBounds();
-        // Try to improve more.
-        improveTreewidthBound();
-      }
-    });
-}
-
-function computeTreewidth() {
-  // compressIds is essential here because the treewidth server
-  // expects that the set of vertices is of the form 0,1,...,n-1.
-  state.g.compressIds();
-  improveTreewidthBound();
-}
-
 d3.select("#load").on("click", loadGraph);
 d3.select("#save").on("click", saveGraph);
 d3.select("#clear")
@@ -275,7 +219,7 @@ d3.select("#genClear").on("click", () => generateGraph(new ParityGame()));
 d3.select("#genRandom").on("click", () => generateGraph(generators.generateRandomGraph(15, 0.2)));
 d3.select("#genGrid").on("click", () => generateGraph(generators.generateGrid()));
 d3.select("#load-save-choice").on("change", showHideLoadSaveBox);
-d3.select("#treewidth").on("click", computeTreewidth);
+d3.select("#treewidth").on("click", () => treewidth.run());
 
 generateGraph(new Graph());
 loadGraph(examples[0]);
