@@ -50,7 +50,8 @@ Build
 Run grunt to build gravi:
 
 ```
-grunt
+grunt serve
 ```
 
-Then, open build/index.html in a browser (only tested in firefox).
+Then, open [http://localhost:8000](http://localhost:8000) in a browser (only tested in
+firefox).
