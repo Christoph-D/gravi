@@ -1,5 +1,6 @@
 import Graph, { Edge, Vertex, VertexOrEdge } from "./graph";
 import "./historygraph";
+import InfoColumn from "./info";
 
 // Represents an svg.
 export type SVGSelection = d3.Selection<SVGSVGElement, {}, any, any>;
@@ -70,6 +71,7 @@ function setCSSClass(v: VertexOrEdge, svgGroup: GraphGroupSelection) {
 // A vertex view is responsible for drawing a set of vertices.
 export class VertexView<V extends Vertex, E extends Edge> {
   protected readonly graphView: GraphView<V, E>;
+
   constructor(graphView: GraphView<V, E>) {
     this.graphView = graphView;
   }
@@ -198,6 +200,7 @@ export class GraphView<V extends Vertex, E extends Edge> {
   private readonly zoom: d3.ZoomBehavior<Element, {}>;
   private readonly drag: d3.DragBehavior<Element, Vertex, Vertex | d3.SubjectPosition>;
   private times: number[];
+  private info: InfoColumn;
 
   private readonly vertexView: VertexView<V, E>;
   private readonly edgeView: EdgeView<V, E>;
@@ -207,6 +210,7 @@ export class GraphView<V extends Vertex, E extends Edge> {
               edgeView: typeof EdgeView = ArrowEdgeView) {
     this.vertexView = new vertexView(this);
     this.edgeView = new edgeView(this);
+    this.info = new InfoColumn(d3.select("#infocol"));
 
     this.svg = svg;
     this.svg.selectAll("*").remove();
@@ -440,15 +444,11 @@ export class GraphView<V extends Vertex, E extends Edge> {
 
     if(this.selection != null) {
       //d3.select("#info2").text(JSON.stringify(G.vertexOrEdgeToJSON(this.selection), undefined, 2));
-      if(this.oldSelection !== this.selection) {
-        d3.select("#infocol").style("display", "block");
-        d3.selectAll("#info *").remove();
-        this.selection.appendPropertiesToDom(d3.select("#info"));
-      }
+      if(this.oldSelection !== this.selection)
+        this.info.addBox("vertex-info", this.selection);
     }
     else if(this.oldSelection !== this.selection) {
-      d3.selectAll("#info *").remove();
-      d3.select("#infocol").style("display", "none");
+      this.info.removeBox("vertex-info");
     }
     this.oldSelection = this.selection;
   }
