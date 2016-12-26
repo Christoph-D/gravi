@@ -1,4 +1,5 @@
 import Graph, { Vertex, Edge } from "./graph";
+import parser from "./firstorder-parser";
 import ManagedPropertiesListenable from "managed-property";
 
 // We declare the parameters of this algorithm in this way so that we

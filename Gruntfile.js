@@ -12,6 +12,15 @@ module.exports = function(grunt) {
     bower: {
       gravi: {}
     },
+    peg: {
+      gravi: {
+        expand: true,
+        src: "*.peg",
+        dest: "<%= buildDir %>/js",
+        ext: ".js",
+        cwd: "src"
+      }
+    },
     watch: {
       options: {
         atBegin: true
@@ -164,6 +173,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-copy");
   grunt.loadNpmTasks("grunt-contrib-connect");
   grunt.loadNpmTasks("gruntify-eslint");
+  grunt.loadNpmTasks('grunt-peg');
   grunt.loadNpmTasks("grunt-postcss");
   grunt.loadNpmTasks("grunt-shell");
   grunt.loadNpmTasks('grunt-string-replace');
@@ -193,7 +203,7 @@ module.exports = function(grunt) {
     });
   });
 
-  grunt.registerTask("compile", [ "ts:gravi", "babel:gravi", "tslint:gravi" ]);
+  grunt.registerTask("compile", [ "peg:gravi", "ts:gravi", "babel:gravi", "tslint:gravi" ]);
   grunt.registerTask("build-site", [ "less", "postcss", "bower", "copy", "replace-nocache-token" ]);
   grunt.registerTask("build", [ "compile", "build-site" ]);
   grunt.registerTask("minify", [ "compile", "requirejs:gravi" ]);
