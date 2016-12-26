@@ -75,6 +75,13 @@ module.exports = function(grunt) {
         cwd: "lib"
       }
     },
+    "string-replace": {
+      index: {
+        files: {
+          "<%= buildDir %>/": "<%= buildDir %>/index.html"
+        }
+      }
+    },
     clean: {
       all: [ "<%= buildDir %>/**/*" ]
     },
@@ -159,13 +166,35 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("gruntify-eslint");
   grunt.loadNpmTasks("grunt-postcss");
   grunt.loadNpmTasks("grunt-shell");
+  grunt.loadNpmTasks('grunt-string-replace');
   grunt.loadNpmTasks("grunt-karma");
   grunt.loadNpmTasks("grunt-babel");
   grunt.loadNpmTasks("grunt-ts");
   grunt.loadNpmTasks("grunt-tslint");
 
+  // Read the current git version and use it as a GET parameter in
+  // requirejs to circumvent overaggressive caching.
+  grunt.registerTask('replace-nocache-token', function() {
+    var done = this.async();
+
+    grunt.util.spawn({
+      cmd : "git",
+      args : [ "describe", "--tags", "--always", "--long" ]
+    }, function(err, result) {
+      if(err) {
+        grunt.log.error(err);
+        return done(false);
+      }
+      grunt.config("string-replace.index.options", {
+        replacements: [{pattern: '{% NOCACHE_TOKEN %}', replacement: result}]
+      });
+      grunt.task.run('string-replace');
+      return done(result);
+    });
+  });
+
   grunt.registerTask("compile", [ "ts:gravi", "babel:gravi", "tslint:gravi" ]);
-  grunt.registerTask("build-site", [ "less", "postcss", "bower", "copy" ]);
+  grunt.registerTask("build-site", [ "less", "postcss", "bower", "copy", "replace-nocache-token" ]);
   grunt.registerTask("build", [ "compile", "build-site" ]);
   grunt.registerTask("minify", [ "compile", "requirejs:gravi" ]);
 
