@@ -3,6 +3,7 @@ import "./historygraph";
 import { GraphView, makeView, SVGSelection } from "./graphview";
 import BasicAlgorithmRunner from "./basic-algorithmrunner";
 import AlgorithmRunner from "./algorithmrunner";
+import ParameterizedAlgorithmRunner from "./parameterized-algorithmrunner";
 import dfsAlgo from "./dfs";
 import examples from "./examples";
 import * as generators from "./generators";
@@ -11,6 +12,8 @@ import GraphLayouter from "./layout";
 import ParityGame from "./paritygame";
 import solver from "./paritygame-recursive";
 import TreewidthImprover from "./treewidth";
+import firstOrderAlgo from "./firstorder-prover";
+import InfoColumn from "./info";
 
 export default class GraphEditor {
   private g: Graph<Vertex, Edge>;
@@ -19,6 +22,7 @@ export default class GraphEditor {
   private alg: BasicAlgorithmRunner;
   private slider: any;
   private animating: boolean;
+  private info: InfoColumn;
 
   private readonly dfs = new AlgorithmRunner(dfsAlgo);
   private readonly parity = new AlgorithmRunner(solver);
@@ -26,6 +30,8 @@ export default class GraphEditor {
   private readonly layouter = new GraphLayouter();
 
   constructor() {
+    this.info = new InfoColumn(d3.select("#infocol"));
+
     d3.select("#load").on("click", () => {
       return this.loadGraph((<HTMLTextAreaElement>document.getElementById("dump")).value);
     });
@@ -39,6 +45,8 @@ export default class GraphEditor {
     const self = this;
     this.stopLayout();
     d3.select("#layout").on("change", () => this.runLayout());
+    d3.select<HTMLInputElement, {}>("#fo")
+      .on("change", function() { return self.chooseAlgorithm(this.value); });
     d3.select<HTMLInputElement, {}>("#dfs")
       .on("change", function() { return self.chooseAlgorithm(this.value); });
     d3.select<HTMLInputElement, {}>("#parity")
@@ -67,6 +75,8 @@ export default class GraphEditor {
 
     if(d3.select("#dfs").property("checked"))
       this.chooseAlgorithm("dfs");
+    else if(d3.select("#fo").property("checked"))
+      this.chooseAlgorithm("fo");
   }
 
   public queueRedraw() {
@@ -200,13 +210,20 @@ export default class GraphEditor {
   }
 
   private chooseAlgorithm(choice: string) {
-    if(choice === "dfs") {
+    if(choice === "fo") {
+      this.alg = new ParameterizedAlgorithmRunner(firstOrderAlgo, this.info);
+      d3.select<HTMLInputElement, {}>("#run").property("disabled", true);
+      this.g.cursor.cursor.reset();
+    }
+    else if(choice === "dfs") {
       this.alg = this.dfs;
       d3.select<HTMLInputElement, {}>("#run").property("disabled", false);
+      this.info.removeBox("parameters");
     }
     else {
       this.alg = this.parity;
       d3.select<HTMLInputElement, {}>("#run").property("disabled", true);
+      this.info.removeBox("parameters");
 
       // Hack to remove the cursor.
       // TODO: find the proper place for this.
