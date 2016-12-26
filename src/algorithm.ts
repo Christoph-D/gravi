@@ -1,4 +1,5 @@
 import Graph, { Edge, Vertex } from "./graph";
+import ManagedPropertiesListenable from "managed-property";
 
 // Methods to check the requirements of an algorithm.
 export interface AlgorithmRequirements {
@@ -10,6 +11,12 @@ export interface AlgorithmRequirements {
 // spanning tree.
 export interface Algorithm extends AlgorithmRequirements {
   run(g: Graph<Vertex, Edge>): any;
+};
+
+export interface ParameterizedAlgorithm extends AlgorithmRequirements {
+  run(g: Graph<Vertex, Edge>, parameters: ManagedPropertiesListenable): any;
+  // Instantiate a new parameter.
+  makeParameters(): ManagedPropertiesListenable;
 };
 
 // An algorithm that cannot complete immediately but needs several
