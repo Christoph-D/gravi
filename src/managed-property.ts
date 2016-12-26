@@ -57,15 +57,16 @@ function appendSingleToDom(dom: any, propertyDescriptor: ManagedPropertyDescript
       .on("change", function() { self[name] = this.checked; });
     break;
   case "enum": {
+    const buttons = form.append("div").attr("class", "radio-buttons");
     for(const n of propertyDescriptor.values!) {
-      form.append("input")
+      buttons.append("input")
         .attr("type", "radio")
         .attr("name", `${name}`)
         .attr("id", `${name}-${n}`)
         .attr("value", `${n}`)
         .property("checked", self[name] === n)
         .on("change", function() { self[name] = parseInt(this.value, 10); });
-      form.append("label")
+      buttons.append("label")
         .attr("for", `${name}-${n}`)
         .text(n);
     }
