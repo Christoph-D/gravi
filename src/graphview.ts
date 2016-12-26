@@ -1,6 +1,11 @@
 import Graph, { Edge, Vertex, VertexOrEdge } from "./graph";
 import "./historygraph";
 
+// Represents an svg.
+export type SVGSelection = d3.Selection<SVGSVGElement, {}, any, any>;
+// Represents a <g> element in an svg.
+export type GraphGroupSelection = d3.Selection<SVGGElement, {}, any, any>;
+
 // A GraphView expects vertices and edges to offer the methods drawEnter() and
 // drawUpdate().  It calls drawEnter() once on every new vertex/edge and
 // drawUpdate() every time a redraw is needed.
@@ -10,19 +15,23 @@ import "./historygraph";
 // different markers for each possible edge highlight.  Highlighting
 // an edge then amounts to changing the css class of the edge, which
 // selects the correct marker.
-function addHighlightedMarkers(svg) {
+function addHighlightedMarkers(svg: SVGSelection) {
   // Markers have to be defined once in <defs> in the svg.
-  const defs = svg.append("defs");
+  const defs = svg.append<SVGDefsElement>("defs");
   function newMarker() {
     const marker = defs
-            .append("marker").attr("id", "edgeArrow")
-            .attr("viewBox", "0 0 10 10")
-            .attr("refX", "2").attr("refY", "5")
-            .attr("markerUnits", "userSpaceOnUse")
-            .attr("markerWidth", "20").attr("markerHeight", "14")
-            .attr("orient", "auto");
+      .append<SVGMarkerElement>("marker")
+      .attr("id", "edgeArrow")
+      .attr("viewBox", "0 0 10 10")
+      .attr("refX", "2")
+      .attr("refY", "5")
+      .attr("markerUnits", "userSpaceOnUse")
+      .attr("markerWidth", "20")
+      .attr("markerHeight", "14")
+      .attr("orient", "auto");
     // An arrow head.
-    marker.append("path").attr("d", "M 0 0 L 10 5 L 0 10 z");
+    marker.append<SVGPathElement>("path")
+      .attr("d", "M 0 0 L 10 5 L 0 10 z");
     return marker;
   }
   // Create one marker without highlights.
@@ -50,7 +59,7 @@ export function circleEdgeAnchor(
 }
 
 // Computes and sets the CSS class of a vertex or an edge.
-function setCSSClass(v: VertexOrEdge, svgGroup) {
+function setCSSClass(v: VertexOrEdge, svgGroup: GraphGroupSelection) {
   const c = [ this.defaultCSSClass, v.highlight.getCSSClass() ];
   if(v.selected)
     c.push("selected");
@@ -66,24 +75,26 @@ export class VertexView<V extends Vertex, E extends Edge> {
   }
 
   get defaultCSSClass() { return "vertex"; }
-  public drawEnter(v: V, svgGroup?) {}
-  public drawUpdate(v: V, svgGroup?) {}
+  public drawEnter(v: V, svgGroup: GraphGroupSelection) {}
+  public drawUpdate(v: V, svgGroup: GraphGroupSelection) {}
   public edgeAnchor(thisNode: Vertex, otherNode: { x: number, y: number }, distanceOffset = 0) {
     return { x: 0, y: 0 };
   }
 
-  public draw(svg) {
-    const vertexSelection = svg.select("#vertices").selectAll(".vertex");
-    const vertices = vertexSelection.data(this.graphView.g.getVertices(), (v: Vertex) => v.id);
+  public draw(svg: GraphGroupSelection) {
+    const vertexSelection =
+      svg.select("#vertices").selectAll<SVGGElement, V>(".vertex");
+    const vertices = vertexSelection
+      .data(this.graphView.g.getVertices(), (v: V) => `${v.id}`);
     const self = this;
     // For each new vertex, add a <g> element to the svg, call
     // drawEnter() and install the handlers.
-    vertices.enter().append("g")
-      .each(function(v) { self.drawEnter(v, d3.select(this));
-                          self.drawUpdate(v, d3.select(this)); })
+    vertices.enter().append<SVGGElement>("g")
+      .each(function(v: V) { self.drawEnter(v, d3.select(this));
+                             self.drawUpdate(v, d3.select(this)); })
       .call(s => this.graphView.addVertexListeners(s));
     vertices.exit().remove();
-    vertices.each(function(v) {
+    vertices.each(function(v: V) {
       if(v.modified)
         self.drawUpdate(v, d3.select(this));
       v.modified = false;
@@ -98,11 +109,11 @@ export class CircleVertexView<V extends Vertex, E extends Edge> extends VertexVi
   public edgeAnchor(thisNode, otherNode: { x: number, y: number }, distanceOffset = 0) {
     return circleEdgeAnchor(thisNode, otherNode, distanceOffset + this.radius);
   }
-  public drawEnter(v: V, svgGroup) {
+  public drawEnter(v: V, svgGroup: GraphGroupSelection) {
     super.drawEnter(v, svgGroup);
     svgGroup.append("circle").attr("class", "main").attr("r", this.radius);
   }
-  public drawUpdate(v: V, svgGroup) {
+  public drawUpdate(v: V, svgGroup: GraphGroupSelection) {
     super.drawUpdate(v, svgGroup);
     svgGroup.selectAll("circle.main")
       .attr("cx", v.x)
@@ -117,19 +128,21 @@ export class EdgeView<V extends Vertex, E extends Edge> {
   }
 
   get defaultCSSClass() { return "edge"; }
-  public drawEnter(e: E, svgGroup?) {}
-  public drawUpdate(e: E, svgGroup?) {}
+  public drawEnter(e: E, svgGroup: GraphGroupSelection) {}
+  public drawUpdate(e: E, svgGroup: GraphGroupSelection) {}
 
-  public draw(graph: Graph<Vertex, Edge>, svg) {
-    const edges = svg.select("#edges")
-            .selectAll(".edge").data(graph.getEdges());
+  public draw(svg: GraphGroupSelection) {
+    const edges = svg
+      .select<SVGGElement>("#edges")
+      .selectAll<SVGGElement, E>(".edge")
+      .data(this.graphView.g.getEdges());
     const self = this;
-    edges.enter().append("g")
-      .each(function(e) { self.drawEnter(e, d3.select(this));
-                          self.drawUpdate(e, d3.select(this)); })
+    edges.enter().append<SVGGElement>("g")
+      .each(function(e: E) { self.drawEnter(e, d3.select(this));
+                             self.drawUpdate(e, d3.select(this)); })
       .call(s => this.graphView.addEdgeListeners(s));
     edges.exit().remove();
-    edges.each(function(e) {
+    edges.each(function(e: E) {
       if(e.modified) {
         self.drawUpdate(e, d3.select(this));
         e.modified = false;
@@ -141,12 +154,12 @@ EdgeView.prototype.drawUpdate = setCSSClass;
 
 // Edges with an arrow at their head.
 export class ArrowEdgeView<V extends Vertex, E extends Edge> extends EdgeView<V, E> {
-  public drawEnter(e: E, svgGroup) {
+  public drawEnter(e: E, svgGroup: GraphGroupSelection) {
     svgGroup.append("line").attr("class", "main");
     svgGroup.append("line").attr("class", "click-target");
   }
 
-  public drawUpdate(e: E, svgGroup) {
+  public drawUpdate(e: E, svgGroup: GraphGroupSelection) {
     super.drawUpdate(e, svgGroup);
     const s = this.graphView.g.getTail(e);
     const t = this.graphView.g.getHead(e);
@@ -175,21 +188,22 @@ export class GraphView<V extends Vertex, E extends Edge> {
   public g: Graph<Vertex, Edge>;
   public selection: VertexOrEdge;
   private oldSelection: VertexOrEdge;
-  private svg: any;
+  private readonly svg: SVGSelection;
+  private readonly graphGroup: GraphGroupSelection;
   private mouse: { x: number, y: number };
   private panLast: [number, number];
   private panHappening: boolean;
   private drawEdgeMode: boolean;
   private redrawQueued: boolean;
-  private zoom: any;
-  private graphGroup: any;
-  private drag: any;
+  private readonly zoom: d3.ZoomBehavior<Element, {}>;
+  private readonly drag: d3.DragBehavior<Element, Vertex, Vertex | d3.SubjectPosition>;
   private times: number[];
 
   private readonly vertexView: VertexView<V, E>;
   private readonly edgeView: EdgeView<V, E>;
 
-  constructor(g, svg, vertexView: typeof VertexView = CircleVertexView,
+  constructor(g: Graph<Vertex, Edge>, svg: SVGSelection,
+              vertexView: typeof VertexView = CircleVertexView,
               edgeView: typeof EdgeView = ArrowEdgeView) {
     this.vertexView = new vertexView(this);
     this.edgeView = new edgeView(this);
@@ -208,7 +222,7 @@ export class GraphView<V extends Vertex, E extends Edge> {
     // the last translation vector the "zoom" handler received.
     this.panLast = [NaN, NaN];
     this.panHappening = false;
-    this.zoom = d3.zoom()
+    this.zoom = d3.zoom<Element, {}>()
       .scaleExtent([0.25, 4])
       .on("start", () => { this.panHappening = false; })
       .on("zoom", () => this.onZoom())
@@ -227,12 +241,12 @@ export class GraphView<V extends Vertex, E extends Edge> {
 
     // Append the vertices after the edges or the click targets of
     // edges would obscure the vertices.
-    this.graphGroup = this.svg.append("g").attr("id", "graphgroup");
+    this.graphGroup = this.svg.append<SVGGElement>("g").attr("id", "graphgroup");
     this.graphGroup.append("g").attr("id", "edges");
     this.graphGroup.append("g").attr("id", "vertices");
 
     // The drag behavior for the vertices.
-    this.drag = d3.drag()
+    this.drag = d3.drag<Element, Vertex>()
       .on("start", (d) => {
         this.select(d);
         this.queueRedraw();
@@ -268,7 +282,7 @@ export class GraphView<V extends Vertex, E extends Edge> {
     // Global mousemove handler to keep track of the mouse.
     const self = this;
     this.svg.on("mousemove", function() {
-      const transform = d3.zoomTransform(self.svg.node());
+      const transform = d3.zoomTransform(self.svg.node()!);
       [ self.mouse.x, self.mouse.y ] = transform.invert(d3.mouse(this));
       if(self.drawEdgeMode)
         self.drawPointer();
@@ -476,7 +490,7 @@ export class GraphView<V extends Vertex, E extends Edge> {
   }
 
   private drawEdges() {
-    this.edgeView.draw(this.g, this.graphGroup);
+    this.edgeView.draw(this.graphGroup);
     return this;
   }
 

@@ -1,6 +1,7 @@
 import Graph, { Vertex, Edge } from "./graph";
 import { ManagedPropertyDescriptor } from "./managed-property";
-import { ArrowEdgeView, circleEdgeAnchor, GraphView, registerView, VertexView } from "./graphview";
+import { ArrowEdgeView, circleEdgeAnchor, GraphGroupSelection,
+         GraphView, registerView, VertexView } from "./graphview";
 
 export enum Player { Even, Odd }
 
@@ -48,6 +49,7 @@ const circle = `M ${radiusC},0 A ${radiusC},${radiusC} 0 1,0 ${radiusC},0.00001 
 
 class ParityGameVertexView
   <V extends ParityGameVertex, E extends Edge> extends VertexView<V, E> {
+
   public edgeAnchor(thisNode, otherNode, distanceOffset = 0) {
     if(thisNode.x === otherNode.x && thisNode.y === otherNode.y)
       return { x: thisNode.x, y: thisNode.y };
@@ -87,7 +89,8 @@ class ParityGameVertexView
     }
     return result;
   }
-  public drawEnter(v: V, svgGroup) {
+
+  public drawEnter(v: V, svgGroup: GraphGroupSelection) {
     super.drawEnter(v, svgGroup);
     svgGroup.append("path").attr("class", "main");
     svgGroup.append("text").attr("class", "priority")
@@ -98,7 +101,8 @@ class ParityGameVertexView
       .style("fill", "#FFFFFF")
       .style("stroke", "none");
   }
-  public drawUpdate(v: V, svgGroup) {
+
+  public drawUpdate(v: V, svgGroup: GraphGroupSelection) {
     super.drawUpdate(v, svgGroup);
     svgGroup.attr("transform", `translate(${v.x},${v.y})`);
     svgGroup.select("path.main").attr("d", v.player === Player.Even ? circle : rectangle);

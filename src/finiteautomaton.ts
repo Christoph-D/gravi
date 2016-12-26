@@ -1,6 +1,7 @@
 import Graph, { Vertex, Edge, VertexOrEdge } from "./graph";
 import { ManagedPropertyDescriptor } from "./managed-property";
-import { ArrowEdgeView, circleEdgeAnchor, CircleVertexView, GraphView, registerView } from "./graphview";
+import { ArrowEdgeView, circleEdgeAnchor, CircleVertexView,
+         GraphGroupSelection, GraphView, registerView } from "./graphview";
 
 const accepting: ManagedPropertyDescriptor = {
   defaultValue: false,
@@ -32,12 +33,12 @@ AutomatonEdge.onStatic(
 
 class AutomatonVertexView
   <V extends AutomatonVertex, E extends Edge> extends CircleVertexView<V, E> {
-  public drawEnter(v: V, svgGroup) {
+  public drawEnter(v: V, svgGroup: GraphGroupSelection) {
     super.drawEnter(v, svgGroup);
     svgGroup.append("circle").attr("class", "accepting accepting1").attr("r", this.radius - 1);
     svgGroup.append("circle").attr("class", "accepting accepting2").attr("r", this.radius - 4);
   }
-  public drawUpdate(v: V, svgGroup) {
+  public drawUpdate(v: V, svgGroup: GraphGroupSelection) {
     super.drawUpdate(v, svgGroup);
     const opacity = v.accepting ? 1 : 0;
     svgGroup.selectAll("circle.accepting")
@@ -50,7 +51,7 @@ class AutomatonVertexView
 class AutomatonEdgeView
   <V extends AutomatonVertex, E extends AutomatonEdge> extends ArrowEdgeView<V, E> {
 
-  public drawEnter(e: E, svgGroup) {
+  public drawEnter(e: E, svgGroup: GraphGroupSelection) {
     super.drawEnter(e, svgGroup);
     svgGroup.append("rect").attr("class", "letter")
       .attr("fill", "#FFFFFF")
@@ -62,7 +63,7 @@ class AutomatonEdgeView
       .attr("dominant-baseline", "central");
   }
 
-  public drawUpdate(e: E, svgGroup) {
+  public drawUpdate(e: E, svgGroup: GraphGroupSelection) {
     super.drawUpdate(e, svgGroup);
     if(e.letter === "") {
       svgGroup.selectAll(".letter").attr("visibility", "hidden");

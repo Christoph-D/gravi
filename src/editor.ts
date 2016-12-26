@@ -1,6 +1,6 @@
 import Graph, { Edge, Vertex, VertexOrEdge } from "./graph";
 import "./historygraph";
-import { GraphView, makeView } from "./graphview";
+import { GraphView, makeView, SVGSelection } from "./graphview";
 import AlgorithmRunner from "./algorithmrunner";
 import dfsAlgo from "./dfs";
 import examples from "./examples";
@@ -14,7 +14,7 @@ import TreewidthImprover from "./treewidth";
 export default class GraphEditor {
   private g: Graph<Vertex, Edge>;
   private view: GraphView<Vertex, Edge>;
-  private readonly svg;
+  private readonly svg: SVGSelection;
   private alg: AlgorithmRunner;
   private slider: any;
   private animating: boolean;
@@ -38,8 +38,10 @@ export default class GraphEditor {
     const self = this;
     this.stopLayout();
     d3.select("#layout").on("change", () => this.runLayout());
-    d3.select("#dfs").on("change", function() { return self.chooseAlgorithm((<any>this).value); });
-    d3.select("#parity").on("change", function() { return self.chooseAlgorithm((<any>this).value); });
+    d3.select<HTMLInputElement, {}>("#dfs")
+      .on("change", function() { return self.chooseAlgorithm(this.value); });
+    d3.select<HTMLInputElement, {}>("#parity")
+      .on("change", function() { return self.chooseAlgorithm(this.value); });
 
     d3.select("#run").on("click", () => this.animateAlgorithm());
     d3.select("#genClear").on("click", () => this.setGraph(new ParityGame()));
@@ -48,7 +50,10 @@ export default class GraphEditor {
     d3.select("#load-save-choice").on("change", () => this.showHideLoadSaveBox());
     d3.select("#treewidth").on("click", () => this.treewidth.run());
 
-    this.svg = d3.select("#graph");
+    this.svg = d3.select<SVGSVGElement, {}>("#graph");
+    if(!(this.svg.node() instanceof SVGSVGElement))
+      throw Error("Cannot find svg element.");
+
     this.slider = (<any>d3).slider()
       .on("slide", (event, value) => {
         this.stopAnimation();
