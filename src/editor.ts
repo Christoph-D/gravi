@@ -1,6 +1,7 @@
 import Graph, { Edge, Vertex, VertexOrEdge } from "./graph";
 import "./historygraph";
 import { GraphView, makeView, SVGSelection } from "./graphview";
+import BasicAlgorithmRunner from "./basic-algorithmrunner";
 import AlgorithmRunner from "./algorithmrunner";
 import dfsAlgo from "./dfs";
 import examples from "./examples";
@@ -15,7 +16,7 @@ export default class GraphEditor {
   private g: Graph<Vertex, Edge>;
   private view: GraphView<Vertex, Edge>;
   private readonly svg: SVGSelection;
-  private alg: AlgorithmRunner;
+  private alg: BasicAlgorithmRunner;
   private slider: any;
   private animating: boolean;
 
