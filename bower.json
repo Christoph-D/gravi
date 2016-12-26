@@ -17,15 +17,11 @@
   ],
   "dependencies": {
     "d3": "^4.4.0",
-    "jquery": "^3.1.1",
     "requirejs": "^2.3.2"
   },
   "exportsOverride": {
     "d3": {
       "js": "d3.min.js"
-    },
-    "jquery": {
-      "js": "dist/jquery.min.js"
     },
     "requirejs": {
       "js": "require.js"

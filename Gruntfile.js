@@ -65,14 +65,13 @@ module.exports = function(grunt) {
         flatten: true,
         dest: "<%= buildDir %>/lib/",
         src: [ "js/requirejs/require.js", "js/d3/d3.min.js",
-               "js/jquery/jquery.min.js",
                "../node_modules/babel-polyfill/dist/polyfill.min.js" ],
         cwd: "lib"
       },
       morelib: {
         expand: true,
         dest: "<%= buildDir %>/lib/",
-        src: [ "d3.slider/*.{js,css}", "jquery-ui/**/*" ],
+        src: [ "d3.slider/*.{js,css}" ],
         cwd: "lib"
       }
     },

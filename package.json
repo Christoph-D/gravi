@@ -7,7 +7,6 @@
   "license": "GPL-2.0",
   "devDependencies": {
     "@types/d3": "^4.4.0",
-    "@types/jquery": "^2.0.34",
     "autoprefixer": "^6.5.4",
     "babel-plugin-transform-es2015-modules-amd": "^6.18.0",
     "babel-polyfill": "^6.20.0",

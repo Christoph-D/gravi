@@ -11,6 +11,16 @@
 @panelOpacity: 0.9;
 @borderColor: #EEEEEE;
 
+@buttonTextColor: #FFFFFF;
+@buttonBorderSize: 3px;
+@buttonBorderColor: solid #CCCCFF;
+@buttonBorder: @buttonBorderSize @buttonBorderColor;
+@buttonBorderRadius: 10px;
+@buttonColor: #8080AA;
+@buttonColorHover: lighten(@buttonColor, 5%);
+@buttonColorActive: #60B970;
+@buttonColorDisabled: #BBBBBB;
+
 body {
   margin: 0;
   padding: 0;
@@ -50,6 +60,97 @@ body {
 #control-buttons {
   text-align: center;
   width: @sliderWidth;
+}
+
+/* Remove additional button padding by firefox. */
+input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+div.radio-buttons,
+input[type=button],
+input[type=radio] + label,
+input[type=checkbox] + label {
+  display: inline-flex;
+  padding: 10px 15px;
+  margin: 0px 2px;
+  box-shadow: none;
+  border: 0;
+  border-radius: 0;
+  line-height: 100%;
+  color: @buttonTextColor;
+}
+
+div.radio-buttons {
+  padding: 0;
+}
+
+input[type=button],
+input[type=checkbox] + label {
+  border: @buttonBorder;
+  border-radius: @buttonBorderRadius;
+}
+
+input[type=radio] + label {
+  border: @buttonBorder;
+  border-left-width: 0;
+  border-right-width: 0;
+}
+input[type=radio]:first-of-type + label {
+  border-left-width: @buttonBorderSize;
+  border-top-left-radius: @buttonBorderRadius;
+  border-bottom-left-radius: @buttonBorderRadius;
+}
+input[type=radio]:last-of-type + label {
+  border-right-width: @buttonBorderSize;
+  border-top-right-radius: @buttonBorderRadius;
+  border-bottom-right-radius: @buttonBorderRadius;
+}
+
+input[type=text] {
+  background-color: #F0F0F0;
+  box-shadow: none;
+  border: @buttonBorder;
+  border-radius: @buttonBorderRadius;
+}
+
+input[type=button],
+input[type=radio] + label,
+input[type=checkbox] + label {
+  background-color: @buttonColor;
+  &:hover {
+    background-color: @buttonColorHover;
+  }
+  &:focus {
+    outline: none
+  }
+}
+
+input[type=radio] + label {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+input[type=button] {
+  appearance: none;
+  &:active {
+    background-color: @buttonColorActive;
+  }
+}
+
+input[type=button]:disabled {
+  background-color: @buttonColorDisabled;
+}
+
+input[type=checkbox],
+input[type=radio] {
+  display: none;
+}
+
+input[type=checkbox]:checked + label,
+input[type=radio]:checked + label {
+  background-color: @buttonColorActive;
 }
 
 #run {
@@ -167,12 +268,12 @@ marker {
   margin-bottom: 1em;
 }
 /* Make sure all labels have the same width. */
-.property-input span.label {
-  display: inline-block;
-  width: 5em;
-}
-
-/* Make spinner elements a little shorter. */
-.number-input span.ui-widget {
-  width: 5em;
+.property-input {
+  span.label {
+    display: inline-block;
+    width: 5em;
+  }
+  input[type=text] {
+    width: 10em;
+  }
 }

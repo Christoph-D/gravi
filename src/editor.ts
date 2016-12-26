@@ -201,11 +201,11 @@ export default class GraphEditor {
   private chooseAlgorithm(choice: string) {
     if(choice === "dfs") {
       this.alg = this.dfs;
-      (<any>$("#run")).button("enable");
+      d3.select<HTMLInputElement, {}>("#run").property("disabled", false);
     }
     else {
       this.alg = this.parity;
-      (<any>$("#run")).button("disable");
+      d3.select<HTMLInputElement, {}>("#run").property("disabled", true);
 
       // Hack to remove the cursor.
       // TODO: find the proper place for this.
@@ -216,7 +216,7 @@ export default class GraphEditor {
 
   private stopLayout() {
     this.layouter.cancel();
-    (<any>$("#layout")).prop("checked", false).button("refresh");
+    d3.select<HTMLInputElement, {}>("#layout").property("checked", false);
   }
   private runLayout() {
     if((<HTMLInputElement>document.getElementById("layout")).checked)

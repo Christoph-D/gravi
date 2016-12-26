@@ -27,10 +27,7 @@ function appendSingleToDom(dom: any, propertyDescriptor: ManagedPropertyDescript
     .text(`${propertyDescriptor.Name}:`);
   switch(propertyDescriptor.type) {
   case "string":
-    form.append("span")
-      .attr("class", "ui-spinner ui-widget ui-widget-content ui-corner-all")
-      .append("input")
-      .attr("class", "ui-spinner-input")
+    form.append("input")
       .attr("type", "text")
       .attr("name", name)
       .property("value", this[name])
@@ -45,12 +42,11 @@ function appendSingleToDom(dom: any, propertyDescriptor: ManagedPropertyDescript
         self[name] = propertyDescriptor.defaultValue;
     };
     const elem = form.append("input")
-            .attr("type", "text")
-            .attr("name", name)
-            .attr("maxlength", "6")
-            .property("value", this[name])
-            .on("change", onChange);
-    (<any>$(elem.node())).spinner({ stop: onChange });
+      .attr("type", "text")
+      .attr("name", name)
+      .attr("maxlength", "6")
+      .property("value", this[name])
+      .on("input", onChange);
     break;
   }
   case "boolean":
@@ -72,7 +68,6 @@ function appendSingleToDom(dom: any, propertyDescriptor: ManagedPropertyDescript
       form.append("label")
         .attr("for", `${name}-${n}`)
         .text(n);
-      (<any>$(form.node())).buttonset();
     }
     break;
   }

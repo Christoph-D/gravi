@@ -7,13 +7,10 @@
 </style>
 <link rel="stylesheet" type="text/css" href="graphs.css">
 <link rel="stylesheet" type="text/css" href="lib/d3.slider/d3.slider.css">
-<link rel="stylesheet" type="text/css" href="lib/jquery-ui/jquery-ui.min.css">
 <title></title>
 <body>
 <script src="lib/d3.min.js" charset="utf-8"></script>
 <script src="lib/d3.slider/d3.slider.js" charset="utf-8"></script>
-<script src="lib/jquery.min.js" charset="utf-8"></script>
-<script src="lib/jquery-ui/jquery-ui.min.js" charset="utf-8"></script>
 <script src="lib/polyfill.min.js" charset="utf-8"></script>
 
 <svg id="graph" viewBox="-300 -300 600 600" />
@@ -26,7 +23,7 @@
   <div id="control-buttons">
     <input id="layout" type="checkbox" value="layout" />
     <label for="layout">Layout</label>
-    <div id="algorithm-chooser" style="display: inline-block;">
+    <div class="radio-buttons">
       <input id="dfs" type="radio" name="algorithm" value="dfs" />
       <label for="dfs">DFS</label>
       <input id="parity" type="radio" name="algorithm" value="parity" checked="checked" />
@@ -57,11 +54,5 @@
   <textarea id="dump"></textarea>
 </div>
 
-<script>
-  $("*[type=button]").button()
-  $("#layout").button()
-  $("#load-save-choice").button()
-  $("#algorithm-chooser").buttonset()
-</script>
 <script data-main="js/viewer.js" src="lib/require.js"></script>
 </body>
