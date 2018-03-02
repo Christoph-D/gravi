@@ -16,7 +16,7 @@ const MAX_FORCE_SQUARED = 10000;
 // The maximum time delta.
 const MAX_STEP_SIZE_MS = 200;
 
-import { ImprovingAlgorithm } from "algorithm";
+import { ImprovingAlgorithm } from "./algorithm";
 export default class GraphLayouter implements ImprovingAlgorithm {
 
   private graph: Graph<Vertex, Edge>;
@@ -29,7 +29,7 @@ export default class GraphLayouter implements ImprovingAlgorithm {
   // so there is no need to call back.
   public initialize(g: Graph<Vertex, Edge>) {
     this.graph = g;
-  };
+  }
 
   public run() {
     let lastTime: number | null = null;

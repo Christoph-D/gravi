@@ -1,23 +1,23 @@
 import Graph, { Edge, Vertex } from "./graph";
-import ManagedPropertiesListenable from "managed-property";
+import ManagedPropertiesListenable from "./managed-property";
 
 // Methods to check the requirements of an algorithm.
 export interface AlgorithmRequirements {
   requiredProperties?: string[];
   checkPreConditions?: (g: Graph<Vertex, Edge>) => boolean;
-};
+}
 
 // A one-shot algorithm returning a result.  Example: Computing a
 // spanning tree.
 export interface Algorithm extends AlgorithmRequirements {
   run(g: Graph<Vertex, Edge>): any;
-};
+}
 
 export interface ParameterizedAlgorithm extends AlgorithmRequirements {
   run(g: Graph<Vertex, Edge>, parameters: ManagedPropertiesListenable): any;
   // Instantiate a new parameter.
   makeParameters(): ManagedPropertiesListenable;
-};
+}
 
 // An algorithm that cannot complete immediately but needs several
 // iterations.  Example: Iteratively approximating the treewidth via
@@ -36,4 +36,4 @@ export interface ImprovingAlgorithm extends AlgorithmRequirements {
 
   // Cancel all running AJAX requests etc.
   cancel(): void;
-};
+}

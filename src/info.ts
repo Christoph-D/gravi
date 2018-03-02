@@ -1,4 +1,4 @@
-import ManagedPropertiesListenable from "managed-property";
+import ManagedPropertiesListenable from "./managed-property";
 
 export default class InfoColumn {
   private dom: any;
@@ -26,4 +26,4 @@ export default class InfoColumn {
       return x;
     return this.dom.append("div").attr("class", `${boxName}`);
   }
-};
+}

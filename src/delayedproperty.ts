@@ -3,9 +3,9 @@
 // time.  In effect, this is a property whose initialization cost
 // (i.e., "new template") you only pay if you access it.
 export default function injectDelayedProperty<T, U>(
-  object: { new(...args: any[]) : T },
+  object: { new(...args: any[]): T },
   propName: string,
-  template: { new(containingInstance: any) : U }) {
+  template: { new(containingInstance: any): U }) {
   if(propName in object.prototype)
     throw Error(`Property "${propName}" already exists`);
   Reflect.defineProperty(object.prototype, propName, {

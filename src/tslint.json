@@ -10,10 +10,13 @@
         "max-classes-per-file": false,
         "no-console": false,
         "no-empty": false,
+        "no-object-literal-type-assertion": false,
+        "no-this-assignment": [true, {"allowed-names": ["^self$"]}],
         "object-literal-sort-keys": false,
         "one-line": false,
         "only-arrow-functions": false,
         "ordered-imports": false,
+        "prefer-conditional-expression": false,
         "variable-name": false,
         "whitespace": false
     }
