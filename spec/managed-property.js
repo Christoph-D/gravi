@@ -142,7 +142,7 @@ describe("A managed property", function() {
     });
     it("rejects invalid values", function() {
       expect(() => v.bar = 2).toThrow(
-        new TypeError(`Enum property \"bar\" received invalid value \"2\".  Valid values: ${D.values}`));
+        new TypeError(`Enum property "bar" received invalid value "2".  Valid values: ${D.values}`));
     });
   });
   describe("with multiple properties", function() {
