@@ -21,9 +21,9 @@ function dfsStep(graph: Graph<Vertex, Edge>, visited: boolean[], v: Vertex) {
 }
 
 import { Algorithm } from "./algorithm";
-export default <Algorithm>{
+export default {
   run(graph: Graph<Vertex, Edge>) {
     if(graph.numberOfVertices() !== 0)
       dfsStep(graph, [], graph.findVertex({ id: 0 }));
   },
-};
+} as Algorithm;

@@ -124,7 +124,8 @@ module.exports = function(grunt) {
           target: "es6",
           additionalFlags: "--strictNullChecks",
           inlineSourceMap: true,
-          inlineSources: true
+          inlineSources: true,
+          rootDir: "<%= srcDir %>"
         }
       }
     },

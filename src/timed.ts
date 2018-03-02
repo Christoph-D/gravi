@@ -13,7 +13,7 @@ export default class TimedProperty {
     const result = {};
     for(const key of this.interpolateKeys) {
       if(!(key in x && key in y))
-        throw `Missing key: ${key}`;
+        throw RangeError(`Missing key: ${key}`);
       result[key] = x[key] * (1 - t) + y[key] * t;
     }
     return result;
@@ -25,11 +25,11 @@ export default class TimedProperty {
       return this;
     }
 
-    const lastTime = Math.max(...(<any>Object.keys(this.value)).filter(v => v <= time));
+    const lastTime = Math.max(...(Object.keys(this.value) as any).filter(v => v <= time));
     if(this.interpolateKeys.length === 0)
       return this.value[lastTime];
 
-    const nextTime = Math.min(...(<any>Object.keys(this.value)).filter(v => v > lastTime));
+    const nextTime = Math.min(...(Object.keys(this.value) as any).filter(v => v > lastTime));
     if(nextTime === Number.POSITIVE_INFINITY)
       return this.value[lastTime];
     const normedDiff = (time - lastTime) / (nextTime - lastTime);

@@ -140,7 +140,7 @@ function parityWin(graph: PG, options: { noHighlights?: boolean } = {}):
 }
 
 import { Algorithm } from "./algorithm";
-export default <Algorithm>{
+export default {
   run: parityWin,
   requiredProperties: ["player", "priority"],
-};
+} as Algorithm;

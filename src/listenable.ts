@@ -30,7 +30,7 @@ type Listener = (...args: any[]) => void;
 function makeForwardingFunction(listener: string | Listener): Listener {
   if(typeof listener === "string")
     return function(x) { return function() { this.dispatch(listener); }; }(listener);
-  return <Listener>listener;
+  return listener as Listener;
 }
 function addListener(where: Map<string, Listener[]>, event: string, listener: string | Listener) {
   const l = where.get(event);
@@ -97,9 +97,9 @@ export default class Listenable {
     if(this._listeners.has(event))
       for(const f of this._listeners.get(event)!)
         Reflect.apply(f, this, args);
-    if((<typeof Listenable>this.constructor).listenersStatic !== undefined &&
-       (<typeof Listenable>this.constructor).listenersStatic.has(event))
-      for(const f of (<typeof Listenable>this.constructor).listenersStatic.get(event)!)
+    if((this.constructor as typeof Listenable).listenersStatic !== undefined &&
+       (this.constructor as typeof Listenable).listenersStatic.has(event))
+      for(const f of (this.constructor as typeof Listenable).listenersStatic.get(event)!)
         Reflect.apply(f, this, args);
     return this;
   }

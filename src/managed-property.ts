@@ -126,10 +126,10 @@ export default class ManagedPropertiesListenable extends Listenable {
         }
       }
       d.getManagedProperty = function() {
-        return (<ManagedPropertiesListenable>this)._properties[d.name];
+        return (this as ManagedPropertiesListenable)._properties[d.name];
       };
       d.setManagedProperty = function(value) {
-        let self = <ManagedPropertiesListenable>this;
+        const self = this as ManagedPropertiesListenable;
         // Rudimentary type checking.
         const typeofValue = typeof value;
         if(typeofValue !== typeToCheck && typeofValue !== "undefined")
@@ -171,8 +171,7 @@ export default class ManagedPropertiesListenable extends Listenable {
       value: {},
       writable: true,
     });
-    for(const d of (<typeof ManagedPropertiesListenable>
-                    Reflect.getPrototypeOf(this).constructor).propertyDescriptors) {
+    for(const d of this.propertyDescriptors()) {
       // Define and initialize every property.
       Reflect.defineProperty(this, d.name, {
         configurable: true,
@@ -196,8 +195,9 @@ export default class ManagedPropertiesListenable extends Listenable {
   }
 
   public propertyDescriptors() {
-    return (<typeof ManagedPropertiesListenable>
-            Reflect.getPrototypeOf(this).constructor).propertyDescriptors;
+    const protoConstructor =
+      Reflect.getPrototypeOf(this).constructor as typeof ManagedPropertiesListenable;
+    return protoConstructor.propertyDescriptors;
   }
 }
 ManagedPropertiesListenable.prototype.appendPropertiesToDom = appendToDom;

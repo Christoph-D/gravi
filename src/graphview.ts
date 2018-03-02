@@ -206,8 +206,8 @@ export class GraphView<V extends Vertex, E extends Edge> {
   private readonly edgeView: EdgeView<V, E>;
 
   constructor(g: Graph<Vertex, Edge>, svg: SVGSelection,
-              vertexView: typeof VertexView = CircleVertexView,
-              edgeView: typeof EdgeView = ArrowEdgeView) {
+              vertexView: { new(g: GraphView<V, E>): VertexView<V, E> } = CircleVertexView,
+              edgeView: { new(g: GraphView<V, E>): EdgeView<V, E> } = ArrowEdgeView) {
     this.vertexView = new vertexView(this);
     this.edgeView = new edgeView(this);
     this.info = new InfoColumn(d3.select("#infocol"));
@@ -231,7 +231,7 @@ export class GraphView<V extends Vertex, E extends Edge> {
       .on("start", () => { this.panHappening = false; })
       .on("zoom", () => this.onZoom())
       .on("end", () => {
-        const e = <MouseEvent | null>d3.event.sourceEvent;
+        const e = d3.event.sourceEvent as MouseEvent | null;
         if(e === null)
           return;
         if(e.button === 0 && !this.panHappening) {
@@ -267,9 +267,9 @@ export class GraphView<V extends Vertex, E extends Edge> {
 
     // Clicks on empty space (left click deselects, right click
     // creates a vertex).
-    this.svg.on("contextmenu", () => (<MouseEvent>d3.event).preventDefault());
+    this.svg.on("contextmenu", () => (d3.event as MouseEvent).preventDefault());
     this.svg.on("mousedown", () => {
-      const event = <MouseEvent>d3.event;
+      const event = d3.event as MouseEvent;
       if(event.button !== 2)
         return;
       // Create a new vertex on right click.
@@ -359,12 +359,12 @@ export class GraphView<V extends Vertex, E extends Edge> {
       .on("dblclick", (d) => this.onDoubleClickVertex(d))
       .on("mousedown", (d) => this.onMouseDownVertex(d))
       .on("mouseup", () => this.onMouseUpKeepSelected())
-      .on("contextmenu", () => (<MouseEvent>d3.event).preventDefault())
+      .on("contextmenu", () => (d3.event as MouseEvent).preventDefault())
       .on("mouseover", (d) => this.onMouseOverVertex(d));
   }
 
   public addEdgeListeners(edgeSet) {
-    edgeSet.on("contextmenu", () => (<MouseEvent>d3.event).preventDefault())
+    edgeSet.on("contextmenu", () => (d3.event as MouseEvent).preventDefault())
       .on("mousedown", (d) => this.onMouseDownEdge(d))
       .on("mouseup", () => this.onMouseUpKeepSelected());
   }
@@ -382,14 +382,14 @@ export class GraphView<V extends Vertex, E extends Edge> {
   }
 
   private onDoubleClickVertex(d) {
-    (<MouseEvent>d3.event).stopPropagation();
+    (d3.event as MouseEvent).stopPropagation();
     this.select(d);
     this.drawEdgeMode = true;
     this.queueRedraw();
   }
 
   private onMouseDownVertex(d) {
-    const e = <MouseEvent>d3.event;
+    const e = d3.event as MouseEvent;
     switch(e.button) {
     case 0:
       // Stop the propagation or the click would start panning of the
@@ -411,7 +411,7 @@ export class GraphView<V extends Vertex, E extends Edge> {
   }
 
   private onMouseUpKeepSelected() {
-    const e = <MouseEvent>d3.event;
+    const e = d3.event as MouseEvent;
     if(e.button === 0) { // left click
       // We want to keep this vertex/edge selected after "mouseup".
       // So we prevent the usual "mouseup" handler from running
@@ -424,7 +424,7 @@ export class GraphView<V extends Vertex, E extends Edge> {
 
   private onMouseOverVertex(d) {
     if(this.drawEdgeMode && this.selection !== d) {
-      const e = { head: (<Vertex>d).id, tail: this.selection.id };
+      const e = { head: (d as Vertex).id, tail: this.selection.id };
       if(this.g.hasEdge(e)) {
         this.g.removeEdge(e);
         this.g.compressIds();
@@ -471,7 +471,7 @@ export class GraphView<V extends Vertex, E extends Edge> {
   }
 
   private onMouseDownEdge(d) {
-    const e = <MouseEvent>d3.event;
+    const e = d3.event as MouseEvent;
     switch(e.button) {
     case 0: // left click
       e.stopPropagation();
@@ -499,8 +499,8 @@ export class GraphView<V extends Vertex, E extends Edge> {
     if(this.drawEdgeMode) {
       const pointer = this.graphGroup.selectAll("#pointer").data([null]);
       pointer.enter().append("line").attr("id", "pointer").attr("class", "edge");
-      const edgeAnchorS = this.edgeAnchor(<Vertex>this.selection, this.mouse);
-      const edgeAnchorT = circleEdgeAnchor(this.mouse, <Vertex>this.selection, 7);
+      const edgeAnchorS = this.edgeAnchor(this.selection as Vertex, this.mouse);
+      const edgeAnchorT = circleEdgeAnchor(this.mouse, this.selection as Vertex, 7);
       pointer
         .attr("x1", edgeAnchorS.x)
         .attr("y1", edgeAnchorS.y)
@@ -533,9 +533,13 @@ export class GraphView<V extends Vertex, E extends Edge> {
   }
 }
 
-let viewRegistry = new Map<string, typeof GraphView>();
+interface GraphViewFactory {
+  new(g: Graph<Vertex, Edge>, svg: SVGSelection): GraphView<Vertex, Edge>;
+}
 
-export function registerView(graphName: string, view: typeof GraphView) {
+const viewRegistry = new Map<string, GraphViewFactory>();
+
+export function registerView(graphName: string, view: GraphViewFactory) {
   viewRegistry.set(graphName, view);
 }
 

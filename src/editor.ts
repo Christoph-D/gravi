@@ -27,13 +27,13 @@ export default class GraphEditor {
 
   constructor() {
     d3.select("#load").on("click", () => {
-      return this.loadGraph((<HTMLTextAreaElement>document.getElementById("dump")).value);
+      return this.loadGraph((document.getElementById("dump") as HTMLTextAreaElement).value);
     });
     d3.select("#save").on("click", () => this.saveGraph());
     d3.select("#clear")
-      .on("click", () => (<HTMLTextAreaElement>document.getElementById("dump")).value = "");
+      .on("click", () => (document.getElementById("dump") as HTMLTextAreaElement).value = "");
     d3.select("#example1").on("click", () => {
-      (<HTMLTextAreaElement>document.getElementById("dump")).value =
+      (document.getElementById("dump") as HTMLTextAreaElement).value =
         examples[0]; });
 
     const self = this;
@@ -55,7 +55,7 @@ export default class GraphEditor {
     if(!(this.svg.node() instanceof SVGSVGElement))
       throw Error("Cannot find svg element.");
 
-    this.slider = (<any>d3).slider()
+    this.slider = (d3 as any).slider()
       .on("slide", (event, value) => {
         this.stopAnimation();
         this.currentStep(value);
@@ -102,7 +102,7 @@ export default class GraphEditor {
   }
 
   private updateTreewidthBounds(value: string) {
-    const button = (<HTMLButtonElement>document.getElementById("treewidth"));
+    const button = document.getElementById("treewidth") as HTMLButtonElement;
     button.value = `Treewidth: ${value}`;
   }
 
@@ -126,7 +126,7 @@ export default class GraphEditor {
         return;
       this.stopAnimation();
       let newStep = this.currentStep();
-      switch((<KeyboardEvent>d3.event).keyCode) {
+      switch((d3.event as KeyboardEvent).keyCode) {
       case 37: // left arrow
         if(newStep >= 1)
           --newStep;
@@ -136,10 +136,10 @@ export default class GraphEditor {
           ++newStep;
         break;
       case 46: // delete
-        if(this.g.getVertices().indexOf(<Vertex>this.getSelection()) !== -1)
-          this.g.removeVertex(<Vertex>this.getSelection());
-        else if(this.g.getEdges().indexOf(<Edge>this.getSelection()) !== -1)
-          this.g.removeEdge(<Edge>this.getSelection());
+        if(this.g.getVertices().indexOf(this.getSelection() as Vertex) !== -1)
+          this.g.removeVertex(this.getSelection() as Vertex);
+        else if(this.g.getEdges().indexOf(this.getSelection() as Edge) !== -1)
+          this.g.removeEdge(this.getSelection() as Edge);
         break;
       default: break;
       }
@@ -173,7 +173,7 @@ export default class GraphEditor {
 
   private saveGraph() {
     this.g.compressIds();
-    (<HTMLTextAreaElement>document.getElementById("dump")).value =
+    (document.getElementById("dump") as HTMLTextAreaElement).value =
       JSON.stringify(this.g, undefined, 2);
   }
 
@@ -220,7 +220,7 @@ export default class GraphEditor {
     d3.select<HTMLInputElement, {}>("#layout").property("checked", false);
   }
   private runLayout() {
-    if((<HTMLInputElement>document.getElementById("layout")).checked)
+    if((document.getElementById("layout") as HTMLInputElement).checked)
       this.layouter.run();
     else
       this.layouter.cancel();
@@ -228,7 +228,7 @@ export default class GraphEditor {
 
   private showHideLoadSaveBox() {
     const f = d3.select("#load-save-form");
-    if((<HTMLInputElement>document.getElementById("load-save-choice")).checked)
+    if((document.getElementById("load-save-choice") as HTMLInputElement).checked)
       f.style("display", "flex");
     else
       f.style("display", "none");

@@ -93,7 +93,7 @@ export class Highlight {
   }
 
   public set(highlightId?: string) {
-    let c = highlightId != null ? `highlight${translateHighlightIds(highlightId)}` : "";
+    const c = highlightId != null ? `highlight${translateHighlightIds(highlightId)}` : "";
     this.highlightClass.valueAtTime(this.parent.graph.history.currentStep, c);
     return this;
   }

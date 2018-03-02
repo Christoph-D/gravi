@@ -1,7 +1,6 @@
 import { Cursor, Highlight, History } from "./historygraph";
 import Listenable from "./listenable";
-import ManagedPropertiesListenable, { ManagedPropertyDescriptor }
-  from "./managed-property";
+import ManagedPropertiesListenable, { ManagedPropertyDescriptor } from "./managed-property";
 
 export class VertexOrEdge extends ManagedPropertiesListenable {
   public id: number;
@@ -124,8 +123,8 @@ function idTranslationTable(what: (VertexOrEdge | null)[]) {
 
 // Types that are sufficient to uniquely identify vertices/edges in
 // simple directed graphs.
-type VertexDescriptor = { id: number };
-type EdgeDescriptor = { tail: number, head: number };
+interface VertexDescriptor { id: number; }
+interface EdgeDescriptor { tail: number; head: number; }
 
 export default class Graph<V extends Vertex, E extends Edge> extends Listenable {
   public get name() { return "Graph"; }
@@ -153,8 +152,8 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
   } = {}) {
     super();
 
-    this.VertexType = <any>VertexType;
-    this.EdgeType = <any>EdgeType;
+    this.VertexType = VertexType as any;
+    this.EdgeType = EdgeType as any;
 
     this.vertices = [];
     this.numVertices = 0;
@@ -248,17 +247,17 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
   // Runtime: O(n).
   public getVertices(vertexFilter?: VertexFilter): V[] {
     if(vertexFilter != null)
-      return <V[]>this.vertices.filter(v => v != null && vertexFilter!(v));
+      return this.vertices.filter(v => v != null && vertexFilter!(v)) as V[];
     else
-      return <V[]>this.vertices.filter(v => v != null);
+      return this.vertices.filter(v => v != null) as V[];
   }
 
   // Runtime: O(m).
   public getEdges(edgeFilter?: EdgeFilter): E[] {
     if(edgeFilter != null)
-      return <E[]>this.edges.filter(e => e !== null && edgeFilter!(e));
+      return this.edges.filter(e => e !== null && edgeFilter!(e)) as E[];
     else
-      return <E[]>this.edges.filter(e => e !== null);
+      return this.edges.filter(e => e !== null) as E[];
   }
 
   // Equivalent to this.getVertices().length, but in time O(1).

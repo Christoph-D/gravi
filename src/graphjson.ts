@@ -4,7 +4,15 @@ import FiniteAutomaton from "./finiteautomaton";
 import Graph, { Edge, Vertex } from "./graph";
 import ParityGame from "./paritygame";
 
-export default function graphFromJSON(json, validTypes = [Graph, FiniteAutomaton, ParityGame]) {
+interface GraphFactory {
+  name: string;
+  new(): any;
+}
+
+export default function graphFromJSON(
+  json: string,
+  validTypes: GraphFactory[] = [Graph, FiniteAutomaton, ParityGame],
+) {
   const raw = JSON.parse(json);
   if(raw.type == null)
     throw TypeError("Missing property: \"type\"");
@@ -13,7 +21,7 @@ export default function graphFromJSON(json, validTypes = [Graph, FiniteAutomaton
   if(typeIndex === -1)
     throw TypeError(`Don't know how to make a graph of type "${raw.type}". Known types: ${typeNames}`);
 
-  const g = <Graph<Vertex, Edge>>new validTypes[typeIndex]();
+  const g = new validTypes[typeIndex]() as Graph<Vertex, Edge>;
 
   if(raw.vertices != null) {
     for(const [i, v] of raw.vertices.entries()) {
