@@ -17,7 +17,7 @@
   ],
   "dependencies": {
     "d3": "^4.13.0",
-    "requirejs": "^2.3.2"
+    "requirejs": "^2.3.5"
   },
   "exportsOverride": {
     "d3": {
