@@ -127,7 +127,8 @@ interface VertexDescriptor { id: number; }
 interface EdgeDescriptor { tail: number; head: number; }
 
 export default class Graph<V extends Vertex, E extends Edge> extends Listenable {
-  public get name() { return "Graph"; }
+  public get graphName() { return Graph.graphName; }
+  public static get graphName() { return "Graph"; }
   public get version() { return "1.0"; }
 
   public readonly history: History;
@@ -363,7 +364,7 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
       vertices: any[],
       edges: any[],
     } = {
-      type: this.name,
+      type: this.graphName,
       version: this.version,
       vertices: [],
       edges: [],

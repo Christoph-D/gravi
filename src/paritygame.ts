@@ -116,7 +116,8 @@ class ParityGameVertexView
 
 export default class ParityGame
   <V extends ParityGameVertex, E extends Edge> extends Graph<V, E> {
-  public get name() { return "ParityGame"; }
+  public get graphName() { return ParityGame.graphName; }
+  public static get graphName() { return "ParityGame"; }
 
   // The Player enum is exported.  Nonetheless, we add its values as
   // static properties so that they are always available as

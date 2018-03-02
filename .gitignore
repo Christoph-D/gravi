@@ -1,7 +1,5 @@
-/bower_components
 /node_modules
-/build
+/package-lock.json
+/dist
 /.tscache/
-/src/.baseDir.ts
 /tscommand*
-/lib/js

@@ -5,7 +5,7 @@ import Graph, { Edge, Vertex } from "./graph";
 import ParityGame from "./paritygame";
 
 interface GraphFactory {
-  name: string;
+  graphName: string;
   new(): any;
 }
 
@@ -16,7 +16,7 @@ export default function graphFromJSON(
   const raw = JSON.parse(json);
   if(raw.type == null)
     throw TypeError("Missing property: \"type\"");
-  const typeNames = validTypes.map(t => t.name);
+  const typeNames = validTypes.map(t => t.graphName);
   const typeIndex = typeNames.indexOf(raw.type);
   if(typeIndex === -1)
     throw TypeError(`Don't know how to make a graph of type "${raw.type}". Known types: ${typeNames}`);

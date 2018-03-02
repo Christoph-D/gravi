@@ -1,5 +1,12 @@
 {
-    "compilerOptions": {
-        "target": "ES6"
-    }
+  "compilerOptions": {
+    "outDir": "../dist/",
+    "module": "es6",
+    "target": "es6",
+    "baseUrl": "../lib",
+    "paths": {
+      "d3.slider": ["d3.slider/d3.slider.d.ts"]
+    },
+    "strictNullChecks": true
+  }
 }

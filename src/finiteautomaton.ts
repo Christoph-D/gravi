@@ -87,7 +87,8 @@ class AutomatonEdgeView
 
 export default class FiniteAutomaton
   <V extends AutomatonVertex, E extends AutomatonEdge> extends Graph<V, E> {
-  get name() { return "FiniteAutomaton"; }
+  public get graphName() { return FiniteAutomaton.graphName; }
+  public static get graphName() { return "FiniteAutomaton"; }
 
   constructor(options: any = {}) {
     options.VertexType = AutomatonVertex;

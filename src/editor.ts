@@ -1,3 +1,6 @@
+import * as d3 from "d3";
+import slider from "d3.slider";
+
 import Graph, { Edge, Vertex, VertexOrEdge } from "./graph";
 import "./historygraph";
 import { GraphView, makeView, SVGSelection } from "./graphview";
@@ -55,7 +58,7 @@ export default class GraphEditor {
     if(!(this.svg.node() instanceof SVGSVGElement))
       throw Error("Cannot find svg element.");
 
-    this.slider = (d3 as any).slider()
+    this.slider = slider()
       .on("slide", (event, value) => {
         this.stopAnimation();
         this.currentStep(value);

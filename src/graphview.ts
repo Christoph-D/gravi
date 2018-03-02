@@ -1,6 +1,10 @@
+import * as d3 from "d3";
+
 import Graph, { Edge, Vertex, VertexOrEdge } from "./graph";
 import "./historygraph";
 import InfoColumn from "./info";
+
+import "assets/graphs.less";
 
 // Represents an svg.
 export type SVGSelection = d3.Selection<SVGSVGElement, {}, any, any>;
@@ -544,7 +548,7 @@ export function registerView(graphName: string, view: GraphViewFactory) {
 }
 
 export function makeView(g: Graph<Vertex, Edge>, svg): GraphView<Vertex, Edge> {
-  const view = viewRegistry.get(g.name);
+  const view = viewRegistry.get(g.graphName);
   if(view !== undefined)
     return new view(g, svg);
   // For unknown graphs, use the default view that always works.

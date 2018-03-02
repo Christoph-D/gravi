@@ -1,23 +1,23 @@
 /*eslint-env commonjs*/
+var webpackConfig = require('./webpack.config.js');
+webpackConfig.entry = undefined;
+webpackConfig.mode = 'development';
 
 module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: "build/",
+    basePath: ".",
 
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ["jasmine", "requirejs"],
+    frameworks: ["jasmine"],
 
 
     // list of files / patterns to load in the browser
     files: [
-      "../specconfig.js",
-      "../node_modules/babel-polyfill/dist/polyfill.min.js",
-      { pattern: "js/*.js", included: false },
-      { pattern: "specjs/*.js", included: false }
+      "specconfig.js"
     ],
 
 
@@ -29,6 +29,7 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+      "specconfig.js": ['webpack']
     },
 
 
@@ -62,6 +63,8 @@ module.exports = function(config) {
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false
+    singleRun: false,
+
+    webpack: webpackConfig
   });
 };
