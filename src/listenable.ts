@@ -94,13 +94,15 @@ export default class Listenable {
         Reflect.apply(f, this, args);
       this._listenersOneshot.delete(event);
     }
-    if(this._listeners.has(event))
+    if(this._listeners.has(event)) {
       for(const f of this._listeners.get(event)!)
         Reflect.apply(f, this, args);
-    if((this.constructor as typeof Listenable).listenersStatic !== undefined &&
-       (this.constructor as typeof Listenable).listenersStatic.has(event))
-      for(const f of (this.constructor as typeof Listenable).listenersStatic.get(event)!)
+    }
+    const listenersStatic = (this.constructor as typeof Listenable).listenersStatic;
+    if(listenersStatic !== undefined && listenersStatic.has(event)) {
+      for(const f of listenersStatic.get(event)!)
         Reflect.apply(f, this, args);
+    }
     return this;
   }
 }

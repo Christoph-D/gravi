@@ -537,13 +537,13 @@ export class GraphView<V extends Vertex, E extends Edge> {
   }
 }
 
-interface GraphViewFactory {
+interface GraphViewConstructor {
   new(g: Graph<Vertex, Edge>, svg: SVGSelection): GraphView<Vertex, Edge>;
 }
 
-const viewRegistry = new Map<string, GraphViewFactory>();
+const viewRegistry = new Map<string, GraphViewConstructor>();
 
-export function registerView(graphName: string, view: GraphViewFactory) {
+export function registerView(graphName: string, view: GraphViewConstructor) {
   viewRegistry.set(graphName, view);
 }
 
