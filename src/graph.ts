@@ -142,8 +142,8 @@ export default class Graph<V extends Vertex, E extends Edge> extends Listenable 
   private numVertices: number;
   private numEdges: number;
 
-  private readonly VertexType: { new(v?: any): V; } & typeof Vertex;
-  private readonly EdgeType: { new(e?: any): E; } & typeof Edge;
+  private readonly VertexType: (new(v?: any) => V) & typeof Vertex;
+  private readonly EdgeType: (new(e?: any) => E) & typeof Edge;
 
   constructor({
     VertexType = Vertex,

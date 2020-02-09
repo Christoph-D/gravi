@@ -72,27 +72,31 @@ export default class implements ImprovingAlgorithm {
       result += `${e.tail} ${e.head}\n`;
 
     this.request = d3
-      .text("/treewidth")
-      .post(result, (error, text: string) => {
+      .text("/treewidth", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(result)
+      }).
+      then((text: string) => {
         this.request = null;
-        if(!error) {
-          if(text.startsWith("Treewidth is larger.")) {
-            this.lowerBound = bound + 1;
-          }
-          else if(text.startsWith("Treewidth is smaller or equal.")) {
-            this.upperBound = bound;
-            // TODO: Parse and visualize the tree decomposition that the
-            // server is kind enough to send.
-          }
-          else {
-            // Abort because an error occurred and we don't want to
-            // hammer the treewidth server.
-            return;
-          }
-          this.sendUpdatedBounds();
-          // Try to improve more.
-          this.improveBound();
+        if(text.startsWith("Treewidth is larger.")) {
+          this.lowerBound = bound + 1;
         }
+        else if(text.startsWith("Treewidth is smaller or equal.")) {
+          this.upperBound = bound;
+          // TODO: Parse and visualize the tree decomposition that the
+          // server is kind enough to send.
+        }
+        else {
+          // Abort because an error occurred and we don't want to
+          // hammer the treewidth server.
+          return;
+        }
+        this.sendUpdatedBounds();
+        // Try to improve more.
+        this.improveBound();
       });
   }
 }

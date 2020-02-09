@@ -1,6 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const outputDir = './dist';
 
@@ -13,7 +13,7 @@ module.exports = {
         use: [
           {
             loader: 'babel-loader',
-            options: { presets: [ 'env' ]}
+            options: { presets: [ '@babel/preset-env' ]}
           }
         ],
         exclude: /node_modules/
@@ -23,7 +23,7 @@ module.exports = {
         use: [
           {
             loader: 'babel-loader',
-            options: { presets: [ 'env' ]}
+            options: { presets: [ '@babel/preset-env' ]}
           },
           'ts-loader'
         ],
@@ -63,7 +63,7 @@ module.exports = {
     filename: 'gravi.js'
   },
   plugins: [
-    new CleanWebpackPlugin([outputDir]),
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       title: 'Gravi',
       template: 'assets/index.html',

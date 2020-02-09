@@ -125,7 +125,7 @@ export default class GraphEditor {
       d3.select("#loading-message").text(error.message);
     }
     d3.select("body").on("keydown", () => {
-      if(document.activeElement.id === "dump")
+      if(document.activeElement?.id === "dump")
         return;
       this.stopAnimation();
       let newStep = this.currentStep();

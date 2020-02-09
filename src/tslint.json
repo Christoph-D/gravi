@@ -11,7 +11,7 @@
         "no-console": false,
         "no-empty": false,
         "no-implicit-dependencies": false,
-        "no-submodule-imports": [true, "assets"],
+        "no-submodule-imports": [true, "assets", "core-js"],
         "no-object-literal-type-assertion": false,
         "no-this-assignment": [true, {"allowed-names": ["^self$"]}],
         "object-literal-sort-keys": false,

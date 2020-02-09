@@ -210,8 +210,8 @@ export class GraphView<V extends Vertex, E extends Edge> {
   private readonly edgeView: EdgeView<V, E>;
 
   constructor(g: Graph<Vertex, Edge>, svg: SVGSelection,
-              vertexView: { new(g: GraphView<V, E>): VertexView<V, E> } = CircleVertexView,
-              edgeView: { new(g: GraphView<V, E>): EdgeView<V, E> } = ArrowEdgeView) {
+              vertexView: new(g: GraphView<V, E>) => VertexView<V, E> = CircleVertexView,
+              edgeView: new(g: GraphView<V, E>) => EdgeView<V, E> = ArrowEdgeView) {
     this.vertexView = new vertexView(this);
     this.edgeView = new edgeView(this);
     this.info = new InfoColumn(d3.select("#infocol"));
@@ -537,9 +537,8 @@ export class GraphView<V extends Vertex, E extends Edge> {
   }
 }
 
-interface GraphViewConstructor {
-  new(g: Graph<Vertex, Edge>, svg: SVGSelection): GraphView<Vertex, Edge>;
-}
+type GraphViewConstructor =
+  new(g: Graph<Vertex, Edge>, svg: SVGSelection) => GraphView<Vertex, Edge>;
 
 const viewRegistry = new Map<string, GraphViewConstructor>();
 
