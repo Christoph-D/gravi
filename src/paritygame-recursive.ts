@@ -9,7 +9,7 @@ import { Edge } from "./graph";
 // algorithm.
 
 interface RemovableVertex extends ParityGameVertex {
-  removed: boolean;
+  removed?: boolean;
 }
 type PG = ParityGame<RemovableVertex, Edge>;
 

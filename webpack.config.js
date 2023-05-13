@@ -1,6 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
 
 const outputDir = './dist';
 
@@ -13,7 +13,7 @@ module.exports = {
         use: [
           {
             loader: 'babel-loader',
-            options: { presets: [ '@babel/preset-env' ]}
+            options: { presets: ['@babel/preset-env'] }
           }
         ],
         exclude: /node_modules/
@@ -23,7 +23,7 @@ module.exports = {
         use: [
           {
             loader: 'babel-loader',
-            options: { presets: [ '@babel/preset-env' ]}
+            options: { presets: ['@babel/preset-env'] }
           },
           'ts-loader'
         ],
@@ -52,18 +52,21 @@ module.exports = {
     contentBase: outputDir
   },
   resolve: {
-    extensions: [ '.ts', '.js' ],
+    extensions: ['.ts', '.js'],
     alias: {
       "assets": path.resolve(__dirname, 'assets'),
       "d3.slider": path.resolve(__dirname, 'lib/d3.slider/d3.slider.js'),
       "gravi": path.resolve(__dirname, 'src')
     }
   },
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserPlugin()],
+  },
   output: {
     filename: 'gravi.js'
   },
   plugins: [
-    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       title: 'Gravi',
       template: 'assets/index.html',

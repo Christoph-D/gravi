@@ -196,7 +196,7 @@ export default class ManagedPropertiesListenable extends Listenable {
 
   public propertyDescriptors() {
     const protoConstructor =
-      Reflect.getPrototypeOf(this).constructor as typeof ManagedPropertiesListenable;
+      Reflect.getPrototypeOf(this)!.constructor as typeof ManagedPropertiesListenable;
     return protoConstructor.propertyDescriptors;
   }
 }
