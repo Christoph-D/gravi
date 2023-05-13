@@ -1,7 +1,7 @@
 Gravi
 =====
 
-[![Build Status](https://travis-ci.org/Christoph-D/gravi.svg?branch=master)](https://travis-ci.org/Christoph-D/gravi)
+![Build Status](https://github.com/github/docs/actions/workflows/test.yml/badge.svg)
 
 Visualizes graphs and algorithms.
 
